@@ -7,6 +7,8 @@
 //   the colour picker image.
 
 // TO DO:
+// - the random colours don't seem to show yellow tones, why?
+// - probably better to turn the alien into a class; also easier to reuse to display later
 // - alien heads and bodies need some anchor info
 // - alien heads and bodies need info how wide the connecting gap can be;
 //   the smaller value will be selected when combining them
@@ -26,7 +28,7 @@
 // - save as an image on the server
 // - save user info in the database
 //   alien table: ( id, timestamp, name, 2 traits, dna: headID, bodyID, color)
-// - eyes table (links to aliens table via id): ( id, alienID, eyeID, x, y, scale? )
+// - eyes table (links to aliens table via id): ( id, alienID, eyeID, x, y, eyeTick?, scale? )
 
 const game = new Phaser.Game( 1200, 1200, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
@@ -38,7 +40,53 @@ let mapping
 let colorSelector
 let validHslColors
 let validColors
+let ui
+let neck
 const dna = {}
+
+const HEAD = 'head'
+const BODY = 'body'
+const EYE = 'eye'
+const EYEBALL = 'eyeball'
+const IRIS = 'iris'
+
+const bodyPartProps = {
+  heads: [
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
+    { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 1 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
+  ],
+  bodies: [
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
+    { anchorX: 0.65, anchorY: 0, neckWidth: 0.3 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
+  ],
+  eyeballs: [
+    { anchorX: 0.5, anchorY: 0.5 },
+    { anchorX: 0.5, anchorY: 0 },
+  ],
+  irises: [
+    { anchorX: 0.5, anchorY: 0.5 },
+    { anchorX: 0.5, anchorY: -0.35 },
+  ]
+}
 
 
 function preload () {
@@ -49,9 +97,6 @@ function preload () {
 function create () {
   console.log( 'GAME', game )
 
-  const numHeads = 15
-  const numBodies = 8
-  const numEyes = 2
   const alienOffsetY = -80
 
   game.input.maxPointers = 1
@@ -62,9 +107,9 @@ function create () {
   alien = game.add.group()
   alien.position.set( game.world.centerX, game.world.centerY + alienOffsetY )
 
-  bodies = makeItems( { parent: alien, type: 'body', num: numBodies, anchorX: 0.5, anchorY: 0, visible: false } )
-  heads = makeItems( { parent: alien, type: 'head', num: numHeads, anchorX: 0.5, anchorY: 1, visible: false } )
-  eyes = makeEyes( { parent: alien, num: numEyes } )
+  bodies = makeItems( { parent: alien, type: BODY, props: bodyPartProps.bodies } )
+  heads = makeItems( { parent: alien, type: HEAD, props: bodyPartProps.heads } )
+  eyes = makeEyes( { parent: alien, props: bodyPartProps.eyeballs } )
 
   mapping = {
     body: bodies,
@@ -75,7 +120,7 @@ function create () {
   validHslColors = makeValidHslColors()
   validColors = _.map( validHslColors, ( hsl ) => Phaser.Color.HSLtoRGB( hsl.s, hsl.s, hsl.l ) )
 
-  const ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
+  ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
 
   game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => showPreviousItem( { type: 'body' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => showNextItem( { type: 'body' } ) )
@@ -100,10 +145,11 @@ function makeUI ( opt = {} ) {
 
   // const validHslColors = makeValidHslColors()
   // colorSelector = makeColorSelector( { parent: group, validHslColors } )
+
   colorSelector = makeColorSelector( { parent: group } )
   colorSelector.sprite.position.set( bounds.centerX, bounds.bottom - colorSelector.height / 2 - edgeMargin )
 
-  const random = game.add.button( 0, 0, 'assets', makeRandomAlien, this, 'uiRandom-over', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
+  const random = game.add.button( 0, 0, 'assets', makeRandomAlien, this, 'uiRandomOver', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
   random.anchor.set( 0.5, 0.5 )
   random.position.set( bounds.left + random.width / 2 + edgeMargin, colorSelector.sprite.y  )
   group.randomButton = random
@@ -161,11 +207,41 @@ function makeAlien ( opt = {} ) {
     color: 0xffffff,
   } )
 
-  showItem( { type: 'body', id: bodyID } )
-  showItem( { type: 'head', id: headID } )
-  showItem( { type: 'eye', id: eyeID } )
-  positionEye()
+  const body = showItem( { type: BODY, id: bodyID } )
+  const head = showItem( { type: HEAD, id: headID } )
+
+  if ( neck !== undefined ) neck.destroy()
+  const width = Math.min( head.neckWidth * head.width, body.neckWidth * body.width )
+  neck = makeNeck( { width } )
+  head.addChild( neck )
+
+  const eye = showItem( { type: EYE, id: eyeID } )
+  setEye()
+
   setColor( { color } )
+}
+
+
+function setEye () {
+  const head = getHead()
+  const eye = getEye()
+  head.addChild( eye )
+  eye.y = -head.anchor.y * head.height + head.height / 2
+}
+
+
+function makeNeck ( opt = {} ) {
+  const { width, height, color } = _.defaults( opt, {
+    width: 100,
+    height: 50,
+  } )
+
+  const graphics = game.add.graphics( width, height )
+  graphics.beginFill( 0xffffff )
+  graphics.drawRect( -width * 1.5, -height, width, height )
+  // graphics.alpha = 0.5
+
+  return graphics
 }
 
 
@@ -177,6 +253,7 @@ function setColor ( opt = {} ) {
   getBody().tint = color
   getHead().tint = color
   getEye().iris.tint = ( color > 0xf8f8f8 ) ? 0x000000 : color // TO DO: set this to color === 0xffffff when color limitations are implemented
+  neck.tint = color
   dna.color = color
   logDNA()
 }
@@ -190,35 +267,39 @@ function showItem ( { type, id } ) {
   const item = mapping[ type ][ id ]
   item.visible = true
   dna[ `${ type }ID` ] = id
+
+  return item
 }
 
 
-function makeItems ( { parent, type, num, anchorX, anchorY } ) {
+function makeItems ( { parent, type, props } ) {
   const items = []
 
-  for ( const i of _.range( num ) ) {
+  props.forEach( ( prop, i ) => {
+    const { anchorX, anchorY, neckWidth } = prop
     const item = game.add.sprite( 0, 0, 'assets', `${ type }${ i }`, parent )
     item.anchor.set( anchorX, anchorY )
+    item.neckWidth = neckWidth
     items.push( item )
-  }
+  } )
 
   return items
 }
 
 
-function makeEyes ( { parent, num } ) {
+function makeEyes ( { parent, props } ) {
   const eyes = []
-  const eyeballs = makeItems( { type: 'eyeball', num, anchorX: 0.5, anchorY: 0.5 } )
-  const irises = makeItems( { type: 'iris', num, anchorX: 0.5, anchorY: 0.5 } )
+  const eyeballs = makeItems( { type: EYEBALL, props } )
+  const irises = makeItems( { type: IRIS, props: bodyPartProps.irises } )
 
-  for ( const i of _.range( num ) ) {
+  props.forEach( ( prop, i ) => {
     const eye = game.add.group( parent )
     eye.eyeball = eyeballs[ i ]
     eye.iris = irises[ i ]
     eye.add( eyeballs[ i ] )
     eye.add( irises[ i ] )
     eyes.push( eye )
-  }
+  } )
 
   return eyes
 }
@@ -240,16 +321,11 @@ function getEye () {
 }
 
 
-function positionEye () {
-  getEye().y = -getHead().height / 2
-}
-
-
 function showNextItem ( { type } ) {
   const id = mapping[ type ][ ++dna[ `${ type }ID` ] ] === undefined ? 0 : dna[ `${ type }ID` ]
   showItem( { type, id } )
   setColor()
-  positionEye()
+  setEye()
   logDNA()
 }
 
@@ -258,7 +334,7 @@ function showPreviousItem ( { type } ) {
   const id = mapping[ type ][ --dna[ `${ type }ID` ] ] === undefined ? mapping[ type ].length - 1 : dna[ `${ type }ID` ]
   showItem( { type, id } )
   setColor()
-  positionEye()
+  setEye()
   logDNA()
 }
 
@@ -390,8 +466,6 @@ function makeValidHslColors ( opt = {} ) {
       const rgb = Phaser.Color.HSLtoRGB( h, s, l )
       const color = _.merge( rgb, { h, s, l } )
       colors.push( color )
-
-      console.log( color )
 
       // temp dev: print color
       const colorString = Phaser.Color.RGBtoString( rgb.r, rgb.g, rgb.b )
