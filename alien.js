@@ -45,8 +45,10 @@ const bodyPartProps = {
 
 export default class Alien {
 
+  #color = 0xffffff
+
   constructor( opt ) {
-    const { game, parent, x, y, mutable, validColors } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, validColors, dna } = _.defaults( opt, {
       x: 0,
       y: 0,
       mutable: false,
@@ -68,6 +70,9 @@ export default class Alien {
       head: this.heads,
       eye: this.eyes,
     }
+
+    this.randomize( { logDNA: false } )
+    this.make( dna )
   }
 
 
@@ -76,12 +81,14 @@ export default class Alien {
   }
 
 
-  randomize () {
+  randomize ( opt = {} ) {
+    const { logDNA } = opt
+
     const bodyID = this.sampleArrayIndex( this.bodies )
     const headID = this.sampleArrayIndex( this.heads )
     const eyeID = this.sampleArrayIndex( this.eyes )
     const color = this.getRandomColor()
-    this.make( { bodyID, headID, eyeID, color } )
+    this.make( { bodyID, headID, eyeID, color, logDNA } )
   }
 
 
@@ -91,11 +98,12 @@ export default class Alien {
 
 
   make ( dna = {} ) {
-    const { bodyID, headID, eyeID, color } = _.defaults( dna, {
+    const { bodyID, headID, eyeID, color, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
       headID: this.dna.headID,
       eyeID: this.dna.eyeID,
       color: this.dna.color,
+      logDNA: true,
     } )
 
     const body = this.showItem( { type: BODY, id: bodyID } )
@@ -112,7 +120,7 @@ export default class Alien {
 
     this.tint( { color } )
 
-    this.logDNA()
+    if ( logDNA ) this.logDNA()
   }
 
 
@@ -121,25 +129,23 @@ export default class Alien {
       color: 0xffffff,
     } )
 
-    this.getBody().tint = color
-    this.getHead().tint = color
-    this.getEye().iris.tint = ( color > 0xfafafa ) ? 0x000000 : color
+    this.body.tint = color
+    this.head.tint = color
+    this.eye.iris.tint = ( color > 0xfafafa ) ? 0x000000 : color
     this.neck.tint = color
     this.dna.color = color
   }
 
 
   setEye () {
-    const head = this.getHead()
-    const eye = this.getEye()
-    head.addChild( eye )
-    eye.y = -head.anchor.y * head.height + head.height / 2
+    this.head.addChild( this.eye )
+    this.eye.y = -this.head.anchor.y * this.head.height + this.head.height / 2
   }
 
 
   makeNeck ( opt = {} ) {
     const { width, height } = _.defaults( opt, {
-      width: 100,
+      width: 0,
       height: 50,
     } )
 
@@ -206,17 +212,17 @@ export default class Alien {
   }
 
 
-  getBody () {
+  get body () {
     return this.bodies[ this.dna.bodyID ]
   }
 
 
-  getHead () {
+  get head () {
     return this.heads[ this.dna.headID ]
   }
 
 
-  getEye () {
+  get eye () {
     return this.eyes[ this.dna.eyeID ]
   }
 

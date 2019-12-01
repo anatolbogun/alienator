@@ -69,8 +69,6 @@ function create () {
   game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
-
-  alien.randomize()
 }
 
 
@@ -178,7 +176,7 @@ function makeValidHslColors ( opt = {} ) {
     luminosityMax: 0.85,
     luminosityEase: Linear.easeNone,
     extraColors: [ 0x000000, 0xffffff ],
-    log: true,
+    log: false,
   } )
 
   const luminositySaturationSteps = Math.max( luminositySteps, saturationSteps )
