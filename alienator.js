@@ -1,3 +1,5 @@
+import Alien from "./alien.js"
+
 // NOTES:
 // - I think makeValidHslColors() and especially getNearestHslColor() was an interesting thing to do
 //   and I may use this in another project, but I think if I want to redo the colour picker
@@ -33,60 +35,10 @@
 const game = new Phaser.Game( 1200, 1200, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
-let bodies
-let heads
-let eyes
-let mapping
 let colorSelector
 let validHslColors
 let validColors
 let ui
-let neck
-const dna = {}
-
-const HEAD = 'head'
-const BODY = 'body'
-const EYE = 'eye'
-const EYEBALL = 'eyeball'
-const IRIS = 'iris'
-
-const bodyPartProps = {
-  heads: [
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 1 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
-  ],
-  bodies: [
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.65, anchorY: 0, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
-  ],
-  eyeballs: [
-    { anchorX: 0.5, anchorY: 0.5 },
-    { anchorX: 0.5, anchorY: 0 },
-  ],
-  irises: [
-    { anchorX: 0.5, anchorY: 0.5 },
-    { anchorX: 0.5, anchorY: -0.35 },
-  ]
-}
 
 
 function preload () {
@@ -104,31 +56,24 @@ function create () {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
   game.scale.parentIsWindow = true
 
-  alien = game.add.group()
-  alien.position.set( game.world.centerX, game.world.centerY + alienOffsetY )
 
-  bodies = makeItems( { parent: alien, type: BODY, props: bodyPartProps.bodies } )
-  heads = makeItems( { parent: alien, type: HEAD, props: bodyPartProps.heads } )
-  eyes = makeEyes( { parent: alien, props: bodyPartProps.eyeballs } )
-
-  mapping = {
-    body: bodies,
-    head: heads,
-    eye: eyes,
-  }
+  const x = game.world.centerX
+  const y = game.world.centerY + alienOffsetY
+  alien = new Alien( { game, x, y, mutable: true } )
+  console.log( 'ALIEN', alien )
 
   validHslColors = makeValidHslColors()
   validColors = _.map( validHslColors, ( hsl ) => Phaser.Color.HSLtoRGB( hsl.s, hsl.s, hsl.l ) )
 
   ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
 
-  game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => showPreviousItem( { type: 'body' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => showNextItem( { type: 'body' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => showPreviousItem( { type: 'head' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => showNextItem( { type: 'head' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( makeRandomAlien )
+  game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
+  game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
+  game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
+  game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
+  game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
 
-  makeRandomAlien()
+  alien.randomize()
 }
 
 
@@ -143,13 +88,10 @@ function makeUI ( opt = {} ) {
   const group = game.add.group()
   const bounds = game.world.bounds
 
-  // const validHslColors = makeValidHslColors()
-  // colorSelector = makeColorSelector( { parent: group, validHslColors } )
-
   colorSelector = makeColorSelector( { parent: group } )
   colorSelector.sprite.position.set( bounds.centerX, bounds.bottom - colorSelector.height / 2 - edgeMargin )
 
-  const random = game.add.button( 0, 0, 'assets', makeRandomAlien, this, 'uiRandomOver', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
+  const random = game.add.button( 0, 0, 'assets', () => alien.randomize(), this, 'uiRandomOver', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
   random.anchor.set( 0.5, 0.5 )
   random.position.set( bounds.left + random.width / 2 + edgeMargin, colorSelector.sprite.y  )
   group.randomButton = random
@@ -159,22 +101,22 @@ function makeUI ( opt = {} ) {
   done.position.set( bounds.right - done.width / 2 - edgeMargin, colorSelector.sprite.y )
   group.doneButton = done
 
-  const previousHead = game.add.button( 0, 0, 'assets', () => showPreviousItem( { type: 'head' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
+  const previousHead = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'head' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
   previousHead.anchor.set( 0.5, 0.5 )
   previousHead.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
   group.previousHeadButton = previousHead
 
-  const previousBody = game.add.button( 0, 0, 'assets', () => showPreviousItem( { type: 'body' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
+  const previousBody = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'body' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
   previousBody.anchor.set( 0.5, 0.5 )
   previousBody.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
   group.previousBodyButton = previousBody
 
-  const nextHead = game.add.button( 0, 0, 'assets', () => showNextItem( { type: 'head' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
+  const nextHead = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'head' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
   nextHead.anchor.set( 0.5, 0.5 )
   nextHead.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
   group.nextHeadButton = nextHead
 
-  const nextBody = game.add.button( 0, 0, 'assets', () => showNextItem( { type: 'body' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
+  const nextBody = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'body' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
   nextBody.anchor.set( 0.5, 0.5 )
   nextBody.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
   group.nextButton = nextBody
@@ -183,164 +125,8 @@ function makeUI ( opt = {} ) {
 }
 
 
-function getRandomItemID ( { items } ) {
-  return _.sample( _.range( items.length ) )
-}
-
-
-function makeRandomAlien () {
-  const bodyID = getRandomItemID( { items: bodies } )
-  const headID = getRandomItemID( { items: heads } )
-  const eyeID = getRandomItemID( { items: eyes } )
-  const color = getRandomColor()
-  makeAlien( { bodyID, headID, eyeID, color } )
-}
-
-
-function getRandomColor () {
-  return validColors !== undefined ? _.sample( validColors ).color : _.random( 0, 0xffffff )
-}
-
-
-function makeAlien ( opt = {} ) {
-  const { bodyID, headID, eyeID, color } = _.defaults( opt, {
-    color: 0xffffff,
-  } )
-
-  const body = showItem( { type: BODY, id: bodyID } )
-  const head = showItem( { type: HEAD, id: headID } )
-
-  if ( neck !== undefined ) neck.destroy()
-  const width = Math.min( head.neckWidth * head.width, body.neckWidth * body.width )
-  neck = makeNeck( { width } )
-  head.addChild( neck )
-
-  const eye = showItem( { type: EYE, id: eyeID } )
-  setEye()
-
-  setColor( { color } )
-}
-
-
-function setEye () {
-  const head = getHead()
-  const eye = getEye()
-  head.addChild( eye )
-  eye.y = -head.anchor.y * head.height + head.height / 2
-}
-
-
-function makeNeck ( opt = {} ) {
-  const { width, height, color } = _.defaults( opt, {
-    width: 100,
-    height: 50,
-  } )
-
-  const graphics = game.add.graphics( width, height )
-  graphics.beginFill( 0xffffff )
-  graphics.drawRect( -width * 1.5, -height, width, height )
-  // graphics.alpha = 0.5
-
-  return graphics
-}
-
-
-function setColor ( opt = {} ) {
-  const { color } = _.defaults( opt, {
-    color: dna.color === undefined ? 0xffffff : dna.color,
-  } )
-
-  getBody().tint = color
-  getHead().tint = color
-  getEye().iris.tint = ( color > 0xf8f8f8 ) ? 0x000000 : color // TO DO: set this to color === 0xffffff when color limitations are implemented
-  neck.tint = color
-  dna.color = color
-  logDNA()
-}
-
-
-function showItem ( { type, id } ) {
-  for ( const item of mapping[ type ] ) {
-    item.visible = false
-  }
-
-  const item = mapping[ type ][ id ]
-  item.visible = true
-  dna[ `${ type }ID` ] = id
-
-  return item
-}
-
-
-function makeItems ( { parent, type, props } ) {
-  const items = []
-
-  props.forEach( ( prop, i ) => {
-    const { anchorX, anchorY, neckWidth } = prop
-    const item = game.add.sprite( 0, 0, 'assets', `${ type }${ i }`, parent )
-    item.anchor.set( anchorX, anchorY )
-    item.neckWidth = neckWidth
-    items.push( item )
-  } )
-
-  return items
-}
-
-
-function makeEyes ( { parent, props } ) {
-  const eyes = []
-  const eyeballs = makeItems( { type: EYEBALL, props } )
-  const irises = makeItems( { type: IRIS, props: bodyPartProps.irises } )
-
-  props.forEach( ( prop, i ) => {
-    const eye = game.add.group( parent )
-    eye.eyeball = eyeballs[ i ]
-    eye.iris = irises[ i ]
-    eye.add( eyeballs[ i ] )
-    eye.add( irises[ i ] )
-    eyes.push( eye )
-  } )
-
-  return eyes
-}
-
-
-function getBody () {
-  return bodies[ dna.bodyID ]
-}
-
-
-function getHead () {
-  return heads[ dna.headID ]
-}
-
-
-
-function getEye () {
-  return eyes[ dna.eyeID ]
-}
-
-
-function showNextItem ( { type } ) {
-  const id = mapping[ type ][ ++dna[ `${ type }ID` ] ] === undefined ? 0 : dna[ `${ type }ID` ]
-  showItem( { type, id } )
-  setColor()
-  setEye()
-  logDNA()
-}
-
-
-function showPreviousItem ( { type } ) {
-  const id = mapping[ type ][ --dna[ `${ type }ID` ] ] === undefined ? mapping[ type ].length - 1 : dna[ `${ type }ID` ]
-  showItem( { type, id } )
-  setColor()
-  setEye()
-  logDNA()
-}
-
-
 function makeColorSelector ( opt = {} ) {
-  const { parent, x, y, validHslColors } = _.defaults( opt, {
+  const { parent, x, y } = _.defaults( opt, {
     x: 0,
     y: 0,
   } )
@@ -364,60 +150,13 @@ function makeColorSelector ( opt = {} ) {
 
     if ( pointer.isDown && posX >= 0 && posX <= bmd.width && posY >= 0 && posY <= bmd.height ) {
       const rgb = bmd.getPixelRGB( posX, posY )
+      const color = Phaser.Color.getColor( rgb.r, rgb.g, rgb.b )
 
-      let color
-
-      if ( validHslColors !== undefined ) {
-        const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
-        const validHsl = getNearestHslColor( { targetColor: hsl, colors: validHslColors } )
-        const validRGB = Phaser.Color.HSLtoRGB( validHsl.h, validHsl.s, validHsl.l )
-        color = validRGB.color
-      } else {
-        color = Phaser.Color.getColor( rgb.r, rgb.g, rgb.b )
-      }
-
-      if ( rgb.a === 255 && color !== dna.color ) {
-        setColor( { color } )
+      if ( rgb.a === 255 && color !== alien.dna.color ) {
+        alien.setColor( { color } )
       }
     }
   }
-}
-
-
-function getNearestHslColor ( opt ) {
-  let { colors } = opt
-  const { targetColor, priorities } = _.defaults( opt, {
-    priorities: [ 'h', 'l', 's' ] // order that colors are filtered by
-  } )
-
-  const reducers = {
-    h: () => {
-      const hues = _.uniq( _.map( colors, 'h' ) )
-      const h = getNearestValue( { target: targetColor.h, array: hues } )
-      return _.filter( colors, { h } )
-    },
-    s: () => {
-      const saturations = _.uniq( _.map( colors, 's' ) )
-      const s = getNearestValue( { target: targetColor.s, array: saturations } )
-      return _.filter( colors, { s } )
-    },
-    l: () => {
-      const luminosities = _.uniq( _.map( colors, 'l' ) )
-      const l = getNearestValue( { target: targetColor.l, array: luminosities } )
-      return _.filter( colors, { l } )
-    },
-  }
-
-  for ( const priority of priorities ) {
-    colors = reducers[ priority ]()
-  }
-
-  return _.first( colors )
-}
-
-
-function getNearestValue ( { target, array } ) {
-  return array.reduce( ( prev, curr ) => Math.abs( curr - target ) < Math.abs( prev - target ) ? curr : prev )
 }
 
 
@@ -427,7 +166,7 @@ function makeValidHslColors ( opt = {} ) {
     hueMin, hueMax, hueEase,
     saturationMin, saturationMax, saturationEase,
     luminosityMin, luminosityMax, luminosityEase,
-    extraColors,
+    extraColors, log,
   } = _.defaults( opt, {
     hueSteps: 24,
     hueMin: 0,
@@ -442,6 +181,7 @@ function makeValidHslColors ( opt = {} ) {
     luminosityMax: 0.85,
     luminosityEase: Linear.easeNone,
     extraColors: [ 0x000000, 0xffffff ],
+    log: true,
   } )
 
   const luminositySaturationSteps = Math.max( luminositySteps, saturationSteps )
@@ -467,20 +207,16 @@ function makeValidHslColors ( opt = {} ) {
       const color = _.merge( rgb, { h, s, l } )
       colors.push( color )
 
-      // temp dev: print color
-      const colorString = Phaser.Color.RGBtoString( rgb.r, rgb.g, rgb.b )
-      console.log( `%c ${ i++ }: ${ h }, ${ s }, ${ l }, ${ rgb.color }`, `background: ${ colorString }; color: #000000` )
+      if ( log ) {
+        const colorString = Phaser.Color.RGBtoString( rgb.r, rgb.g, rgb.b )
+        console.log( `%c ${ i++ }: ${ h }, ${ s }, ${ l }, ${ rgb.color }`, `background: ${ colorString }; color: #000000` )
+      }
     }
   }
 
-  // return colors.sort( ( a, b ) => a - b )
   return colors
 }
 
-
-function logDNA () {
-  console.log( 'ALIEN DNA:', dna )
-}
 
 function update() {
 }
