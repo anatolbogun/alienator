@@ -90,9 +90,12 @@ export default class Alien {
   }
 
 
-  make ( opt = {} ) {
-    const { bodyID, headID, eyeID, color } = _.defaults( opt, {
-      color: 0xffffff,
+  make ( dna = {} ) {
+    const { bodyID, headID, eyeID, color } = _.defaults( dna, {
+      bodyID: this.dna.bodyID,
+      headID: this.dna.headID,
+      eyeID: this.dna.eyeID,
+      color: this.dna.color,
     } )
 
     const body = this.showItem( { type: BODY, id: bodyID } )
@@ -107,7 +110,22 @@ export default class Alien {
     const eye = this.showItem( { type: EYE, id: eyeID } )
     this.setEye()
 
-    this.setColor( { color } )
+    this.tint( { color } )
+
+    this.logDNA()
+  }
+
+
+  tint ( opt = {} ) {
+    const { color } = _.defaults( opt, {
+      color: 0xffffff,
+    } )
+
+    this.getBody().tint = color
+    this.getHead().tint = color
+    this.getEye().iris.tint = ( color > 0xfafafa ) ? 0x000000 : color
+    this.neck.tint = color
+    this.dna.color = color
   }
 
 
@@ -120,7 +138,7 @@ export default class Alien {
 
 
   makeNeck ( opt = {} ) {
-    const { width, height, color } = _.defaults( opt, {
+    const { width, height } = _.defaults( opt, {
       width: 100,
       height: 50,
     } )
@@ -128,7 +146,6 @@ export default class Alien {
     const graphics = this.game.add.graphics( width, height )
     graphics.beginFill( 0xffffff )
     graphics.drawRect( -width * 1.5, -height, width, height )
-    // graphics.alpha = 0.5
 
     return graphics
   }
@@ -139,12 +156,7 @@ export default class Alien {
       color: this.dna.color === undefined ? 0xffffff : this.dna.color,
     } )
 
-    this.getBody().tint = color
-    this.getHead().tint = color
-    this.getEye().iris.tint = ( color > 0xf8f8f8 ) ? 0x000000 : color // TO DO: set this to color === 0xffffff when color limitations are implemented
-    this.neck.tint = color
-    this.dna.color = color
-    this.logDNA()
+    this.make( { color } )
   }
 
 
@@ -211,19 +223,15 @@ export default class Alien {
 
   showNextItem ( { type } ) {
     const id = this.mapping[ type ][ ++this.dna[ `${ type }ID` ] ] === undefined ? 0 : this.dna[ `${ type }ID` ]
-    this.showItem( { type, id } )
-    this.setColor()
-    this.setEye()
-    this.logDNA()
+    const dna = { [ `${ type }ID` ]: id }
+    this.make( dna )
   }
 
 
   showPreviousItem ( { type } ) {
     const id = this.mapping[ type ][ --this.dna[ `${ type }ID` ] ] === undefined ? this.mapping[ type ].length - 1 : this.dna[ `${ type }ID` ]
-    this.showItem( { type, id } )
-    this.setColor()
-    this.setEye()
-    this.logDNA()
+    const dna = { [ `${ type }ID` ]: id }
+    this.make( dna )
   }
 
 
