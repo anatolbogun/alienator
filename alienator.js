@@ -10,15 +10,9 @@ import Alien from "./alien.js"
 
 // TO DO:
 // - the random colours don't seem to show yellow tones, why?
-// - probably better to turn the alien into a class; also easier to reuse to display later
-// - alien heads and bodies need some anchor info
-// - alien heads and bodies need info how wide the connecting gap can be;
-//   the smaller value will be selected when combining them
 // - eyes need to be draggable (and only onto the body, maybe I need a
 //   second inner shape and eyes can only drop if inside of that shape)
 // - draggable eyes should not overlap each other
-// - as an alternative just select type/s and number of eyes, like UI with
-// - <full eye > + | - <half eye> + , but I think I prefer draggables
 // - still, for the random generator we need a way to automatically place eyes,
 //   ideally with a random placement on the shape with validation as user drag and drop;
 //   maybe a while loop that picks random positions within the body part bounds and places
@@ -27,10 +21,13 @@ import Alien from "./alien.js"
 //   simple way to check that
 // - eyes on the body should be permitted, however, the random generator should prioritise
 //   to place them on the head
-// - save as an image on the server
+// - 2 eyes should be prioritised on the same height
+// - save as an image on the server (maybe even png and gif with eye blink)
 // - save user info in the database
 //   alien table: ( id, timestamp, name, 2 traits, dna: headID, bodyID, color)
 // - eyes table (links to aliens table via id): ( id, alienID, eyeID, x, y, eyeTick?, scale? )
+// - display aliens as images
+// - maybe also display aliens moving across the screen
 
 const game = new Phaser.Game( 1200, 1200, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
