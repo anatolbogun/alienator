@@ -1,61 +1,75 @@
+const { delayedCall } = gsap
+
 const HEAD = 'head'
 const BODY = 'body'
 const EYE = 'eye'
 const EYEBALL = 'eyeball'
 const IRIS = 'iris'
+const EYE_CLOSED = 'eyeClosed'
 
 const bodyPartProps = {
   heads: [
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 1 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5 },
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.1 }, // 0
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4, neckHeight: 0.05 }, // 1
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 2
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 }, // 3
+    { anchorX: 0.5, anchorY: 0.75, neckWidth: 0.3, neckHeight: 0.1 }, // 4
+    { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5, neckHeight: 0.15 }, // 5
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.05 }, // 6
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.07 }, // 7
+    { anchorX: 0.5, anchorY: 0.7, neckWidth: 0, neckHeight: 0 }, // 8
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 1, neckHeight: 0.05, scaleToFit: false }, // 9
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 }, // 10
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.4, neckHeight: 0.05 }, // 11
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.1 }, // 12
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 13
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 14
   ],
   bodies: [
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
-    { anchorX: 0.65, anchorY: 0, neckWidth: 0.3 },
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 },
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 }, // 0
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 1
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 2
+    { anchorX: 0.52, anchorY: 0, neckWidth: 0.8 }, // 3
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 }, // 4
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 5
+    { anchorX: 0.65, anchorY: 0, neckWidth: 0.3 }, // 6
+    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 }, // 7
   ],
   eyeballs: [
-    { anchorX: 0.5, anchorY: 0.5 },
-    { anchorX: 0.5, anchorY: 0 },
+    { anchorX: 0.5, anchorY: 0.5 }, // 0
+    { anchorX: 0.5, anchorY: 0 }, // 1
   ],
   irises: [
-    { anchorX: 0.5, anchorY: 0.5 },
-    { anchorX: 0.5, anchorY: -0.35 },
-  ]
+    { anchorX: 0.5, anchorY: 0.5 }, // 0
+    { anchorX: 0.5, anchorY: -0.35 }, // 1
+  ],
+  eyesClosed: [
+    { anchorX: 0.5, anchorY: 0 }, // 0
+    { anchorX: 0.5, anchorY: 0 }, // 1
+  ],
 }
+
+// maybe I need something like this
+// const specialHeadBodyCombinations = [
+//   { bodyID: 0, headID: 9, bodyNeckWidth: 0.6, scaleHead: true }
+// ]
+
+// or for a body neckWidth: { default: 0.3, head9: 0.6 }
 
 
 export default class Alien {
 
-  #color = 0xffffff
-
   constructor( opt ) {
-    const { game, parent, x, y, mutable, validColors, dna } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, validColors, dna, groundY } = _.defaults( opt, {
       x: 0,
       y: 0,
       mutable: false,
+      groundY: 0.7,
     } )
 
     this.game = game
     this.validColors = validColors
+    this.groundY = groundY
     this.dna = {}
 
     this.group = this.game.add.group( parent )
@@ -88,6 +102,7 @@ export default class Alien {
     const headID = this.sampleArrayIndex( this.heads )
     const eyeID = this.sampleArrayIndex( this.eyes )
     const color = this.getRandomColor()
+
     this.make( { bodyID, headID, eyeID, color, logDNA } )
   }
 
@@ -98,27 +113,46 @@ export default class Alien {
 
 
   make ( dna = {} ) {
-    const { bodyID, headID, eyeID, color, logDNA } = _.defaults( dna, {
+    const { bodyID, headID, eyeID, color, blink, onGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
       headID: this.dna.headID,
       eyeID: this.dna.eyeID,
       color: this.dna.color,
+      blink: true,
+      onGround: true,
       logDNA: true,
     } )
+
+    const isNewEye = eyeID !== this.dna.eyeID
+
+    if ( isNewEye ) this.stopAllBlinking()
 
     const body = this.showItem( { type: BODY, id: bodyID } )
     const head = this.showItem( { type: HEAD, id: headID } )
 
     if ( this.neck !== undefined ) this.neck.destroy()
-
     const width = Math.min( head.neckWidth * head.width, body.neckWidth * body.width )
-    this.neck = this.makeNeck( { width } )
+    const height = head.neckHeight * head.height
+    this.neck = this.makeNeck( { width, height } )
+    this.neck.y = head.height - head.height * head.anchor.y
+
     head.addChild( this.neck )
 
     const eye = this.showItem( { type: EYE, id: eyeID } )
+
+    if ( head.scaleToFit ) {
+      const scale = width / head.width
+      head.scale.set( scale )
+      eye.scale.set( 1 / scale )
+    }
+
     this.setEye()
 
     this.tint( { color } )
+
+    if ( onGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
+
+    if ( blink && isNewEye ) eye.startBlinking()
 
     if ( logDNA ) this.logDNA()
   }
@@ -173,6 +207,7 @@ export default class Alien {
 
     const item = this.mapping[ type ][ id ]
     item.visible = true
+    item.scale.set( 1 )
     this.dna[ `${ type }ID` ] = id
 
     return item
@@ -183,10 +218,13 @@ export default class Alien {
     const items = []
 
     props.forEach( ( prop, i ) => {
-      const { anchorX, anchorY, neckWidth } = prop
+      const { anchorX, anchorY, neckWidth, neckHeight, scaleToFit } = prop
       const item = this.game.add.sprite( 0, 0, 'assets', `${ type }${ i }`, parent )
       item.anchor.set( anchorX, anchorY )
       item.neckWidth = neckWidth
+      item.neckHeight = neckHeight
+      item.scaleToFit = scaleToFit || false
+
       items.push( item )
     } )
 
@@ -198,13 +236,27 @@ export default class Alien {
     const eyes = []
     const eyeballs = this.makeItems( { type: EYEBALL, props } )
     const irises = this.makeItems( { type: IRIS, props: bodyPartProps.irises } )
+    const eyesClosed = this.makeItems( { type: EYE_CLOSED, props: bodyPartProps.eyesClosed } )
 
     props.forEach( ( prop, i ) => {
       const eye = this.game.add.group( parent )
       eye.eyeball = eyeballs[ i ]
       eye.iris = irises[ i ]
+      eye.closed = eyesClosed[ i ]
+      eye.closingFrame = `eyeClosing${ i }`
+      eye.closedFrame = `eyeClosed${ i }`
       eye.add( eyeballs[ i ] )
       eye.add( irises[ i ] )
+      eye.add( eyesClosed[ i ] )
+
+      eye.startBlinking = () => this.startBlinking( { eye } )
+      eye.stopBlinking = () => this.stopBlinking( { eye } )
+      eye.open = () => this.openEye( { eye } )
+      eye.close = () => this.closeEye( { eye } )
+      eye.reset = () => this.resetEye( { eye } )
+
+      eye.reset()
+
       eyes.push( eye )
     } )
 
@@ -238,6 +290,66 @@ export default class Alien {
     const id = this.mapping[ type ][ --this.dna[ `${ type }ID` ] ] === undefined ? this.mapping[ type ].length - 1 : this.dna[ `${ type }ID` ]
     const dna = { [ `${ type }ID` ]: id }
     this.make( dna )
+  }
+
+
+  startBlinking ( opt = {} ) {
+    const { eye, minInterval, maxInterval, closeDuration } = _.defaults( opt, {
+      minInterval: 2,
+      maxInterval: 4,
+      closeDuration: 0.4,
+    } )
+
+    const interval = Math.max( closeDuration, _.random( minInterval, maxInterval, true ) )
+
+    eye.blinkTL = new TimelineMax( { repeat: -1, delay: interval } )
+    eye.blinkTL.call( eye.close )
+    eye.blinkTL.call( eye.open, null, closeDuration )
+    eye.blinkTL.to( {}, interval, {} )
+  }
+
+
+  stopBlinking ( { eye } ) {
+    if ( eye.blinkTL !== undefined ) eye.blinkTL.kill()
+    eye.reset()
+  }
+
+
+  stopAllBlinking () {
+    for ( const eye of this.eyes ) {
+      eye.stopBlinking()
+    }
+  }
+
+
+  closeEye ( { eye } ) {
+    eye.closed.frameName = eye.closingFrame
+    eye.closed.visible = true
+    eye.eyeball.visible = false
+    eye.iris.visible = false
+
+    delayedCall( 0.03, () => eye.closed.frameName = eye.closedFrame )
+  }
+
+
+  openEye ( { eye } ) {
+    eye.closed.frameName = eye.closingFrame
+    eye.closed.visible = true
+    eye.eyeball.visible = false
+    eye.iris.visible = false
+
+    delayedCall( 0.03, () => {
+      eye.closed.visible = false
+      eye.eyeball.visible = true
+      eye.iris.visible = true
+    } )
+  }
+
+
+  resetEye ( { eye } ) {
+    eye.closed.visible = false
+    eye.eyeball.visible = true
+    eye.iris.visible = true
   }
 
 
