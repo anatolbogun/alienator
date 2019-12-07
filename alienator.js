@@ -9,6 +9,8 @@ import Alien from "./alien.js"
 //   the colour picker image.
 
 // TO DO:
+// - some combinations (~30 or so) son't work that well. Maybe create handcrafted ones of those and if they exist use the handcrafted version.
+// - handcrafted version needs to store where head and body are to place eyes
 // - the random colours don't seem to show yellow tones, why?
 // - eyes need to be draggable (and only onto the body, maybe I need a
 //   second inner shape and eyes can only drop if inside of that shape)
@@ -53,10 +55,11 @@ function create () {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
   game.scale.parentIsWindow = true
 
+  const dna = hashToDNA()
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
-  alien = new Alien( { game, x, y, mutable: true } )
+  alien = new Alien( { game, x, y, mutable: true, dna } )
   console.log( 'ALIEN', alien )
 
   validHslColors = makeValidHslColors()
@@ -69,6 +72,27 @@ function create () {
   game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
+}
+
+
+function hashToDNA ( opt ) {
+  const { separator1, separator2, mapping } = _.defaults( opt || {}, {
+    separator1: ',',
+    separator2: '=',
+    mapping: {
+      head: 'headID',
+      body: 'bodyID',
+      eye: 'eyeID',
+      color: 'color',
+    },
+  } )
+
+  const hash = window.location.hash.replace( /^\#/, '' )
+
+  return _.fromPairs( _.remove( _.forEach( _.map( hash.split( separator1 ), ( part ) => part.split( separator2 ) ), ( pair ) => {
+    pair[ 0 ] = mapping[ pair[ 0 ] ]
+    if ( !isNaN( _.toNumber( pair[ 1 ] ) ) ) pair[ 1 ] = _.toNumber( pair[ 1 ] )
+  } ), ( pair ) => pair[ 0 ] !== undefined ) )
 }
 
 
