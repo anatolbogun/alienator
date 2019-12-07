@@ -1,0 +1,100 @@
+{"frames": {
+
+"body2-head14":
+{
+	"frame": {"x":1,"y":1,"w":572,"h":624},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":572,"h":624},
+	"sourceSize": {"w":572,"h":624}
+},
+"body3-head9":
+{
+	"frame": {"x":1459,"y":1318,"w":352,"h":536},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":352,"h":536},
+	"sourceSize": {"w":352,"h":536}
+},
+"body3-head13":
+{
+	"frame": {"x":913,"y":696,"w":388,"h":682},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":388,"h":682},
+	"sourceSize": {"w":388,"h":682}
+},
+"body4-head9":
+{
+	"frame": {"x":497,"y":1330,"w":414,"h":506},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":414,"h":506},
+	"sourceSize": {"w":414,"h":506}
+},
+"body4-head13":
+{
+	"frame": {"x":497,"y":627,"w":414,"h":701},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":414,"h":701},
+	"sourceSize": {"w":414,"h":701}
+},
+"body5-head9":
+{
+	"frame": {"x":1,"y":1309,"w":494,"h":610},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":494,"h":610},
+	"sourceSize": {"w":494,"h":610}
+},
+"body5-head13":
+{
+	"frame": {"x":1,"y":627,"w":494,"h":680},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":494,"h":680},
+	"sourceSize": {"w":494,"h":680}
+},
+"body6-head9":
+{
+	"frame": {"x":1303,"y":696,"w":436,"h":620},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":436,"h":620},
+	"sourceSize": {"w":436,"h":620}
+},
+"body6-head13":
+{
+	"frame": {"x":1121,"y":1,"w":447,"h":693},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":447,"h":693},
+	"sourceSize": {"w":447,"h":693}
+},
+"body7-head9":
+{
+	"frame": {"x":913,"y":1380,"w":544,"h":477},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":544,"h":477},
+	"sourceSize": {"w":544,"h":477}
+},
+"body7-head13":
+{
+	"frame": {"x":575,"y":1,"w":544,"h":601},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":544,"h":601},
+	"sourceSize": {"w":544,"h":601}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "alien-combinations-2.png",
+	"format": "RGBA8888",
+	"size": {"w":1812,"h":1920},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e8e259f80fa7a644b3a56e28c661d945:532d036f4bcd00a46389a4d176fe5569:81bcf1e3359acb3ea604c420dc90d769$"
+}
+}

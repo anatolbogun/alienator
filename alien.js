@@ -1,6 +1,3 @@
-// TO DO:
-// - I can probably get rid of scaleToFit
-
 const { delayedCall } = gsap
 
 const HEAD = 'head'
@@ -12,31 +9,31 @@ const EYE_CLOSED = 'eyeClosed'
 
 const bodyPartProps = {
   heads: [
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.1, combinations: { body3: { anchorX: 0.49, anchorY: 0.8 } } }, // 0
-    { anchorX: 0.5, anchorY: 0.84, neckWidth: 0.4, neckHeight: 0.05 }, // 1
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 2
-    { anchorX: 0.5, anchorY: 0.85, neckWidth: 0.3, neckHeight: 0.05 }, // 3
-    { anchorX: 0.49, anchorY: 0.73, neckWidth: 0.3, neckHeight: 0.1 }, // 4
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.11, combinations: { body1: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 }, body2: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 }, body3: { anchorX: 0.48, anchorY: 0.79 }, body4: { anchorY: 0.8 }, body5: { anchorY: 0.8 }, body6: { anchorY: 0.82, neckWidth: 0.2 }, body7: { anchorY: 0.7 } } }, // 0
+    { anchorX: 0.5, anchorY: 0.84, neckWidth: 0.4, neckHeight: 0.05, combinations: { body1: { neckWidth: 0.7, neckHeight: 0.15 } } }, // 1
+    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05, combinations: { body6: { anchorX: 0.55 } } }, // 2
+    { anchorX: 0.5, anchorY: 0.85, neckWidth: 0.3, neckHeight: 0.05, combinations: { body1: { neckWidth: 0.5, neckHeight: 0.07 }, body7: { neckWidth: 0.5 } } }, // 3
+    { anchorX: 0.49, anchorY: 0.73, neckWidth: 0.3, neckHeight: 0.1, combinations: { body1: { neckWidth: 0.65, neckHeight: 0.25 }, body3: { anchorY: 0.8 }, body6: { neckWidth: 0.2 }, body7: { anchorY: 0.9 } } }, // 4
     { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5, neckHeight: 0.15 }, // 5
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.05 }, // 6
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.07 }, // 7
-    { anchorX: 0.5, anchorY: 0.7, neckWidth: 0, neckHeight: 0 }, // 8
+    { anchorX: 0.5, anchorY: 0.7, neckWidth: 0, neckHeight: 0, combinations: { body3: { anchorX: 0.48, anchorY: 0.63 } } }, // 8
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 1, neckHeight: 0.05 }, // 9
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 }, // 10
     { anchorX: 0.49, anchorY: 0.88, neckWidth: 0.4, neckHeight: 0.05 }, // 11
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.1 }, // 12
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 13
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 }, // 14
+    { anchorX: 0.48, anchorY: 0.9, neckWidth: 0.4, neckHeight: 0.05 }, // 14
   ],
   bodies: [
     { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 }, // 0
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 1
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 2
+    { anchorX: 0.5, anchorY: 0.25, neckWidth: 0.6 }, // 1
+    { anchorX: 0.5, anchorY: 0.3, neckWidth: 0.6 }, // 2
     { anchorX: 0.52, anchorY: 0, neckWidth: 0.8 }, // 3
     { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 }, // 4
     { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 }, // 5
-    { anchorX: 0.65, anchorY: 0, neckWidth: 0.3 }, // 6
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.8 }, // 7
+    { anchorX: 0.64, anchorY: 0, neckWidth: 0.3 }, // 6
+    { anchorX: 0.5, anchorY: 0.2, neckWidth: 0.8 }, // 7
   ],
   eyeballs: [
     { anchorX: 0.5, anchorY: 0.5 }, // 0
@@ -56,14 +53,18 @@ const bodyPartProps = {
 export default class Alien {
 
   constructor( opt ) {
-    const { game, parent, x, y, mutable, validColors, dna, groundY, onMake } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, onMake } = _.defaults( opt, {
       x: 0,
       y: 0,
+      atlasKey: 'alien',
+      atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       mutable: false,
       groundY: 0.7,
     } )
 
     this.game = game
+    this.atlasKey = atlasKey
+    this.atlasKeyCombinations = atlasKeyCombinations
     this.validColors = validColors
     this.groundY = groundY
     this.dna = {}
@@ -72,9 +73,11 @@ export default class Alien {
     this.group = this.game.add.group( parent )
     this.group.position.set( x, y )
 
+    this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations } )
     this.bodies = this.makeItems( { parent: this.group, type: BODY, props: bodyPartProps.bodies } )
     this.heads = this.makeItems( { parent: this.group, type: HEAD, props: bodyPartProps.heads } )
     this.eyes = this.makeEyes( { parent: this.group, props: bodyPartProps.eyeballs } )
+
 
     this.mapping = {
       body: this.bodies,
@@ -89,6 +92,28 @@ export default class Alien {
 
   sampleArrayIndex ( array ) {
     return _.sample( _.range( array.length ) )
+  }
+
+
+  makeCombinations ( { atlasKeys } ) {
+    let combinations = []
+
+    for ( const atlasKey of atlasKeys ) {
+      const frameNames = _.keys( this.game.cache.getFrameData( atlasKey )._frameNames )
+
+      for ( const frameName of frameNames ) {
+        const parts = frameName.split( '-' )
+        const bodyID = _.toNumber( _.trimStart( parts[ 0 ], 'body' ) )
+        const headID = _.toNumber( _.trimStart( parts[ 1 ], 'head' ) )
+        const image = this.game.add.sprite( 0, 0, atlasKey, frameName, this.group )
+        image.visible = false
+        image.anchor.set( 0.5, 0.5 )
+        const combination = { headID, bodyID, image }
+        combinations.push( combination )
+      }
+    }
+
+    return combinations
   }
 
 
@@ -109,6 +134,7 @@ export default class Alien {
   }
 
 
+  // TO DO: rename dna to opt?
   make ( dna = {} ) {
     const { bodyID, headID, eyeID, color, blink, positionOnGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
@@ -124,36 +150,75 @@ export default class Alien {
 
     if ( isNewEye ) this.stopAllBlinking()
 
-    const body = this.showItem( { type: BODY, id: bodyID, combinationID: `${ HEAD }${ headID }` } )
-    const head = this.showItem( { type: HEAD, id: headID, combinationID: `${ BODY }${ bodyID }` } )
-
-    if ( this.neck !== undefined ) this.neck.destroy()
-    const width = Math.min( head.neckWidth * head.width, body.neckWidth * body.width )
-    const height = head.neckHeight * head.height
-    this.neck = this.makeNeck( { width, height } )
-    this.neck.y = head.height - head.height * head.anchor.y
-
-    head.addChild( this.neck )
-
     const eye = this.showItem( { type: EYE, id: eyeID } )
+    if ( blink && isNewEye ) eye.startBlinking()
 
-    if ( head.scaleToFit ) {
-      const scale = width / head.width
-      head.scale.set( scale )
-      eye.scale.set( 1 / scale )
+    this.hideCombinations()
+
+    this.combination = this.getCombination( { headID, bodyID } )
+
+    if ( this.combination !== undefined ) {
+      this.hideHeads()
+      this.hideBodies()
+
+      this.combination.tint = color
+      this.combination.visible = true
+      this.dna.headID = headID
+      this.dna.bodyID = bodyID
+
+      this.combination.addChild( this.eye )
+      this.eye.y = -this.combination.anchor.y * this.combination.height + this.combination.height / 3
+
+      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
+    } else {
+      const body = this.showItem( { type: BODY, id: bodyID, combinationID: `${ HEAD }${ headID }` } )
+      const head = this.showItem( { type: HEAD, id: headID, combinationID: `${ BODY }${ bodyID }` } )
+
+      if ( this.neck !== undefined ) this.neck.destroy()
+      const width = Math.min( head.neckWidth * head.width, body.neckWidth * body.width )
+      const height = head.neckHeight * head.height
+      this.neck = this.makeNeck( { width, height } )
+      this.neck.y = head.height - head.height * head.anchor.y
+
+      head.addChild( this.neck )
+
+      this.setEye()
+
+      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
     }
 
-    this.setEye()
-
     this.tint( { color } )
-
-    if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
-
-    if ( blink && isNewEye ) eye.startBlinking()
 
     if ( this.onMake !== undefined ) this.onMake( { dna: this.dna } )
 
     if ( logDNA ) this.logDNA()
+  }
+
+
+  hideCombinations () {
+    for ( const combination of this.combinations ) {
+      combination.image.visible = false
+    }
+  }
+
+
+  hideHeads () {
+    for ( const head of this.heads ) {
+      head.visible = false
+    }
+  }
+
+
+  hideBodies () {
+    for ( const body of this.bodies ) {
+      body.visible = false
+    }
+  }
+
+
+  getCombination ( { headID, bodyID } ) {
+    const combination = _.find( this.combinations, { headID, bodyID } )
+    if ( combination !== undefined ) return combination.image
   }
 
 
@@ -162,10 +227,11 @@ export default class Alien {
       color: 0xffffff,
     } )
 
-    this.body.tint = color
-    this.head.tint = color
+    if ( this.body !== undefined ) this.body.tint = color
+    if ( this.head !== undefined ) this.head.tint = color
+    if ( this.combination !== undefined ) this.combination.tint = color
     this.eye.iris.tint = ( color > 0xfafafa ) ? 0x000000 : color
-    this.neck.tint = color
+    if ( this.neck !== undefined ) this.neck.tint = color
     this.dna.color = color
   }
 
@@ -224,12 +290,11 @@ export default class Alien {
 
 
   setItemProps ( { item, props } ) {
-    const { anchorX, anchorY, neckWidth, neckHeight, scaleToFit } = props || item.defaultProps
+    const { anchorX, anchorY, neckWidth, neckHeight } = props || item.defaultProps
 
     item.anchor.set( anchorX, anchorY )
     item.neckWidth = neckWidth
     item.neckHeight = neckHeight
-    item.scaleToFit = scaleToFit || false
   }
 
 
@@ -237,7 +302,7 @@ export default class Alien {
     const items = []
 
     props.forEach( ( prop, i ) => {
-      const item = this.game.add.sprite( 0, 0, 'assets', `${ type }${ i }`, parent )
+      const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ i }`, parent )
       item.defaultProps = prop
       this.setItemProps( { item } )
       items.push( item )

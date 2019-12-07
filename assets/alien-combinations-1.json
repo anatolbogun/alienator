@@ -1,0 +1,92 @@
+{"frames": {
+
+"body0-head9":
+{
+	"frame": {"x":639,"y":1219,"w":442,"h":542},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":442,"h":542},
+	"sourceSize": {"w":442,"h":542}
+},
+"body0-head13":
+{
+	"frame": {"x":1277,"y":1,"w":442,"h":755},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":442,"h":755},
+	"sourceSize": {"w":442,"h":755}
+},
+"body1-head8":
+{
+	"frame": {"x":639,"y":635,"w":636,"h":582},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":636,"h":582},
+	"sourceSize": {"w":636,"h":582}
+},
+"body1-head9":
+{
+	"frame": {"x":1,"y":1407,"w":636,"h":537},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":636,"h":537},
+	"sourceSize": {"w":636,"h":537}
+},
+"body1-head10":
+{
+	"frame": {"x":1,"y":715,"w":636,"h":690},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":636,"h":690},
+	"sourceSize": {"w":636,"h":690}
+},
+"body1-head11":
+{
+	"frame": {"x":1,"y":1,"w":636,"h":712},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":636,"h":712},
+	"sourceSize": {"w":636,"h":712}
+},
+"body1-head13":
+{
+	"frame": {"x":1501,"y":1291,"w":390,"h":534},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":390,"h":534},
+	"sourceSize": {"w":390,"h":534}
+},
+"body1-head14":
+{
+	"frame": {"x":639,"y":1,"w":636,"h":632},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":636,"h":632},
+	"sourceSize": {"w":636,"h":632}
+},
+"body2-head9":
+{
+	"frame": {"x":1277,"y":758,"w":563,"h":531},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":563,"h":531},
+	"sourceSize": {"w":563,"h":531}
+},
+"body2-head13":
+{
+	"frame": {"x":1083,"y":1291,"w":416,"h":566},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":416,"h":566},
+	"sourceSize": {"w":416,"h":566}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "alien-combinations-1.png",
+	"format": "RGBA8888",
+	"size": {"w":1892,"h":1945},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:baf5c2142507835b2991f04ba007aa4f:5dc38363bcd8d11bbbc3a3c880e34cca:fd935b6ab5aa6b0925b2b894f1ff83cb$"
+}
+}
