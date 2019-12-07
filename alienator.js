@@ -59,7 +59,7 @@ function create () {
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
-  alien = new Alien( { game, x, y, mutable: true, dna } )
+  alien = new Alien( { game, x, y, mutable: true, dna, onMake: dnaToHash } )
   console.log( 'ALIEN', alien )
 
   validHslColors = makeValidHslColors()
@@ -80,8 +80,8 @@ function hashToDNA ( opt ) {
     separator1: ',',
     separator2: '=',
     mapping: {
-      head: 'headID',
       body: 'bodyID',
+      head: 'headID',
       eye: 'eyeID',
       color: 'color',
     },
@@ -93,6 +93,29 @@ function hashToDNA ( opt ) {
     pair[ 0 ] = mapping[ pair[ 0 ] ]
     if ( !isNaN( _.toNumber( pair[ 1 ] ) ) ) pair[ 1 ] = _.toNumber( pair[ 1 ] )
   } ), ( pair ) => pair[ 0 ] !== undefined ) )
+}
+
+
+function dnaToHash ( opt ) {
+  const { dna, separator1, separator2, mapping } = _.defaults( opt || {}, {
+    separator1: ',',
+    separator2: '=',
+    mapping: {
+      body: 'bodyID',
+      head: 'headID',
+      eye: 'eyeID',
+      color: 'color',
+    },
+  } )
+
+  const hash = _.join( _.map( _.forEach( _.toPairs( dna ), ( pair ) => {
+    if ( pair[ 0 ] === mapping.color ) pair[ 1 ] = `0x${ pair[ 1 ].toString( 16 ) }`
+    pair[ 0 ] = _.findKey( mapping, ( item ) => item === pair[ 0 ] )
+  } ), ( pair ) => _.join( pair, separator2 ) ), separator1 )
+
+  window.location.hash = hash
+
+  return hash
 }
 
 
