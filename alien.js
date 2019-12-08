@@ -37,15 +37,27 @@ const bodyPartProps = {
   ],
   eyeballs: [
     { anchorX: 0.5, anchorY: 0.5 }, // 0
-    { anchorX: 0.5, anchorY: 0 }, // 1
+    { anchorX: 0.5, anchorY: 0.5 }, // 1
+    { anchorX: 0.5, anchorY: 0.5 }, // 2
+    { anchorX: 0.5, anchorY: 0 }, // 3
+    { anchorX: 0.5, anchorY: 0 }, // 4
+    { anchorX: 0.5, anchorY: 0 }, // 5
   ],
   irises: [
     { anchorX: 0.5, anchorY: 0.5 }, // 0
-    { anchorX: 0.5, anchorY: -0.35 }, // 1
+    { anchorX: 0.5, anchorY: 0.5 }, // 1
+    { anchorX: 0.5, anchorY: 0.5 }, // 2
+    { anchorX: 0.5, anchorY: -0.2 }, // 3
+    { anchorX: 0.5, anchorY: -0.33 }, // 4
+    { anchorX: 0.5, anchorY: -0.6 }, // 5
   ],
   eyesClosed: [
-    { anchorX: 0.5, anchorY: 0 }, // 0
-    { anchorX: 0.5, anchorY: 0 }, // 1
+    { anchorX: 0.5, anchorY: 0.15 }, // 0
+    { anchorX: 0.5, anchorY: 0.075 }, // 1
+    { anchorX: 0.5, anchorY: 0.06 }, // 2
+    { anchorX: 0.5, anchorY: 0 }, // 3
+    { anchorX: 0.5, anchorY: 0 }, // 4
+    { anchorX: 0.5, anchorY: 0 }, // 5
   ],
 }
 
