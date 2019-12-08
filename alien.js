@@ -158,12 +158,12 @@ export default class Alien {
       logDNA: true,
     } )
 
-    const isNewEye = eyeID !== this.dna.eyeID
+    // const isNewEye = eyeID !== this.dna.eyeID
 
-    if ( isNewEye ) this.stopAllBlinking()
+    // if ( isNewEye ) this.stopAllBlinking()
 
-    const eye = this.showItem( { type: EYE, id: eyeID } )
-    if ( blink && isNewEye ) eye.startBlinking()
+    // const eye = this.showItem( { type: EYE, id: eyeID } )
+    // if ( blink && isNewEye ) eye.startBlinking()
 
     this.hideCombinations()
 
@@ -178,8 +178,10 @@ export default class Alien {
       this.dna.headID = headID
       this.dna.bodyID = bodyID
 
-      this.combination.addChild( this.eye )
-      this.eye.y = -this.combination.anchor.y * this.combination.height + this.combination.height / 3
+      if ( this.eye !== undefined ) {
+        this.combination.addChild( this.eye )
+        this.eye.y = -this.combination.anchor.y * this.combination.height + this.combination.height / 3
+      }
 
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     } else {
@@ -194,7 +196,7 @@ export default class Alien {
 
       head.addChild( this.neck )
 
-      this.setEye()
+      // this.setEye()
 
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
     }
@@ -247,7 +249,12 @@ export default class Alien {
     // when luminosity is very high, tint the iris black
     const rgb = Phaser.Color.valueToColor( color )
     const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
-    this.eye.iris.tint = ( hsl.l > luminosityThreshold ) ? 0x000000 : color
+    const eyeColor = hsl.l > luminosityThreshold ? 0x000000 : color
+    // if ( this.eye !== undefined ) this.eye.iris.tint = eyeColor
+
+    for ( const eye of this.eyes ) {
+      eye.iris.tint = eyeColor
+    }
 
     if ( this.neck !== undefined ) this.neck.tint = color
     this.dna.color = color
@@ -337,15 +344,17 @@ export default class Alien {
     const eyesClosed = this.makeItems( { type: EYE_CLOSED, props: bodyPartProps.eyesClosed } )
 
     props.forEach( ( prop, i ) => {
-      const eye = this.game.add.group( parent )
+      const eye = this.game.add.sprite( 0, 0, null, null, parent )
+      eye.inputEnabled = true
+      eye.input.enableDrag( true )
       eye.eyeball = eyeballs[ i ]
       eye.iris = irises[ i ]
       eye.closed = eyesClosed[ i ]
       eye.closingFrame = `eyeClosing${ i }`
       eye.closedFrame = `eyeClosed${ i }`
-      eye.add( eyeballs[ i ] )
-      eye.add( irises[ i ] )
-      eye.add( eyesClosed[ i ] )
+      eye.addChild( eyeballs[ i ] )
+      eye.addChild( irises[ i ] )
+      eye.addChild( eyesClosed[ i ] )
 
       eye.startBlinking = () => this.startBlinking( { eye } )
       eye.stopBlinking = () => this.stopBlinking( { eye } )
@@ -355,8 +364,21 @@ export default class Alien {
 
       eye.reset()
 
+      eye.startBlinking()
+
       eyes.push( eye )
     } )
+
+    const margin = 10
+    const totalEyesWidth = _.sumBy( _.map( eyes, 'eyeball' ), 'width' )
+    let x = -1 * ( totalEyesWidth + ( eyes.length - 1 ) * margin ) / 2
+    const y = -parent.y + 25 // TO DO: magic number
+
+    for ( const eye of eyes ) {
+      x += eye.eyeball.width / 2
+      eye.position.set( x, y )
+      x += eye.eyeball.width / 2 + margin
+    }
 
     return eyes
   }
