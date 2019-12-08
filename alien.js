@@ -230,7 +230,12 @@ export default class Alien {
     if ( this.body !== undefined ) this.body.tint = color
     if ( this.head !== undefined ) this.head.tint = color
     if ( this.combination !== undefined ) this.combination.tint = color
-    this.eye.iris.tint = ( color > 0xfafafa ) ? 0x000000 : color
+
+    // when luminosity is very high, tint the iris black
+    const rgb = Phaser.Color.valueToColor( color )
+    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
+    this.eye.iris.tint = ( hsl.l > 0.95 ) ? 0x000000 : color
+
     if ( this.neck !== undefined ) this.neck.tint = color
     this.dna.color = color
   }
