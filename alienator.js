@@ -34,7 +34,6 @@ import Alien from "./alien.js"
 const game = new Phaser.Game( 1200, 1200, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
-let colorSelector
 let validHslColors
 let validColors
 let ui
@@ -122,8 +121,8 @@ function dnaToHash ( opt ) {
 }
 
 
-function makeUI ( opt = {} ) {
-  const { edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY, randomXPosFactor, doneXPosFactor } = _.defaults( opt, {
+function makeUI ( opt ) {
+  const { edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY, randomXPosFactor, doneXPosFactor } = _.defaults( opt || {}, {
     edgeMargin: 30,
     headYPosFactor: 0.4,
     bodyYPosFactor: 0.6,
@@ -131,47 +130,154 @@ function makeUI ( opt = {} ) {
   } )
 
   const group = game.add.group()
+  group.buttons = []
+  group.disableButtons = () => {
+    for ( const button of group.buttons ) {
+      button.inputEnabled = false
+    }
+  }
+  group.enableButtons = () => {
+    for ( const button of group.buttons ) {
+      button.inputEnabled = true
+    }
+  }
+
   const bounds = game.world.bounds
 
-  colorSelector = makeColorSelector( { parent: group } )
+  const colorSelector = makeColorSelector( { parent: group } )
   colorSelector.sprite.position.set( bounds.centerX, bounds.bottom - colorSelector.height / 2 - edgeMargin )
+  group.colorSelector = colorSelector
 
   const random = game.add.button( 0, 0, 'assets', () => alien.randomize(), this, 'uiRandomOver', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
   random.anchor.set( 0.5, 0.5 )
-  random.position.set( bounds.left + random.width / 2 + edgeMargin, colorSelector.sprite.y  )
+  random.position.set( bounds.left + random.width / 2 + edgeMargin, colorSelector.sprite.y )
+  random.origin = _.clone( random.position )
   group.randomButton = random
+  group.buttons.push( random )
 
-  const done = game.add.button( 0, 0, 'assets', () => window.alert( 'I can\'t do that yet.' ), this, 'uiDoneOver', 'uiDone', 'uiDoneDown', 'uiDone', group )
-  done.anchor.set( 0.5, 0.5 )
-  done.position.set( bounds.right - done.width / 2 - edgeMargin, colorSelector.sprite.y )
-  group.doneButton = done
+  const cancel = game.add.button( 0, 0, 'assets', () => handleClick( { type: 'cancel' } ), this, 'uiCancelOver', 'uiCancel', 'uiCancelDown', 'uiCancel', group )
+  cancel.anchor.set( 0.5, 0.5 )
+  cancel.position.set( bounds.right - cancel.width / 2 - edgeMargin, colorSelector.sprite.y )
+  cancel.origin = _.clone( cancel.position )
+  cancel.alpha = 0
+  cancel.inputEnabled = false
+  group.cancelButton = cancel
+  group.buttons.push( cancel )
+
+  const ok = game.add.button( 0, 0, 'assets', () => handleClick( { type: 'ok' } ), this, 'uiOkOver', 'uiOk', 'uiOkDown', 'uiOk', group )
+  ok.anchor.set( 0.5, 0.5 )
+  ok.position.set( bounds.right - ok.width / 2 - edgeMargin, colorSelector.sprite.y )
+  ok.origin = _.clone( ok.position )
+  group.okButton = ok
+  group.buttons.push( ok )
 
   const previousHead = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'head' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
   previousHead.anchor.set( 0.5, 0.5 )
   previousHead.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
+  previousHead.origin = _.clone( previousHead.position )
   group.previousHeadButton = previousHead
+  group.buttons.push( previousHead )
 
   const previousBody = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'body' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
   previousBody.anchor.set( 0.5, 0.5 )
   previousBody.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
+  previousBody.origin = _.clone( previousBody.position )
   group.previousBodyButton = previousBody
+  group.buttons.push( previousBody )
 
   const nextHead = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'head' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
   nextHead.anchor.set( 0.5, 0.5 )
   nextHead.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
+  nextHead.origin = _.clone( nextHead.position )
   group.nextHeadButton = nextHead
+  group.buttons.push( nextHead )
 
   const nextBody = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'body' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
   nextBody.anchor.set( 0.5, 0.5 )
   nextBody.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
-  group.nextButton = nextBody
+  nextBody.origin = _.clone( nextBody.position )
+  group.nextBodyButton = nextBody
+  group.buttons.push( nextBody )
+
+  const oath = makeOath( { x: bounds.centerX, y: bounds.height * headYPosFactor - previousNextButtonOffsetY / 2 } )
+  group.oath = oath
 
   return group
 }
 
 
-function makeColorSelector ( opt = {} ) {
-  const { parent, x, y } = _.defaults( opt, {
+function makeOath ( opt ) {
+  const { x, y } = opt
+
+  const group = game.add.group()
+  group.visible = false
+
+  const panel = game.add.sprite( 0, 0, 'assets', 'panel', group )
+  panel.anchor.set( 0.5, 0.5 )
+
+  const text = game.add.sprite( 0, 0, 'assets', 'oath', group )
+  text.anchor.set( 0.5, 0.5 )
+
+  group.showPos = { x, y }
+  group.hidePos = { x, y: -panel.height / 2 }
+
+  group.position.set( group.hidePos.x, group.hidePos.y )
+
+  return group
+}
+
+
+function showOath () {
+  ui.disableButtons()
+  ui.colorSelector.inputEnabled = false
+  ui.oath.enabled = true
+
+  const tl = new TimelineMax()
+  // tl.call( ui.disableButtons )
+  // tl.set( ui.colorSelector, { inputEnabled: false } )
+  tl.set( ui.oath, { visible: true } )
+  tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
+  tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
+  tl.to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Bounce.easeOut } ), 0.3 )
+  tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+  tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
+  tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
+  tl.to( alien.group, 0.5, { y: 150, ease: Back.easeOut }, 0.3 )
+  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+  tl.call( () => ui.cancelButton.inputEnabled = true )
+  tl.call( () => ui.okButton.inputEnabled = true )
+
+  ui.oath.timeline = tl
+}
+
+
+function hideOath () {
+  ui.oath.timeline.reverse()
+  ui.enableButtons()
+  ui.cancelButton.inputEnabled = false
+  ui.oath.enabled = false
+
+  // const tl = new TimelineMax()
+  // tl.call( ui.disableButtons )
+  // tl.set( ui.colorSelector, { inputEnabled: false } )
+  // tl.set( ui.oath, { visible: true } )
+  // tl.to( ui.previousHeadButton, 0.5, { x: ui.previousHeadButton.origin.x, ease: Back.easeIn }, 0 )
+  // tl.to( ui.previousHeadButton, 0.5, { x: ui.previousHeadButton.origin.x, ease: Back.easeIn }, 0.1 )
+  // // tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
+  // // tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
+  // // tl.to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Bounce.easeOut } ), 0.3 )
+  // // tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+  // // tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
+  // // tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
+  // // tl.to( alien.group, 0.5, { y: 150, ease: Back.easeOut }, 0.3 )
+  // // tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+  // tl.call( () => ui.cancelButton.inputEnabled = true )
+  // tl.call( () => ui.okButton.inputEnabled = true )
+}
+
+
+function makeColorSelector ( opt ) {
+  const { parent, x, y } = _.defaults( opt || {}, {
     x: 0,
     y: 0,
   } )
@@ -185,9 +291,12 @@ function makeColorSelector ( opt = {} ) {
   bmd.sprite = sprite
   parent.add( sprite )
   game.input.addMoveCallback( getColor )
+  bmd.origin = { x, y }
+  bmd.inputEnabled = true
   return bmd
 
   function getColor ( pointer ) {
+    if ( !bmd.inputEnabled ) return
     const { x, y } = pointer
 
     const posX = Math.round( x - sprite.x + sprite.anchor.x * sprite.width )
@@ -205,14 +314,14 @@ function makeColorSelector ( opt = {} ) {
 }
 
 
-function makeValidHslColors ( opt = {} ) {
+function makeValidHslColors ( opt ) {
   const {
     hueSteps, saturationSteps, luminositySteps,
     hueMin, hueMax, hueEase,
     saturationMin, saturationMax, saturationEase,
     luminosityMin, luminosityMax, luminosityEase,
     extraColors, log,
-  } = _.defaults( opt, {
+  } = _.defaults( opt || {}, {
     hueSteps: 24,
     hueMin: 0,
     hueMax: 1,
@@ -260,6 +369,25 @@ function makeValidHslColors ( opt = {} ) {
   }
 
   return colors
+}
+
+
+function handleClick( { type } ) {
+  switch ( type ) {
+    case 'ok': {
+      if ( ui.oath.enabled ) {
+        alert( 'I can\'t do that yet.' )
+      } else {
+        showOath()
+      }
+
+      break
+    }
+    case 'cancel': {
+      hideOath()
+      break
+    }
+  }
 }
 
 
