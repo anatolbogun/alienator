@@ -71,7 +71,7 @@ export default class Alien {
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       mutable: false,
-      groundY: 0.7,
+      groundY: 0.65,
     } )
 
     this.game = game

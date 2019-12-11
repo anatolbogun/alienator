@@ -31,7 +31,7 @@ import Alien from "./alien.js"
 // - display aliens as images
 // - maybe also display aliens moving across the screen
 
-const game = new Phaser.Game( 1200, 1200, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
+const game = new Phaser.Game( 1200, 1400, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
 let validHslColors
@@ -50,7 +50,7 @@ function preload () {
 function create () {
   console.log( 'GAME', game )
 
-  const alienOffsetY = -80
+  const alienOffsetY = -140
 
   game.input.maxPointers = 1
   game.stage.backgroundColor = 0xffffff
@@ -199,7 +199,7 @@ function makeUI ( opt ) {
   group.nextBodyButton = nextBody
   group.buttons.push( nextBody )
 
-  const oath = makeOath( { x: bounds.centerX, y: bounds.height * headYPosFactor - previousNextButtonOffsetY / 2 } )
+  const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.5 } )
   group.oath = oath
 
   return group
@@ -207,7 +207,9 @@ function makeUI ( opt ) {
 
 
 function makeOath ( opt ) {
-  const { x, y } = opt
+  const { x, y, textOffsetY } = _.defaults( opt, {
+    textOffsetY: -8,
+  } )
 
   const group = game.add.group()
   group.visible = false
@@ -215,7 +217,7 @@ function makeOath ( opt ) {
   const panel = game.add.sprite( 0, 0, 'assets', 'panel', group )
   panel.anchor.set( 0.5, 0.5 )
 
-  const text = game.add.sprite( 0, 0, 'assets', 'oath', group )
+  const text = game.add.sprite( 0, textOffsetY, 'assets', 'oath', group )
   text.anchor.set( 0.5, 0.5 )
 
   group.showPos = { x, y }
@@ -238,12 +240,12 @@ function showOath () {
   tl.set( ui.oath, { visible: true } )
   tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
   tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
-  tl.to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Bounce.easeOut } ), 0.3 )
+  tl.to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
   tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
   tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
   tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  tl.to( alien.group, 0.5, { y: 150, ease: Back.easeOut }, 0.3 )
-  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+  tl.to( alien.group, 0.5, { y: 180, ease: Back.easeOut }, 0.3 )
+  tl.to( alien.group.scale, 0.5, { x: 0.4, y: 0.4, ease: Power1.easeOut }, 0.3 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
 
@@ -254,6 +256,7 @@ function showOath () {
 function hideOath () {
   ui.oath.timeline.reverse()
   ui.enableButtons()
+  ui.colorSelector.inputEnabled = true
   ui.cancelButton.inputEnabled = false
   ui.oath.enabled = false
 
