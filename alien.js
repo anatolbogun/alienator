@@ -88,8 +88,7 @@ export default class Alien {
     this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations } )
     this.bodies = this.makeItems( { parent: this.group, type: BODY, props: bodyPartProps.bodies } )
     this.heads = this.makeItems( { parent: this.group, type: HEAD, props: bodyPartProps.heads } )
-    this.eyes = this.makeEyes( { parent: this.group, props: bodyPartProps.eyeballs } )
-
+    this.eyes = []
 
     this.mapping = {
       body: this.bodies,
@@ -134,10 +133,49 @@ export default class Alien {
 
     const bodyID = this.sampleArrayIndex( this.bodies )
     const headID = this.sampleArrayIndex( this.heads )
-    const eyeID = this.sampleArrayIndex( this.eyes )
     const color = this.getRandomColor()
 
-    this.make( { bodyID, headID, eyeID, color, logDNA } )
+    this.makeRandomEyes()
+
+    this.make( { bodyID, headID, color, logDNA } )
+  }
+
+
+  makeRandomEyes ( opt ) {
+    const { num, positions } = _.defaults( opt || {}, {
+      num: 2,
+      positions: [
+        { x: -50, y: 0 },
+        { x: 50, y: 0 },
+      ],
+    } )
+
+    this.destroyEyes()
+
+    for ( const i of _.range( num ) ) {
+      const { x, y } = positions[ i ]
+      const index = _.random( bodyPartProps.eyeballs.length - 1 )
+      const eye = this.makeEye( { index, x, y } )
+      this.eyeTest( { eye } )
+    }
+  }
+
+
+  // returns false if the eye is overlapping another eye or if it exceeds the body
+  eyeTest ( { eye } ) {
+    eye.inputEnabled = true
+    eye.pixelPerfectOver = true
+    console.log( 'SPRITE', eye.eyeball )
+  }
+
+
+  destroyEyes () {
+    for ( const eye of this.eyes ) {
+      eye.stopBlinking()
+      eye.destroy()
+    }
+
+    this.eyes = []
   }
 
 
@@ -158,13 +196,6 @@ export default class Alien {
       logDNA: true,
     } )
 
-    const isNewEye = eyeID !== this.dna.eyeID
-
-    if ( isNewEye ) this.stopAllBlinking()
-
-    const eye = this.showItem( { type: EYE, id: eyeID } )
-    if ( blink && isNewEye ) eye.startBlinking()
-
     this.hideCombinations()
 
     this.combination = this.getCombination( { headID, bodyID } )
@@ -178,8 +209,9 @@ export default class Alien {
       this.dna.headID = headID
       this.dna.bodyID = bodyID
 
-      this.combination.addChild( this.eye )
-      this.eye.y = -this.combination.anchor.y * this.combination.height + this.combination.height / 3
+      for ( const eye of this.eyes ) {
+        this.combination.addChild( eye )
+      }
 
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     } else {
@@ -194,7 +226,9 @@ export default class Alien {
 
       head.addChild( this.neck )
 
-      this.setEye()
+      for ( const eye of this.eyes ) {
+        this.setEye( { eye } )
+      }
 
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
     }
@@ -240,23 +274,37 @@ export default class Alien {
       luminosityThreshold: 0.95,
     } )
 
+    this.dna.color = color
+
     if ( this.body !== undefined ) this.body.tint = color
     if ( this.head !== undefined ) this.head.tint = color
     if ( this.combination !== undefined ) this.combination.tint = color
 
-    // when luminosity is very high, tint the iris black
-    const rgb = Phaser.Color.valueToColor( color )
-    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
-    this.eye.iris.tint = ( hsl.l > luminosityThreshold ) ? 0x000000 : color
+    const irisColor = this.getIrisColor()
+
+    for ( const eye of this.eyes ) {
+      eye.iris.tint = irisColor
+    }
 
     if ( this.neck !== undefined ) this.neck.tint = color
-    this.dna.color = color
   }
 
 
-  setEye () {
-    this.head.addChild( this.eye )
-    this.eye.y = -this.head.anchor.y * this.head.height + this.head.height / 2
+  getIrisColor ( opt ) {
+    const { luminosityThreshold } = _.defaults( opt, {
+      luminosityThreshold: 0.95,
+    } )
+
+    // when luminosity is very high, tint the iris black
+    const rgb = Phaser.Color.valueToColor( this.dna.color )
+    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
+    return ( hsl.l > luminosityThreshold ) ? 0x000000 : this.dna.color
+  }
+
+
+  setEye ( { eye } ) {
+    this.head.addChild( eye )
+    eye.y = -this.head.anchor.y * this.head.height + this.head.height / 2
   }
 
 
@@ -319,10 +367,8 @@ export default class Alien {
   makeItems ( { parent, type, props } ) {
     const items = []
 
-    props.forEach( ( prop, i ) => {
-      const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ i }`, parent )
-      item.defaultProps = prop
-      this.setItemProps( { item } )
+    props.forEach( ( prop, index ) => {
+      const item = this.makeItem( { parent, type, index, prop } )
       items.push( item )
     } )
 
@@ -330,35 +376,70 @@ export default class Alien {
   }
 
 
+  makeItem ( { parent, type, index, prop } ) {
+    const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ index }`, parent )
+    item.defaultProps = prop
+    this.setItemProps( { item } )
+    return item
+  }
+
+
   makeEyes ( { parent, props } ) {
-    const eyes = []
-    const eyeballs = this.makeItems( { type: EYEBALL, props } )
-    const irises = this.makeItems( { type: IRIS, props: bodyPartProps.irises } )
-    const eyesClosed = this.makeItems( { type: EYE_CLOSED, props: bodyPartProps.eyesClosed } )
+    props.forEach( ( prop, index ) => {
+      this.makeEye( { parent, index } )
+    } )
+  }
 
-    props.forEach( ( prop, i ) => {
-      const eye = this.game.add.group( parent )
-      eye.eyeball = eyeballs[ i ]
-      eye.iris = irises[ i ]
-      eye.closed = eyesClosed[ i ]
-      eye.closingFrame = `eyeClosing${ i }`
-      eye.closedFrame = `eyeClosed${ i }`
-      eye.add( eyeballs[ i ] )
-      eye.add( irises[ i ] )
-      eye.add( eyesClosed[ i ] )
 
-      eye.startBlinking = () => this.startBlinking( { eye } )
-      eye.stopBlinking = () => this.stopBlinking( { eye } )
-      eye.open = () => this.openEye( { eye } )
-      eye.close = () => this.closeEye( { eye } )
-      eye.reset = () => this.resetEye( { eye } )
-
-      eye.reset()
-
-      eyes.push( eye )
+  makeEye ( opt ) {
+    const { parent, index, x, y, blink } = _.defaults( opt || {}, {
+      parent: this.group,
+      index: 0,
+      x: 0,
+      y: 0,
+      blink: true,
     } )
 
-    return eyes
+    const eye = this.game.add.group( parent )
+    eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ] } )
+    // eye.eyeball.bmd = this.makeBitmapData( { sourceImage: eye.eyeball } )
+    // [CONTINUE HERE] use the bitmap data above to do a sort of hit test with alpha values
+
+    eye.iris = this.makeItem( { parent: eye, type: IRIS, index, prop: bodyPartProps.irises[ index ] } )
+    eye.closed = this.makeItem( { parent: eye, type: EYE_CLOSED, index, prop: bodyPartProps.eyesClosed[ index ] } )
+    eye.closingFrame = `eyeClosing${ index }`
+    eye.closedFrame = `eyeClosed${ index }`
+    eye.iris.tint = this.getIrisColor()
+    eye.add( eye.eyeball )
+    eye.add( eye.iris )
+    eye.add( eye.closed )
+    eye.position.set( x, y )
+
+    eye.startBlinking = () => this.startBlinking( { eye } )
+    eye.stopBlinking = () => this.stopBlinking( { eye } )
+    eye.open = () => this.openEye( { eye } )
+    eye.close = () => this.closeEye( { eye } )
+    eye.reset = () => this.resetEye( { eye } )
+
+    eye.reset()
+    if ( blink ) eye.startBlinking()
+
+    this.eyes.push( eye )
+
+    return eye
+  }
+
+
+  makeBitmapData ( { sourceImage } ) {
+    const currentFrame = sourceImage.animations.currentFrame
+    const bmd = this.game.add.bitmapData( currentFrame.width, currentFrame.height )
+    bmd.draw( sourceImage, -currentFrame.spriteSourceSizeX + currentFrame.width * sourceImage.anchor.x, -currentFrame.spriteSourceSizeY + currentFrame.height * sourceImage.anchor.y )
+    console.log( 'TTT', -currentFrame.spriteSourceSizeX, currentFrame.width, sourceImage.anchor.x )
+    // bmd.update()
+    const sprite = bmd.addToWorld()
+    sprite.anchor.set( sourceImage.anchor.x, sourceImage.anchor.y )
+    sourceImage.parent.add( sprite )
+    return bmd
   }
 
 
@@ -369,11 +450,6 @@ export default class Alien {
 
   get head () {
     return this.heads[ this.dna.headID ]
-  }
-
-
-  get eye () {
-    return this.eyes[ this.dna.eyeID ]
   }
 
 

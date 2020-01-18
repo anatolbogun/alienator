@@ -60,6 +60,8 @@ function create () {
   alien = new Alien( { game, x, y, mutable: true, dna, onMake: dnaToHash } )
   console.log( 'ALIEN', alien )
 
+  // alien.makeEye( { index: 1 } )
+
   ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
   console.log( 'UI', ui )
 
