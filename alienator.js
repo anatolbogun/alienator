@@ -9,9 +9,7 @@ import Alien from "./alien.js"
 //   the colour picker image.
 
 // TO DO:
-// - some combinations (~30 or so) son't work that well. Maybe create handcrafted ones of those and if they exist use the handcrafted version.
 // - handcrafted version needs to store where head and body are to place eyes
-// - the random colours don't seem to show yellow tones, why?
 // - eyes need to be draggable (and only onto the body, maybe I need a
 //   second inner shape and eyes can only drop if inside of that shape)
 // - draggable eyes should not overlap each other
@@ -34,8 +32,6 @@ import Alien from "./alien.js"
 const game = new Phaser.Game( 1200, 1400, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
-let validHslColors
-let validColors
 let ui
 
 
@@ -64,10 +60,8 @@ function create () {
   alien = new Alien( { game, x, y, mutable: true, dna, onMake: dnaToHash } )
   console.log( 'ALIEN', alien )
 
-  validHslColors = makeValidHslColors()
-  validColors = _.map( validHslColors, ( hsl ) => Phaser.Color.HSLtoRGB( hsl.s, hsl.s, hsl.l ) )
-
   ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
+  console.log( 'UI', ui )
 
   game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
@@ -148,61 +142,64 @@ function makeUI ( opt ) {
   colorSelector.sprite.position.set( bounds.centerX, bounds.bottom - colorSelector.height / 2 - edgeMargin )
   group.colorSelector = colorSelector
 
-  const random = game.add.button( 0, 0, 'assets', () => alien.randomize(), this, 'uiRandomOver', 'uiRandom', 'uiRandomDown', 'uiRandom', group )
-  random.anchor.set( 0.5, 0.5 )
-  random.position.set( bounds.left + random.width / 2 + edgeMargin, colorSelector.sprite.y )
-  random.origin = _.clone( random.position )
-  group.randomButton = random
-  group.buttons.push( random )
+  const randomButton = makeButton( { group, key: 'random', onClick: () => alien.randomize() } )
+  randomButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, colorSelector.sprite.y )
 
-  const cancel = game.add.button( 0, 0, 'assets', () => handleClick( { type: 'cancel' } ), this, 'uiCancelOver', 'uiCancel', 'uiCancelDown', 'uiCancel', group )
-  cancel.anchor.set( 0.5, 0.5 )
-  cancel.position.set( bounds.right - cancel.width / 2 - edgeMargin, colorSelector.sprite.y )
-  cancel.origin = _.clone( cancel.position )
-  cancel.alpha = 0
-  cancel.inputEnabled = false
-  group.cancelButton = cancel
-  group.buttons.push( cancel )
+  const cancelButton = makeButton( { group, key: 'cancel', alpha: 0, inputEnabled: false, onClick: () => handleClick( { type: 'cancel' } ) } )
+  cancelButton.position.set( bounds.right - cancelButton.width / 2 - edgeMargin, colorSelector.sprite.y )
 
-  const ok = game.add.button( 0, 0, 'assets', () => handleClick( { type: 'ok' } ), this, 'uiOkOver', 'uiOk', 'uiOkDown', 'uiOk', group )
-  ok.anchor.set( 0.5, 0.5 )
-  ok.position.set( bounds.right - ok.width / 2 - edgeMargin, colorSelector.sprite.y )
-  ok.origin = _.clone( ok.position )
-  group.okButton = ok
-  group.buttons.push( ok )
+  const okButton = makeButton( { group, key: 'ok', onClick: () => handleClick( { type: 'ok' } ) } )
+  okButton.position.set( bounds.right - okButton.width / 2 - edgeMargin, colorSelector.sprite.y )
 
-  const previousHead = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'head' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
-  previousHead.anchor.set( 0.5, 0.5 )
-  previousHead.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
-  previousHead.origin = _.clone( previousHead.position )
-  group.previousHeadButton = previousHead
-  group.buttons.push( previousHead )
+  const previousHeadButton = makeButton( { group, key: 'previousHead', frameKey: 'previous', onClick: () => alien.showPreviousItem( { type: 'head' } ) } )
+  previousHeadButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
 
-  const previousBody = game.add.button( 0, 0, 'assets', () => alien.showPreviousItem( { type: 'body' } ), this, 'uiPreviousOver', 'uiPrevious', 'uiPreviousDown', 'uiPrevious', group )
-  previousBody.anchor.set( 0.5, 0.5 )
-  previousBody.position.set( bounds.left + random.width / 2 + edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
-  previousBody.origin = _.clone( previousBody.position )
-  group.previousBodyButton = previousBody
-  group.buttons.push( previousBody )
+  const previousBodyButton = makeButton( { group, key: 'previousBody', frameKey: 'previous', onClick: () => alien.showPreviousItem( { type: 'body' } ) } )
+  previousBodyButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
 
-  const nextHead = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'head' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
-  nextHead.anchor.set( 0.5, 0.5 )
-  nextHead.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
-  nextHead.origin = _.clone( nextHead.position )
-  group.nextHeadButton = nextHead
-  group.buttons.push( nextHead )
+  const nextHeadButton = makeButton( { group, key: 'nextHead', frameKey: 'next', onClick: () => alien.showNextItem( { type: 'head' } ) } )
+  nextHeadButton.position.set( bounds.right - randomButton.width / 2 - edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
 
-  const nextBody = game.add.button( 0, 0, 'assets', () => alien.showNextItem( { type: 'body' } ), this, 'uiNextOver', 'uiNext', 'uiNextDown', 'uiNext', group )
-  nextBody.anchor.set( 0.5, 0.5 )
-  nextBody.position.set( bounds.right - random.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
-  nextBody.origin = _.clone( nextBody.position )
-  group.nextBodyButton = nextBody
-  group.buttons.push( nextBody )
+  const nextBodyButton = makeButton( { group, key: 'nextBody', frameKey: 'next', onClick: () => alien.showNextItem( { type: 'body' } ) } )
+  nextBodyButton.position.set( bounds.right - randomButton.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
 
   const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.5 } )
   group.oath = oath
 
   return group
+}
+
+
+function makeButton ( opt ) {
+  const { key, atlasKey, frameKey, x, y, anchorX, anchorY, alpha, inputEnabled, group, onClick } = _.defaults( opt || {}, {
+    atlasKey: 'assets',
+    frameKey: opt.key,
+    x: 0,
+    y: 0,
+    anchorX: 0.5,
+    anchorY: 0.5,
+    alpha: 1,
+    inputEnabled: true,
+  } )
+
+  const capitalizedFrameKey = capitalize( frameKey )
+  const button = game.add.button( x, y, atlasKey, onClick, this, `ui${ capitalizedFrameKey }Over`, `ui${ capitalizedFrameKey }`, `ui${ capitalizedFrameKey }Down`, `ui${ capitalizedFrameKey }`, group )
+  button.anchor.set( anchorX, anchorY )
+  button.origin = _.clone( button.position )
+  button.alpha = alpha
+  button.inputEnabled = inputEnabled
+
+  if ( group !== undefined ) {
+    group[ `${ key }Button` ] = button
+    group.buttons.push( button )
+  }
+
+  return button
+}
+
+
+function capitalize ( string ) {
+  return string.charAt( 0 ).toUpperCase() + string.slice( 1 )
 }
 
 
@@ -259,23 +256,6 @@ function hideOath () {
   ui.colorSelector.inputEnabled = true
   ui.cancelButton.inputEnabled = false
   ui.oath.enabled = false
-
-  // const tl = new TimelineMax()
-  // tl.call( ui.disableButtons )
-  // tl.set( ui.colorSelector, { inputEnabled: false } )
-  // tl.set( ui.oath, { visible: true } )
-  // tl.to( ui.previousHeadButton, 0.5, { x: ui.previousHeadButton.origin.x, ease: Back.easeIn }, 0 )
-  // tl.to( ui.previousHeadButton, 0.5, { x: ui.previousHeadButton.origin.x, ease: Back.easeIn }, 0.1 )
-  // // tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
-  // // tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
-  // // tl.to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Bounce.easeOut } ), 0.3 )
-  // // tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
-  // // tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
-  // // tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  // // tl.to( alien.group, 0.5, { y: 150, ease: Back.easeOut }, 0.3 )
-  // // tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
-  // tl.call( () => ui.cancelButton.inputEnabled = true )
-  // tl.call( () => ui.okButton.inputEnabled = true )
 }
 
 
@@ -314,64 +294,6 @@ function makeColorSelector ( opt ) {
       }
     }
   }
-}
-
-
-function makeValidHslColors ( opt ) {
-  const {
-    hueSteps, saturationSteps, luminositySteps,
-    hueMin, hueMax, hueEase,
-    saturationMin, saturationMax, saturationEase,
-    luminosityMin, luminosityMax, luminosityEase,
-    extraColors, log,
-  } = _.defaults( opt || {}, {
-    hueSteps: 24,
-    hueMin: 0,
-    hueMax: 1,
-    hueEase: Linear.easeNone,
-    saturationSteps: 7,
-    saturationMin: 0.5,
-    saturationMax: 0.85,
-    saturationEase: Linear.easeNone,
-    luminositySteps: 7,
-    luminosityMin: 0.4,
-    luminosityMax: 0.85,
-    luminosityEase: Linear.easeNone,
-    extraColors: [ 0x000000, 0xffffff ],
-    log: false,
-  } )
-
-  const luminositySaturationSteps = Math.max( luminositySteps, saturationSteps )
-
-  const extraHslColors = _.map( extraColors, ( color ) => {
-    const rgb = Phaser.Color.getRGB( color )
-    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
-    return hsl
-  } )
-
-  const colors = extraHslColors || []
-
-  let i = 0
-
-  for ( const hueStep of _.range( hueSteps ) ) {
-    const h = hueMin + Math.abs( hueMax - hueMin ) * hueEase( ( hueStep / hueSteps ) )
-
-    for ( const luminositySaturationStep of _.range( luminositySaturationSteps ) ) {
-      const s = saturationMin + Math.abs( saturationMax - saturationMin ) * saturationEase( luminositySaturationStep / luminositySaturationSteps )
-      const l = luminosityMin + Math.abs( luminosityMax - luminosityMin ) * luminosityEase( luminositySaturationStep / luminositySaturationSteps )
-
-      const rgb = Phaser.Color.HSLtoRGB( h, s, l )
-      const color = _.merge( rgb, { h, s, l } )
-      colors.push( color )
-
-      if ( log ) {
-        const colorString = Phaser.Color.RGBtoString( rgb.r, rgb.g, rgb.b )
-        console.log( `%c ${ i++ }: ${ h }, ${ s }, ${ l }, ${ rgb.color }`, `background: ${ colorString }; color: #000000` )
-      }
-    }
-  }
-
-  return colors
 }
 
 
