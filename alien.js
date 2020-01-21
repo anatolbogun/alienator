@@ -402,7 +402,8 @@ export default class Alien {
 
     const eye = this.game.add.group( parent )
     eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ] } )
-    // eye.eyeball.bmd = this.makeBitmapData( { sourceImage: eye.eyeball } )
+    eye.eyeball.bmd = this.makeBitmapData( { sourceImage: eye.eyeball } )
+    eye.eyeball.bmd.inputEnabled = true
     // [CONTINUE HERE] use the bitmap data above to do a sort of hit test with alpha values
 
     eye.iris = this.makeItem( { parent: eye, type: IRIS, index, prop: bodyPartProps.irises[ index ] } )
@@ -417,6 +418,7 @@ export default class Alien {
 
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
+    eye.hitTest = ( { pointer } ) => this.hitTest( { item: eye.eyeball, pointer } )
     eye.open = () => this.openEye( { eye } )
     eye.close = () => this.closeEye( { eye } )
     eye.reset = () => this.resetEye( { eye } )
@@ -427,6 +429,36 @@ export default class Alien {
     this.eyes.push( eye )
 
     return eye
+  }
+
+
+  hitTest ( { item, pointer } ) {
+    if ( !pointer.isDown ) return false
+    if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
+
+    const { bmd } = item
+    const { x, y } = pointer
+
+    // const posX = Math.round( x - item.x + item.anchor.x * bmd.width )
+    // const posY = Math.round( y - item.y + item.anchor.y * bmd.height )
+
+    const pos = item.toGlobal( { x: item.x, y: item.y } )
+
+    console.log( 'xy', x, y, pos )
+
+    // if ( posX >= 0 && posX <= bmd.width && posY >= 0 && posY <= bmd.height ) {
+    if ( x >= pos.x && x <= pos.x + bmd.width && y >= pos.y && y <= pos.y + bmd.height ) {
+      const localPos = item.toLocal( { x, y } )
+      const rgb = bmd.getPixelRGB( localPos.x, localPos.y )
+      console.log( 'IN EYE', rgb.a )
+
+      if ( rgb.a > 0 ) {
+        console.log( 'HIT!' )
+        return true
+      }
+    }
+
+    return false
   }
 
 

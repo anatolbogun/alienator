@@ -70,6 +70,13 @@ function create () {
   game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
+
+  game.input.addMoveCallback( hitTest )
+}
+
+
+function hitTest ( pointer ) {
+  alien.eyes[ 0 ].hitTest( { pointer } )
 }
 
 
