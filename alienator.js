@@ -142,11 +142,13 @@ function makeUI ( opt ) {
   const group = game.make.group()
   if ( parent !== undefined ) parent.addChild( group )
   group.buttons = []
+
   group.disableButtons = () => {
     for ( const button of group.buttons ) {
       button.inputEnabled = false
     }
   }
+
   group.enableButtons = () => {
     for ( const button of group.buttons ) {
       button.inputEnabled = true
@@ -161,6 +163,7 @@ function makeUI ( opt ) {
 
   const eyes = makeEyes( { parent: group } )
   group.eyes = eyes
+  group.buttons = _.concat( group.buttons, eyes )
 
   const randomButton = makeButton( { group, key: 'random', onClick: () => alien.randomize() } )
   randomButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, colorSelector.sprite.y )
@@ -307,11 +310,13 @@ function showOath () {
   tl.set( ui.oath, { visible: true } )
   tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
   tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
+  tl.staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
+  tl.staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
   tl.to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
   tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
   tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
   tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  tl.to( alien.group, 0.5, { y: 180, ease: Back.easeOut }, 0.3 )
+  tl.to( alien.group, 0.5, { y: 320, ease: Back.easeOut }, 0.3 )
   tl.to( alien.group.scale, 0.5, { x: 0.4, y: 0.4, ease: Power1.easeOut }, 0.3 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
