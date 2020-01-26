@@ -143,7 +143,7 @@ export default class Alien {
 
   makeRandomEyes ( opt ) {
     const { num, positions } = _.defaults( opt || {}, {
-      num: 2,
+      num: 1,
       positions: [
         { x: -50, y: 0 },
         { x: 50, y: 0 },
@@ -439,25 +439,20 @@ export default class Alien {
     const { bmd } = item
     const { x, y } = pointer
 
-    // const posX = Math.round( x - item.x + item.anchor.x * bmd.width )
-    // const posY = Math.round( y - item.y + item.anchor.y * bmd.height )
-
     const pos = item.toGlobal( { x: item.x, y: item.y } )
 
-    console.log( 'xy', x, y, pos )
-
-    // if ( posX >= 0 && posX <= bmd.width && posY >= 0 && posY <= bmd.height ) {
-    if ( x >= pos.x && x <= pos.x + bmd.width && y >= pos.y && y <= pos.y + bmd.height ) {
-      const localPos = item.toLocal( { x, y } )
-      const rgb = bmd.getPixelRGB( localPos.x, localPos.y )
-      console.log( 'IN EYE', rgb.a )
+    if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) {
+      const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
+      const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
 
       if ( rgb.a > 0 ) {
         console.log( 'HIT!' )
+        item.tint = 0xff0000
         return true
       }
     }
 
+    item.tint = 0xffffff
     return false
   }
 
@@ -467,9 +462,10 @@ export default class Alien {
     const bmd = this.game.add.bitmapData( currentFrame.width, currentFrame.height )
     bmd.draw( sourceImage, -currentFrame.spriteSourceSizeX + currentFrame.width * sourceImage.anchor.x, -currentFrame.spriteSourceSizeY + currentFrame.height * sourceImage.anchor.y )
     console.log( 'TTT', -currentFrame.spriteSourceSizeX, currentFrame.width, sourceImage.anchor.x )
-    // bmd.update()
+    bmd.update()
     const sprite = bmd.addToWorld()
     sprite.anchor.set( sourceImage.anchor.x, sourceImage.anchor.y )
+    sprite.alpha = 0
     sourceImage.parent.add( sprite )
     return bmd
   }

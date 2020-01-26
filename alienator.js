@@ -294,6 +294,9 @@ function makeColorSelector ( opt ) {
     const posX = Math.round( x - sprite.x + sprite.anchor.x * sprite.width )
     const posY = Math.round( y - sprite.y + sprite.anchor.y * sprite.height )
 
+    // TO DO: this can be im proved by first checking item bounds before the getPixelRGB
+    // maybe also use .toLocal(); see alien.js hit test
+
     if ( pointer.isDown && posX >= 0 && posX <= bmd.width && posY >= 0 && posY <= bmd.height ) {
       const rgb = bmd.getPixelRGB( posX, posY )
       const color = Phaser.Color.getColor( rgb.r, rgb.g, rgb.b )
