@@ -29,7 +29,7 @@ import Alien from "./alien.js"
 // - display aliens as images
 // - maybe also display aliens moving across the screen
 
-const game = new Phaser.Game( 1200, 1400, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
+const game = new Phaser.Game( 1200, 1600, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
 let ui
@@ -62,8 +62,13 @@ function create () {
 
   // alien.makeEye( { index: 1 } )
 
-  ui = makeUI( { previousNextButtonOffsetY: alienOffsetY } )
+  ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
   console.log( 'UI', ui )
+
+  game.world.addChild( alien.group )
+
+  // console.log( 'CHILD INDEX', alien.group.parent.getChildIndex( alien.group ) )
+  // alien.group.parent.setChildIndex( alien.group, 0 )
 
   game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
@@ -71,12 +76,14 @@ function create () {
   game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
 
-  game.input.addMoveCallback( hitTest )
+  // game.input.addMoveCallback( hitTest )
 }
 
 
 function hitTest ( pointer ) {
-  alien.eyes[ 0 ].hitTest( { pointer } )
+  for ( const eye of alien.eyes ) {
+    if ( eye.hitTest( { pointer } ) ) console.log( 'EYE', eye.index, 'HIT' )
+  }
 }
 
 
@@ -125,14 +132,15 @@ function dnaToHash ( opt ) {
 
 
 function makeUI ( opt ) {
-  const { edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY, randomXPosFactor, doneXPosFactor } = _.defaults( opt || {}, {
+  const { parent, edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY, randomXPosFactor, doneXPosFactor } = _.defaults( opt || {}, {
     edgeMargin: 30,
     headYPosFactor: 0.4,
     bodyYPosFactor: 0.6,
     previousNextButtonOffsetY: 0,
   } )
 
-  const group = game.add.group()
+  const group = game.make.group()
+  if ( parent !== undefined ) parent.addChild( group )
   group.buttons = []
   group.disableButtons = () => {
     for ( const button of group.buttons ) {
@@ -150,6 +158,9 @@ function makeUI ( opt ) {
   const colorSelector = makeColorSelector( { parent: group } )
   colorSelector.sprite.position.set( bounds.centerX, bounds.bottom - colorSelector.height / 2 - edgeMargin )
   group.colorSelector = colorSelector
+
+  const eyes = makeEyes( { parent: group } )
+  group.eyes = eyes
 
   const randomButton = makeButton( { group, key: 'random', onClick: () => alien.randomize() } )
   randomButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, colorSelector.sprite.y )
@@ -176,6 +187,56 @@ function makeUI ( opt ) {
   group.oath = oath
 
   return group
+}
+
+
+// creates UI eyes
+function makeEyes ( opt ) {
+  const { parent, x, y, margin, color, eyeIndices } = _.defaults( opt || {}, {
+    x: game.world.centerX,
+    y: 50,
+    margin: 20,
+    color: 0x808080,
+    eyeIndices: [ 2, 1, 0, 5, 4, 3 ],
+  } )
+
+  const eyes = []
+  let width = 0
+  let height = 0
+
+  for( const index of eyeIndices ) {
+    const eye = alien.makeEye( { parent, index, blink: false, attach: false } )
+    eye.index = index
+    eye.iris.tint = color
+    eye.inputEnabled = true
+    eye.events.onInputDown.add( () => handleEyeClicked( eye ) )
+
+    width += eye.eyeball.width + margin
+    height = Math.max( height, eye.eyeball.height )
+    eyes.push( eye )
+  }
+
+  width -= margin
+
+  const posY = y + height / 2
+  let posX = x - width / 2
+
+  for ( const eye of eyes ) {
+    posX += eye.eyeball.width / 2
+    eye.position.set( posX, posY )
+    posX += eye.eyeball.width / 2 + margin
+  }
+
+  return eyes
+}
+
+
+function handleEyeClicked ( eye ) {
+  const { x, y } = alien.toLocal( game.input.activePointer.position )
+  const newEye = alien.makeEye( { index: eye.index, x, y, blink: false } )
+  newEye.inputEnabled = true
+  newEye.input.enableDrag( false, true )
+  newEye.input.startDrag( game.input.activePointer )
 }
 
 

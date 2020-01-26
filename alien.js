@@ -2,7 +2,6 @@ const { delayedCall } = gsap
 
 const HEAD = 'head'
 const BODY = 'body'
-const EYE = 'eye'
 const EYEBALL = 'eyeball'
 const IRIS = 'iris'
 const EYE_CLOSED = 'eyeClosed'
@@ -82,7 +81,8 @@ export default class Alien {
     this.dna = {}
     this.onMake = onMake
 
-    this.group = this.game.add.group( parent )
+    this.group = this.game.make.group()
+    if ( parent !== undefined ) parent.addChild( group )
     this.group.position.set( x, y )
 
     this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations } )
@@ -103,6 +103,16 @@ export default class Alien {
 
   sampleArrayIndex ( array ) {
     return _.sample( _.range( array.length ) )
+  }
+
+
+  toLocal ( opt ) {
+    const { x, y, from } = _.defaults( opt || {}, {
+      x: 0,
+      y: 0,
+    } )
+
+    return this.group.toLocal( { x, y }, from )
   }
 
 
@@ -135,7 +145,7 @@ export default class Alien {
     const headID = this.sampleArrayIndex( this.heads )
     const color = this.getRandomColor()
 
-    this.makeRandomEyes()
+    // this.makeRandomEyes()
 
     this.make( { bodyID, headID, color, logDNA } )
   }
@@ -377,7 +387,8 @@ export default class Alien {
 
 
   makeItem ( { parent, type, index, prop } ) {
-    const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ index }`, parent )
+    const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ index }` )
+    if ( parent !== undefined ) parent.addChild( item )
     item.defaultProps = prop
     this.setItemProps( { item } )
     return item
@@ -392,28 +403,30 @@ export default class Alien {
 
 
   makeEye ( opt ) {
-    const { parent, index, x, y, blink } = _.defaults( opt || {}, {
+    const { parent, index, x, y, blink, attach } = _.defaults( opt || {}, {
       parent: this.group,
       index: 0,
       x: 0,
       y: 0,
       blink: true,
+      attach: true,
     } )
 
-    const eye = this.game.add.group( parent )
+    const eye = this.game.add.sprite()
+    if ( parent !== undefined ) parent.addChild( eye )
+    eye.index = index
     eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ] } )
     eye.eyeball.bmd = this.makeBitmapData( { sourceImage: eye.eyeball } )
     eye.eyeball.bmd.inputEnabled = true
-    // [CONTINUE HERE] use the bitmap data above to do a sort of hit test with alpha values
 
     eye.iris = this.makeItem( { parent: eye, type: IRIS, index, prop: bodyPartProps.irises[ index ] } )
     eye.closed = this.makeItem( { parent: eye, type: EYE_CLOSED, index, prop: bodyPartProps.eyesClosed[ index ] } )
     eye.closingFrame = `eyeClosing${ index }`
     eye.closedFrame = `eyeClosed${ index }`
     eye.iris.tint = this.getIrisColor()
-    eye.add( eye.eyeball )
-    eye.add( eye.iris )
-    eye.add( eye.closed )
+    eye.addChild( eye.eyeball )
+    eye.addChild( eye.iris )
+    eye.addChild( eye.closed )
     eye.position.set( x, y )
 
     eye.startBlinking = () => this.startBlinking( { eye } )
@@ -426,7 +439,7 @@ export default class Alien {
     eye.reset()
     if ( blink ) eye.startBlinking()
 
-    this.eyes.push( eye )
+    if ( attach ) this.eyes.push( eye )
 
     return eye
   }
@@ -446,13 +459,13 @@ export default class Alien {
       const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
 
       if ( rgb.a > 0 ) {
-        console.log( 'HIT!' )
-        item.tint = 0xff0000
+        // console.log( 'HIT!' )
+        // item.tint = 0xff0000
         return true
       }
     }
 
-    item.tint = 0xffffff
+    // item.tint = 0xffffff
     return false
   }
 
@@ -461,12 +474,11 @@ export default class Alien {
     const currentFrame = sourceImage.animations.currentFrame
     const bmd = this.game.add.bitmapData( currentFrame.width, currentFrame.height )
     bmd.draw( sourceImage, -currentFrame.spriteSourceSizeX + currentFrame.width * sourceImage.anchor.x, -currentFrame.spriteSourceSizeY + currentFrame.height * sourceImage.anchor.y )
-    console.log( 'TTT', -currentFrame.spriteSourceSizeX, currentFrame.width, sourceImage.anchor.x )
-    bmd.update()
+    bmd.update() // necessary to getPixelRGB()
     const sprite = bmd.addToWorld()
     sprite.anchor.set( sourceImage.anchor.x, sourceImage.anchor.y )
     sprite.alpha = 0
-    sourceImage.parent.add( sprite )
+    sourceImage.parent.addChild( sprite )
     return bmd
   }
 
