@@ -288,17 +288,12 @@ function makeColorSelector ( opt ) {
   return bmd
 
   function getColor ( pointer ) {
-    if ( !bmd.inputEnabled ) return
+    if ( !bmd.inputEnabled || !pointer.isDown ) return
     const { x, y } = pointer
 
-    const posX = Math.round( x - sprite.x + sprite.anchor.x * sprite.width )
-    const posY = Math.round( y - sprite.y + sprite.anchor.y * sprite.height )
-
-    // TO DO: this can be im proved by first checking item bounds before the getPixelRGB
-    // maybe also use .toLocal(); see alien.js hit test
-
-    if ( pointer.isDown && posX >= 0 && posX <= bmd.width && posY >= 0 && posY <= bmd.height ) {
-      const rgb = bmd.getPixelRGB( posX, posY )
+    if ( x >= sprite.x - sprite.anchor.x * sprite.width && x <= sprite.x - sprite.anchor.x * sprite.width + sprite.width && y >= sprite.y - sprite.anchor.y * sprite.height && y <= sprite.y - sprite.anchor.y * sprite.height + sprite.height ) {
+      const localPos = sprite.toLocal( { x: x + sprite.anchor.x * sprite.width, y: y + sprite.anchor.y * sprite.height } )
+      const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
       const color = Phaser.Color.getColor( rgb.r, rgb.g, rgb.b )
 
       if ( rgb.a === 255 && color !== alien.dna.color ) {
