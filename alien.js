@@ -196,10 +196,9 @@ export default class Alien {
 
   // TO DO: rename dna to opt?
   make ( dna = {} ) {
-    const { bodyID, headID, eyeID, color, blink, positionOnGround, logDNA } = _.defaults( dna, {
+    const { bodyID, headID, color, positionOnGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
       headID: this.dna.headID,
-      eyeID: this.dna.eyeID,
       color: this.dna.color,
       blink: true,
       positionOnGround: true,
@@ -210,21 +209,7 @@ export default class Alien {
 
     this.combination = this.getCombination( { headID, bodyID } )
 
-    if ( this.combination !== undefined ) {
-      this.hideHeads()
-      this.hideBodies()
-
-      this.combination.tint = color
-      this.combination.visible = true
-      this.dna.headID = headID
-      this.dna.bodyID = bodyID
-
-      for ( const eye of this.eyes ) {
-        this.combination.addChild( eye )
-      }
-
-      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
-    } else {
+    if ( this.combination === undefined ) {
       const body = this.showItem( { type: BODY, id: bodyID, combinationID: `${ HEAD }${ headID }` } )
       const head = this.showItem( { type: HEAD, id: headID, combinationID: `${ BODY }${ bodyID }` } )
 
@@ -236,11 +221,17 @@ export default class Alien {
 
       head.addChild( this.neck )
 
-      for ( const eye of this.eyes ) {
-        this.setEye( { eye } )
-      }
-
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
+    } else {
+      this.hideHeads()
+      this.hideBodies()
+
+      this.combination.tint = color
+      this.combination.visible = true
+      this.dna.headID = headID
+      this.dna.bodyID = bodyID
+
+      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     }
 
     this.tint( { color } )
@@ -431,7 +422,7 @@ export default class Alien {
 
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
-    eye.hitTest = ( { pointer } ) => this.hitTest( { item: eye.eyeball, pointer } )
+    // eye.hitTest = ( { pointer } ) => this.hitTest( { item: eye.eyeball, pointer } )
     eye.open = () => this.openEye( { eye } )
     eye.close = () => this.closeEye( { eye } )
     eye.reset = () => this.resetEye( { eye } )
@@ -439,18 +430,46 @@ export default class Alien {
     eye.reset()
     if ( blink ) eye.startBlinking()
 
-    if ( attach ) this.eyes.push( eye )
+    if ( attach ) this.attachEye( { eye } )
 
     return eye
   }
 
 
-  hitTest ( { item, pointer } ) {
-    if ( !pointer.isDown ) return false
+  attachEye ( { eye } ) {
+    this.eyes.push( eye )
+  }
+
+
+  // hitTest ( { item, pointer } ) {
+  //   if ( !pointer.isDown ) return false
+  //   if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
+
+  //   const { bmd } = item
+  //   const { x, y } = pointer
+
+  //   const pos = item.toGlobal( { x: item.x, y: item.y } )
+
+  //   if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) {
+  //     const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
+  //     const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
+
+  //     if ( rgb.a > 0 ) {
+  //       // console.log( 'HIT!' )
+  //       // item.tint = 0xff0000
+  //       return true
+  //     }
+  //   }
+
+  //   // item.tint = 0xffffff
+  //   return false
+  // }
+
+
+  hitTest ( { item, x, y } ) {
     if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
 
     const { bmd } = item
-    const { x, y } = pointer
 
     const pos = item.toGlobal( { x: item.x, y: item.y } )
 
@@ -514,6 +533,11 @@ export default class Alien {
       closeDuration: 0.4,
     } )
 
+    if ( eye.blinkTL !== undefined ) {
+      eye.blinkTL.play()
+      return
+    }
+
     const interval = Math.max( closeDuration, _.random( minInterval, maxInterval, true ) )
 
     eye.blinkTL = new TimelineMax( { repeat: -1, delay: interval } )
@@ -524,7 +548,9 @@ export default class Alien {
 
 
   stopBlinking ( { eye } ) {
-    if ( eye.blinkTL !== undefined ) eye.blinkTL.kill()
+    if ( eye.blinkTL !== undefined ) {
+      eye.blinkTL.pause().progress( 0 )
+    }
     eye.reset()
   }
 

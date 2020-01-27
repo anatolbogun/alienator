@@ -46,6 +46,11 @@ function preload () {
 function create () {
   console.log( 'GAME', game )
 
+  game.canvas.addEventListener( 'contextmenu', e => {
+    e.preventDefault()
+    return false
+  } )
+
   const alienOffsetY = -140
 
   game.input.maxPointers = 1
@@ -195,29 +200,25 @@ function makeUI ( opt ) {
 
 // creates UI eyes
 function makeEyes ( opt ) {
-  const { parent, x, y, margin, color, eyeIndices } = _.defaults( opt || {}, {
+  const { parent, x, y, margin, eyeIndices } = _.defaults( opt || {}, {
     x: game.world.centerX,
     y: 50,
     margin: 20,
-    color: 0x808080,
-    eyeIndices: [ 2, 1, 0, 5, 4, 3 ],
+    eyeIndices: [ 0, 1, 2, 3, 4, 5 ],
+    // eyeIndices: [ 2, 1, 0, 5, 4, 3 ], // alternative eye order
   } )
 
   const eyes = []
   let width = 0
   let height = 0
 
-  for( const index of eyeIndices ) {
-    const eye = alien.makeEye( { parent, index, blink: false, attach: false } )
-    eye.index = index
-    eye.iris.tint = color
-    eye.inputEnabled = true
-    eye.events.onInputDown.add( handleEyeClicked )
+  eyeIndices.forEach( ( index, order ) => {
+    const eye = makeEye( { parent, index, order } )
 
     width += eye.eyeball.width + margin
     height = Math.max( height, eye.eyeball.height )
-    eyes.push( eye )
-  }
+    eyes[ order ] = eye
+  } )
 
   width -= margin
 
@@ -227,6 +228,7 @@ function makeEyes ( opt ) {
   for ( const eye of eyes ) {
     posX += eye.eyeball.width / 2
     eye.position.set( posX, posY )
+    eye.origin = { x: posX, y: posY }
     posX += eye.eyeball.width / 2 + margin
   }
 
@@ -234,17 +236,28 @@ function makeEyes ( opt ) {
 }
 
 
-function handleEyeClicked ( eye, pointer ) {
-  console.log( 'EYE CLICKED', eye )
-  const { x, y } = alien.toLocal( game.input.activePointer.position )
-  const newEye = alien.makeEye( { index: eye.index, x, y, blink: false } )
-  newEye.inputEnabled = true
-  newEye.input.enableDrag( false, true )
-  newEye.events.onDragStart.add( handleEyeDragStart )
-  newEye.events.onDragUpdate.add( handleEyeDragUpdate )
-  newEye.events.onDragStop.add( handleEyeDragStop )
-  newEye.input.startDrag( game.input.activePointer )
-  console.log( newEye )
+function makeEye ( opt ) {
+  const { parent, index, order, x, y, origin, color, alpha } = _.defaults( opt || {}, {
+    x: 0,
+    y: 0,
+    origin: { x: opt.x || 0, y: opt.y || 0 },
+    alpha: 1,
+    color: 0x808080,
+  } )
+
+  const eye = alien.makeEye( { parent, x, y, index, blink: false, attach: false } )
+  eye.alpha = alpha
+  eye.index = index
+  eye.order = order
+  eye.origin = origin
+  eye.iris.tint = color
+  eye.inputEnabled = true
+  eye.input.enableDrag( false, true )
+  eye.events.onDragStart.add( handleEyeDragStart )
+  eye.events.onDragUpdate.add( handleEyeDragUpdate )
+  eye.events.onDragStop.add( handleEyeDragStop )
+
+  return eye
 }
 
 
@@ -252,6 +265,11 @@ function handleEyeDragStart ( eye, pointer ) {
   console.log( 'DRAG START EYE', eye.index )
   console.log( 'EYE', eye )
   console.log( 'POINTER', pointer )
+
+  eye.initialDrag = eye.parent !== alien.group
+  alien.group.addChild( eye )
+  eye.iris.tint = alien.getIrisColor()
+  eye.stopBlinking()
 }
 
 
@@ -262,6 +280,21 @@ function handleEyeDragUpdate ( eye, pointer ) {
 
 function handleEyeDragStop ( eye, pointer ) {
   console.log( 'DRAG STOP EYE', eye.index )
+
+  if ( eye.initialDrag ) makeNewUiEye( { eye } )
+
+  alien.attachEye( { eye } )
+  eye.startBlinking()
+}
+
+
+function makeNewUiEye ( { eye } ) {
+  const uiEye = makeEye( { parent: ui, index: eye.index, order: eye.order, x: eye.origin.x, y: eye.origin.y, alpha: 0 } )
+
+  const tl = new TimelineMax()
+  tl.set( uiEye, { alpha: 1 } )
+  tl.from( uiEye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
+  ui.eyes[ eye.order ] = uiEye
 }
 
 
