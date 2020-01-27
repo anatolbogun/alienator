@@ -212,7 +212,7 @@ function makeEyes ( opt ) {
     eye.index = index
     eye.iris.tint = color
     eye.inputEnabled = true
-    eye.events.onInputDown.add( () => handleEyeClicked( eye ) )
+    eye.events.onInputDown.add( handleEyeClicked )
 
     width += eye.eyeball.width + margin
     height = Math.max( height, eye.eyeball.height )
@@ -234,12 +234,34 @@ function makeEyes ( opt ) {
 }
 
 
-function handleEyeClicked ( eye ) {
+function handleEyeClicked ( eye, pointer ) {
+  console.log( 'EYE CLICKED', eye )
   const { x, y } = alien.toLocal( game.input.activePointer.position )
   const newEye = alien.makeEye( { index: eye.index, x, y, blink: false } )
   newEye.inputEnabled = true
   newEye.input.enableDrag( false, true )
+  newEye.events.onDragStart.add( handleEyeDragStart )
+  newEye.events.onDragUpdate.add( handleEyeDragUpdate )
+  newEye.events.onDragStop.add( handleEyeDragStop )
   newEye.input.startDrag( game.input.activePointer )
+  console.log( newEye )
+}
+
+
+function handleEyeDragStart ( eye, pointer ) {
+  console.log( 'DRAG START EYE', eye.index )
+  console.log( 'EYE', eye )
+  console.log( 'POINTER', pointer )
+}
+
+
+function handleEyeDragUpdate ( eye, pointer ) {
+  console.log( 'DRAG UPDATE EYE', eye.index, eye.input.isDragged )
+}
+
+
+function handleEyeDragStop ( eye, pointer ) {
+  console.log( 'DRAG STOP EYE', eye.index )
 }
 
 
