@@ -6,6 +6,34 @@ const EYEBALL = 'eyeball'
 const IRIS = 'iris'
 const EYE_CLOSED = 'eyeClosed'
 
+const eyeballHitTestPoints = {
+  full: _.map( [ 0, 45, 90, 135, 180, 225, 270, 315 ], ( angle ) => getPointOnCircle( { angle, radius: 0.5 } ) ),
+  half: _.concat(
+    [
+      { x: -0.25, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0.25, y: 0 },
+    ],
+    _.map( [ 0, 45, 90, 135, 180 ], ( angle ) => {
+      const point = getPointOnCircle( { angle, radius: 0.5 } )
+      point.y *= 2 // because the half open eye height equals the radius of the circle the point y must me multiplied by 2
+      return point
+    } )
+  )
+}
+
+function getPointOnCircle ( opt ) {
+  const { radius, angle } = _.defaults( opt || {}, {
+    radius: 1,
+    angle: 0,
+  } )
+
+  const radian = angle * Math.PI / 180
+  const x = radius * Math.cos( radian )
+  const y = radius * Math.sin( radian )
+  return { x, y }
+}
+
 const bodyPartProps = {
   heads: [
     { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.11, combinations: { body1: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 }, body2: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 }, body3: { anchorX: 0.48, anchorY: 0.79 }, body4: { anchorY: 0.8 }, body5: { anchorY: 0.8 }, body6: { anchorY: 0.82, neckWidth: 0.2 }, body7: { anchorY: 0.7 } } }, // 0
@@ -35,12 +63,12 @@ const bodyPartProps = {
     { anchorX: 0.5, anchorY: 0.2, neckWidth: 0.8 }, // 7
   ],
   eyeballs: [
-    { anchorX: 0.5, anchorY: 0.5 }, // 0
-    { anchorX: 0.5, anchorY: 0.5 }, // 1
-    { anchorX: 0.5, anchorY: 0.5 }, // 2
-    { anchorX: 0.5, anchorY: 0 }, // 3
-    { anchorX: 0.5, anchorY: 0 }, // 4
-    { anchorX: 0.5, anchorY: 0 }, // 5
+    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full }, // 0
+    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full }, // 1
+    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full }, // 2
+    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half }, // 3
+    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half }, // 4
+    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half }, // 5
   ],
   irises: [
     { anchorX: 0.5, anchorY: 0.5 }, // 0
@@ -175,7 +203,6 @@ export default class Alien {
   eyeTest ( { eye } ) {
     eye.inputEnabled = true
     eye.pixelPerfectOver = true
-    console.log( 'SPRITE', eye.eyeball )
   }
 
 
@@ -343,7 +370,6 @@ export default class Alien {
     if ( item.defaultProps !== undefined && item.defaultProps.combinations !== undefined && item.defaultProps.combinations[ combinationID ] !== undefined ) {
       const props = _.merge( _.clone( item.defaultProps ), item.defaultProps.combinations[ combinationID ] )
       this.setItemProps( { item, props } )
-      console.log( 'SPECIAL PROPS' )
     } else if ( item.defaultProps !== undefined ) {
       this.setItemProps( { item } )
     }
@@ -414,6 +440,7 @@ export default class Alien {
     eye.closed = this.makeItem( { parent: eye, type: EYE_CLOSED, index, prop: bodyPartProps.eyesClosed[ index ] } )
     eye.closingFrame = `eyeClosing${ index }`
     eye.closedFrame = `eyeClosed${ index }`
+    eye.hitTestPoints = bodyPartProps.eyeballs[ index ].hitTestPoints
     eye.iris.tint = this.getIrisColor()
     eye.addChild( eye.eyeball )
     eye.addChild( eye.iris )
@@ -441,31 +468,6 @@ export default class Alien {
   }
 
 
-  // hitTest ( { item, pointer } ) {
-  //   if ( !pointer.isDown ) return false
-  //   if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
-
-  //   const { bmd } = item
-  //   const { x, y } = pointer
-
-  //   const pos = item.toGlobal( { x: item.x, y: item.y } )
-
-  //   if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) {
-  //     const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
-  //     const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
-
-  //     if ( rgb.a > 0 ) {
-  //       // console.log( 'HIT!' )
-  //       // item.tint = 0xff0000
-  //       return true
-  //     }
-  //   }
-
-  //   // item.tint = 0xffffff
-  //   return false
-  // }
-
-
   hitTest ( { item, x, y } ) {
     if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
 
@@ -473,18 +475,40 @@ export default class Alien {
 
     const pos = item.toGlobal( { x: item.x, y: item.y } )
 
-    if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) {
-      const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
-      const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
+    // if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) { // we're checking this in eyeHitTest with .overlap()
+    const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
+    const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
 
-      if ( rgb.a > 0 ) {
-        // console.log( 'HIT!' )
-        // item.tint = 0xff0000
-        return true
+    if ( rgb.a === 255 ) {
+      return true
+    }
+    // }
+
+    return false
+  }
+
+
+  eyeHitTest ( { eye } ) {
+    const otherEyes = _.without( this.eyes, eye )
+
+    for ( const otherEye of otherEyes ) {
+      if ( eye.eyeball.overlap( otherEye.eyeball ) ) {
+
+        for ( const hitTestPoint of eye.hitTestPoints ) {
+          const x = eye.eyeball.x + hitTestPoint.x * eye.eyeball.width
+          const y = eye.eyeball.y + hitTestPoint.y * eye.eyeball.height
+          const globalPos = eye.eyeball.toGlobal( { x, y } )
+          const hit = this.hitTest( { item: otherEye.eyeball, x: globalPos.x, y: globalPos.y } )
+
+          if ( hit ) {
+            eye.iris.tint = 0xff0000 // DEV test
+            return true
+          }
+        }
       }
     }
 
-    // item.tint = 0xffffff
+    eye.iris.tint = this.getIrisColor() // DEV test
     return false
   }
 

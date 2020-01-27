@@ -262,10 +262,6 @@ function makeEye ( opt ) {
 
 
 function handleEyeDragStart ( eye, pointer ) {
-  console.log( 'DRAG START EYE', eye.index )
-  console.log( 'EYE', eye )
-  console.log( 'POINTER', pointer )
-
   eye.initialDrag = eye.parent !== alien.group
   alien.group.addChild( eye )
   eye.iris.tint = alien.getIrisColor()
@@ -274,13 +270,11 @@ function handleEyeDragStart ( eye, pointer ) {
 
 
 function handleEyeDragUpdate ( eye, pointer ) {
-  console.log( 'DRAG UPDATE EYE', eye.index, eye.input.isDragged )
+  alien.eyeHitTest( { eye } )
 }
 
 
 function handleEyeDragStop ( eye, pointer ) {
-  console.log( 'DRAG STOP EYE', eye.index )
-
   if ( eye.initialDrag ) makeNewUiEye( { eye } )
 
   alien.attachEye( { eye } )
