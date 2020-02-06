@@ -412,13 +412,6 @@ export default class Alien {
   }
 
 
-  makeEyes ( { parent, props } ) {
-    props.forEach( ( prop, index ) => {
-      this.makeEye( { parent, index } )
-    } )
-  }
-
-
   makeEye ( opt ) {
     const { parent, index, x, y, blink, attach } = _.defaults( opt || {}, {
       parent: this.group,
@@ -472,43 +465,34 @@ export default class Alien {
     if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
 
     const { bmd } = item
-
-    const pos = item.toGlobal( { x: item.x, y: item.y } )
-
-    // if ( x >= pos.x - item.anchor.x * item.width && x <= pos.x - item.anchor.x * item.width + bmd.width && y >= pos.y - item.anchor.y * item.height && y <= pos.y - item.anchor.y * item.height + bmd.height ) { // we're checking this in eyeHitTest with .overlap()
     const localPos = item.toLocal( { x: x + item.anchor.x * item.width, y: y + item.anchor.y * item.height } )
     const rgb = bmd.getPixelRGB( Math.round( localPos.x ), Math.round( localPos.y ) )
 
-    if ( rgb.a === 255 ) {
-      return true
-    }
-    // }
-
-    return false
+    return rgb.a === 255
   }
 
 
-  eyeHitTest ( { eye } ) {
+  eyeHitTest ( { eye, offsetX, offsetY } ) {
     const otherEyes = _.without( this.eyes, eye )
 
     for ( const otherEye of otherEyes ) {
       if ( eye.eyeball.overlap( otherEye.eyeball ) ) {
 
         for ( const hitTestPoint of eye.hitTestPoints ) {
-          const x = eye.eyeball.x + hitTestPoint.x * eye.eyeball.width
-          const y = eye.eyeball.y + hitTestPoint.y * eye.eyeball.height
+          const x = eye.eyeball.x + hitTestPoint.x * eye.eyeball.width + ( offsetX || 0 )
+          const y = eye.eyeball.y + hitTestPoint.y * eye.eyeball.height + ( offsetY || 0 )
           const globalPos = eye.eyeball.toGlobal( { x, y } )
           const hit = this.hitTest( { item: otherEye.eyeball, x: globalPos.x, y: globalPos.y } )
 
           if ( hit ) {
-            eye.iris.tint = 0xff0000 // DEV test
+            // eye.iris.tint = 0xff0000 // DEV test
             return true
           }
         }
       }
     }
 
-    eye.iris.tint = this.getIrisColor() // DEV test
+    // eye.iris.tint = this.getIrisColor() // DEV test
     return false
   }
 

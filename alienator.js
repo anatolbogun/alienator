@@ -85,11 +85,11 @@ function create () {
 }
 
 
-function hitTest ( pointer ) {
-  for ( const eye of alien.eyes ) {
-    if ( eye.hitTest( { pointer } ) ) console.log( 'EYE', eye.index, 'HIT' )
-  }
-}
+// function hitTest ( pointer ) {
+//   for ( const eye of alien.eyes ) {
+//     if ( eye.hitTest( { pointer } ) ) console.log( 'EYE', eye.index, 'HIT' )
+//   }
+// }
 
 
 function hashToDNA ( opt ) {
@@ -246,6 +246,7 @@ function makeEye ( opt ) {
   } )
 
   const eye = alien.makeEye( { parent, x, y, index, blink: false, attach: false } )
+  eye.previousValidPosition = new Phaser.Point( x, y )
   eye.alpha = alpha
   eye.index = index
   eye.order = order
@@ -253,6 +254,7 @@ function makeEye ( opt ) {
   eye.iris.tint = color
   eye.inputEnabled = true
   eye.input.enableDrag( false, true )
+  eye.input.enableSnap( 1, 1, true, true )
   eye.events.onDragStart.add( handleEyeDragStart )
   eye.events.onDragUpdate.add( handleEyeDragUpdate )
   eye.events.onDragStop.add( handleEyeDragStop )
@@ -261,7 +263,7 @@ function makeEye ( opt ) {
 }
 
 
-function handleEyeDragStart ( eye, pointer ) {
+function handleEyeDragStart ( eye ) {
   eye.initialDrag = eye.parent !== alien.group
   alien.group.addChild( eye )
   eye.iris.tint = alien.getIrisColor()
@@ -269,12 +271,20 @@ function handleEyeDragStart ( eye, pointer ) {
 }
 
 
-function handleEyeDragUpdate ( eye, pointer ) {
-  alien.eyeHitTest( { eye } )
+function handleEyeDragUpdate ( eye ) {
+  // I'm not entirely certain why, but without offsetX / offsetY, once the eyeHitTest is true it will never become false again
+  const offsetX = eye.x - eye.previousValidPosition.x
+  const offsetY = eye.y - eye.previousValidPosition.y
+
+  if ( alien.eyeHitTest( { eye, offsetX, offsetY } ) ) {
+    eye.position.set( eye.previousValidPosition.x, eye.previousValidPosition.y )
+  } else {
+    eye.previousValidPosition.set( eye.x, eye.y )
+  }
 }
 
 
-function handleEyeDragStop ( eye, pointer ) {
+function handleEyeDragStop ( eye ) {
   if ( eye.initialDrag ) makeNewUiEye( { eye } )
 
   alien.attachEye( { eye } )
@@ -419,7 +429,7 @@ function makeColorSelector ( opt ) {
 }
 
 
-function handleClick( { type } ) {
+function handleClick ( { type } ) {
   switch ( type ) {
     case 'ok': {
       if ( ui.oath.enabled ) {
@@ -438,5 +448,5 @@ function handleClick( { type } ) {
 }
 
 
-function update() {
+function update () {
 }
