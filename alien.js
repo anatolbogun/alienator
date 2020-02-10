@@ -469,6 +469,11 @@ export default class Alien {
   }
 
 
+  detachEye ( { eye } ) {
+    _.pull( this.eyes, eye )
+  }
+
+
   hitTest ( { item, x, y } ) {
     if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
 
@@ -660,6 +665,7 @@ export default class Alien {
   hideAndDestroyEye ( { eye } ) {
     const tl = new TimelineMax()
     tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
+    tl.call( () => this.detachEye( { eye } ) )
     tl.call( () => eye.destroy() )
   }
 
