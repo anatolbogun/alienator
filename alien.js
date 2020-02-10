@@ -97,7 +97,7 @@ export default class Alien {
       y: 0,
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
-      mutable: false,
+      mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
       groundY: 0.65,
     } )
 
@@ -113,9 +113,9 @@ export default class Alien {
     if ( parent !== undefined ) parent.addChild( group )
     this.group.position.set( x, y )
 
-    this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations } )
-    this.bodies = this.makeItems( { parent: this.group, type: BODY, props: bodyPartProps.bodies } )
-    this.heads = this.makeItems( { parent: this.group, type: HEAD, props: bodyPartProps.heads } )
+    this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD: true } )
+    this.bodies = this.makeItems( { parent: this.group, type: BODY, props: bodyPartProps.bodies, withBMD: true } )
+    this.heads = this.makeItems( { parent: this.group, type: HEAD, props: bodyPartProps.heads, withBMD: true } )
     this.eyes = []
 
     this.mapping = {
@@ -144,7 +144,7 @@ export default class Alien {
   }
 
 
-  makeCombinations ( { atlasKeys } ) {
+  makeCombinations ( { atlasKeys, withBMD } ) {
     let combinations = []
 
     for ( const atlasKey of atlasKeys ) {
@@ -158,6 +158,12 @@ export default class Alien {
         image.visible = false
         image.anchor.set( 0.5, 0.5 )
         const combination = { headID, bodyID, image }
+
+        if ( withBMD ) {
+          image.bmd = this.makeBitmapData( { sourceImage: image } )
+          image.bmd.inputEnabled = true
+        }
+
         combinations.push( combination )
       }
     }
@@ -391,11 +397,11 @@ export default class Alien {
   }
 
 
-  makeItems ( { parent, type, props } ) {
+  makeItems ( { parent, type, props, withBMD } ) {
     const items = []
 
     props.forEach( ( prop, index ) => {
-      const item = this.makeItem( { parent, type, index, prop } )
+      const item = this.makeItem( { parent, type, index, prop, withBMD } )
       items.push( item )
     } )
 
@@ -403,11 +409,15 @@ export default class Alien {
   }
 
 
-  makeItem ( { parent, type, index, prop } ) {
+  makeItem ( { parent, type, index, prop, withBMD } ) {
     const item = this.game.add.sprite( 0, 0, this.atlasKey, `${ type }${ index }` )
     if ( parent !== undefined ) parent.addChild( item )
     item.defaultProps = prop
     this.setItemProps( { item } )
+    if ( withBMD ) {
+      item.bmd = this.makeBitmapData( { sourceImage: item } )
+      item.bmd.inputEnabled = true
+    }
     return item
   }
 
@@ -425,9 +435,7 @@ export default class Alien {
     const eye = this.game.add.sprite()
     if ( parent !== undefined ) parent.addChild( eye )
     eye.index = index
-    eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ] } )
-    eye.eyeball.bmd = this.makeBitmapData( { sourceImage: eye.eyeball } )
-    eye.eyeball.bmd.inputEnabled = true
+    eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ], withBMD: true } )
 
     eye.iris = this.makeItem( { parent: eye, type: IRIS, index, prop: bodyPartProps.irises[ index ] } )
     eye.closed = this.makeItem( { parent: eye, type: EYE_CLOSED, index, prop: bodyPartProps.eyesClosed[ index ] } )
@@ -442,14 +450,14 @@ export default class Alien {
 
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
-    // eye.hitTest = ( { pointer } ) => this.hitTest( { item: eye.eyeball, pointer } )
     eye.open = () => this.openEye( { eye } )
     eye.close = () => this.closeEye( { eye } )
     eye.reset = () => this.resetEye( { eye } )
+    eye.hideAndDestroy = () => this.hideAndDestroyEye( { eye } )
 
     eye.reset()
-    if ( blink ) eye.startBlinking()
 
+    if ( blink ) eye.startBlinking()
     if ( attach ) this.attachEye( { eye } )
 
     return eye
@@ -472,7 +480,9 @@ export default class Alien {
   }
 
 
-  eyeHitTest ( { eye, offsetX, offsetY } ) {
+  // TO DO: There's a bug where eyes can be on top of each other if hit test points don't register or so.
+  // Does the eye to eye hit test have some logical error with checking for overlap?
+  eyeToEyeHitTest ( { eye, offsetX, offsetY } ) {
     const otherEyes = _.without( this.eyes, eye )
 
     for ( const otherEye of otherEyes ) {
@@ -494,6 +504,52 @@ export default class Alien {
 
     // eye.iris.tint = this.getIrisColor() // DEV test
     return false
+  }
+
+
+  // TO DO: instead of the alpha tint probably better to make a faded colour of the current tint so that the head/body overlap isn't
+  // obvious with an alpha value < 1
+  eyeToBodyHitTest ( { eye } ) {
+    if ( this.combination === undefined ) {
+      if ( eye.eyeball.overlap( this.head ) || eye.eyeball.overlap( this.body ) ) {
+        let hitsNeeded = eye.hitTestPoints.length
+
+        hitPointCheck:
+        for ( const hitTestPoint of eye.hitTestPoints ) {
+          const x = eye.eyeball.x + hitTestPoint.x * eye.eyeball.width
+          const y = eye.eyeball.y + hitTestPoint.y * eye.eyeball.height
+          const globalPos = eye.eyeball.toGlobal( { x, y } )
+
+          for ( const item of [ this.head, this.body ] ) {
+            const hit = this.hitTest( { item, x: globalPos.x, y: globalPos.y } )
+
+            if ( hit ) {
+              --hitsNeeded
+              continue hitPointCheck
+            }
+          }
+        }
+
+        return hitsNeeded < 1
+      }
+    } else {
+      if ( eye.eyeball.overlap( this.combination ) ) {
+        for ( const hitTestPoint of eye.hitTestPoints ) {
+          const x = eye.eyeball.x + hitTestPoint.x * eye.eyeball.width
+          const y = eye.eyeball.y + hitTestPoint.y * eye.eyeball.height
+          const globalPos = eye.eyeball.toGlobal( { x, y } )
+          const hit = this.hitTest( { item: this.combination, x: globalPos.x, y: globalPos.y } )
+
+          if ( !hit ) {
+            return false
+          }
+        }
+      } else {
+        return false
+      }
+      // we only return true if all hitTestPoint tests are true (the entire eye is in the body)
+      return true
+    }
   }
 
 
@@ -598,6 +654,13 @@ export default class Alien {
     eye.closed.visible = false
     eye.eyeball.visible = true
     eye.iris.visible = true
+  }
+
+
+  hideAndDestroyEye ( { eye } ) {
+    const tl = new TimelineMax()
+    tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
+    tl.call( () => eye.destroy() )
   }
 
 

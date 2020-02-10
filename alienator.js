@@ -272,11 +272,17 @@ function handleEyeDragStart ( eye ) {
 
 
 function handleEyeDragUpdate ( eye ) {
-  // I'm not entirely certain why, but without offsetX / offsetY, once the eyeHitTest is true it will never become false again
+  // I'm not entirely certain why, but without offsetX / offsetY, once the eyeToEyeHitTest is true it will never become false again
   const offsetX = eye.x - eye.previousValidPosition.x
   const offsetY = eye.y - eye.previousValidPosition.y
 
-  if ( alien.eyeHitTest( { eye, offsetX, offsetY } ) ) {
+  if ( alien.eyeToBodyHitTest( { eye } ) ) {
+    alien.group.alpha = 1
+  } else {
+    alien.group.alpha = 0.5
+  }
+
+  if ( alien.eyeToEyeHitTest( { eye, offsetX, offsetY } ) ) {
     eye.position.set( eye.previousValidPosition.x, eye.previousValidPosition.y )
   } else {
     eye.previousValidPosition.set( eye.x, eye.y )
@@ -287,8 +293,12 @@ function handleEyeDragUpdate ( eye ) {
 function handleEyeDragStop ( eye ) {
   if ( eye.initialDrag ) makeNewUiEye( { eye } )
 
-  alien.attachEye( { eye } )
-  eye.startBlinking()
+  if ( alien.eyeToBodyHitTest( { eye } ) ) {
+    alien.attachEye( { eye } )
+    eye.startBlinking()
+  } else {
+    eye.hideAndDestroy()
+  }
 }
 
 
