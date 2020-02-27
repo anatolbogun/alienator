@@ -156,6 +156,15 @@ function makeUI ( opt ) {
     }
   }
 
+  group.detachButton = ( button ) => {
+    _.pull( group.buttons, button )
+  }
+
+
+  group.attachButton = ( button ) => {
+    group.buttons.push( button )
+  }
+
   const bounds = game.world.bounds
 
   const colorSelector = makeColorSelector( { parent: group } )
@@ -294,6 +303,7 @@ function handleEyeDragStop ( eye ) {
     eye.startBlinking()
   } else {
     eye.hideAndDestroy()
+    ui.detachButton( eye )
   }
 
   alien.tint()
@@ -307,6 +317,7 @@ function makeNewUiEye ( { eye } ) {
   tl.set( uiEye, { alpha: 1 } )
   tl.from( uiEye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
   ui.eyes[ eye.order ] = uiEye
+  ui.attachButton( uiEye )
 }
 
 
