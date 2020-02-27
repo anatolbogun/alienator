@@ -92,7 +92,7 @@ const bodyPartProps = {
 export default class Alien {
 
   constructor( opt ) {
-    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, onMake } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, onDNAChange } = _.defaults( opt, {
       x: 0,
       y: 0,
       atlasKey: 'alien',
@@ -107,7 +107,7 @@ export default class Alien {
     this.validColors = validColors
     this.groundY = groundY
     this.dna = {}
-    this.onMake = onMake
+    this.onDNAChange = onDNAChange
 
     this.group = this.game.make.group()
     if ( parent !== undefined ) parent.addChild( group )
@@ -229,10 +229,11 @@ export default class Alien {
 
   // TO DO: rename dna to opt?
   make ( dna = {} ) {
-    const { bodyID, headID, color, positionOnGround, logDNA } = _.defaults( dna, {
+    const { bodyID, headID, color, eyes, positionOnGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
       headID: this.dna.headID,
       color: this.dna.color,
+      eyes: _.isArray( this.dna.eyes ) ? this.dna.eyes : [],
       blink: true,
       positionOnGround: true,
       logDNA: true,
@@ -267,9 +268,11 @@ export default class Alien {
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     }
 
+    this.dna.eyes = eyes
+
     this.tint( { color } )
 
-    if ( this.onMake !== undefined ) this.onMake( { dna: this.dna } )
+    if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
 
     if ( logDNA ) this.logDNA()
   }
@@ -347,8 +350,6 @@ export default class Alien {
     } )
 
     // when luminosity is very high, tint the iris black
-    // const rgb = Phaser.Color.valueToColor( this.dna.color )
-    // const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
     const hsl = this.colorToHSL( { color: this.dna.color } )
     return ( hsl.l > luminosityThreshold ) ? 0x000000 : this.dna.color
   }
@@ -488,8 +489,25 @@ export default class Alien {
   }
 
 
-  attachEye ( { eye } ) {
+  attachEye ( opt ) {
+    const { eye, logDNA } = _.defaults( opt || {}, {
+      logDNA: true,
+    } )
+
     this.eyes.push( eye )
+    const eyeDNA = _.pick( eye, [ 'index', 'x', 'y' ] )
+    eyeDNA.eye = eye // we won't need to save this but need it if we want to remove the eye from the DNA
+
+    const existingEyeDNA = _.find( this.dna.eyes, ( eyeDNA ) => eyeDNA.eye === eye )
+
+    if ( existingEyeDNA !== undefined ) {
+      _.pull( this.dna.eyes, existingEyeDNA )
+    }
+
+    this.dna.eyes.push( eyeDNA )
+
+    if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
+    if ( logDNA ) this.logDNA()
   }
 
 
@@ -687,6 +705,11 @@ export default class Alien {
 
 
   hideAndDestroyEye ( { eye } ) {
+    const existingEyeDNA = _.find( this.dna.eyes, ( eyeDNA ) => eyeDNA.eye === eye )
+    _.pull( this.dna.eyes, existingEyeDNA )
+
+    if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
+
     const tl = new TimelineMax()
     tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
     tl.call( () => this.detachEye( { eye } ) )
