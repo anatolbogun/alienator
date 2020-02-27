@@ -303,12 +303,12 @@ export default class Alien {
 
 
   tint ( opt = {} ) {
-    const { color, luminosityThreshold } = _.defaults( opt, {
-      color: 0xffffff,
-      luminosityThreshold: 0.95,
+    const { color, setDNA } = _.defaults( opt, {
+      color: this.dna.color || 0xffffff,
+      setDNA: true,
     } )
 
-    this.dna.color = color
+    if ( setDNA ) this.dna.color = color
 
     if ( this.body !== undefined ) this.body.tint = color
     if ( this.head !== undefined ) this.head.tint = color
@@ -321,6 +321,23 @@ export default class Alien {
     }
 
     if ( this.neck !== undefined ) this.neck.tint = color
+    this.isTintAdjusted = false
+  }
+
+
+  adjustTintLuminosity ( opt ) {
+    if ( this.isTintAdjusted ) return // performance improvement
+
+    const hsl = this.colorToHSL( { color: this.dna.color } )
+
+    const { adjustment } = _.defaults( opt || {}, {
+      adjustment: ( 1 - hsl.l ) / 2,
+    } )
+
+    const luminosity = Math.min( 1, hsl.l + adjustment )
+    const rgb = Phaser.Color.HSLtoRGB( hsl.h, hsl.s, luminosity )
+    this.tint( { color: rgb.color, setDNA: false } )
+    this.isTintAdjusted = true
   }
 
 
@@ -330,9 +347,16 @@ export default class Alien {
     } )
 
     // when luminosity is very high, tint the iris black
-    const rgb = Phaser.Color.valueToColor( this.dna.color )
-    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
+    // const rgb = Phaser.Color.valueToColor( this.dna.color )
+    // const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
+    const hsl = this.colorToHSL( { color: this.dna.color } )
     return ( hsl.l > luminosityThreshold ) ? 0x000000 : this.dna.color
+  }
+
+
+  colorToHSL ( { color } ) {
+    const rgb = Phaser.Color.valueToColor( color )
+    return Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
   }
 
 

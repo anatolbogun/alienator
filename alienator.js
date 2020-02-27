@@ -9,11 +9,7 @@ import Alien from "./alien.js"
 //   the colour picker image.
 
 // TO DO:
-// - handcrafted version needs to store where head and body are to place eyes
-// - eyes need to be draggable (and only onto the body, maybe I need a
-//   second inner shape and eyes can only drop if inside of that shape)
-// - draggable eyes should not overlap each other
-// - still, for the random generator we need a way to automatically place eyes,
+// - if possible for the random generator we need a way to automatically place eyes,
 //   ideally with a random placement on the shape with validation as user drag and drop;
 //   maybe a while loop that picks random positions within the body part bounds and places
 //   the eye as long as it does not collide with other eyes; but limit the number of loops
@@ -277,9 +273,9 @@ function handleEyeDragUpdate ( eye ) {
   const offsetY = eye.y - eye.previousValidPosition.y
 
   if ( alien.eyeToBodyHitTest( { eye } ) ) {
-    alien.group.alpha = 1
+    alien.tint()
   } else {
-    alien.group.alpha = 0.5
+    alien.adjustTintLuminosity()
   }
 
   if ( alien.eyeToEyeHitTest( { eye, offsetX, offsetY } ) ) {
@@ -299,6 +295,8 @@ function handleEyeDragStop ( eye ) {
   } else {
     eye.hideAndDestroy()
   }
+
+  alien.tint()
 }
 
 
