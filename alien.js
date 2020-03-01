@@ -268,7 +268,11 @@ export default class Alien {
       if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     }
 
-    this.dna.eyes = eyes
+    this.dna.eyes = []
+
+    for ( const eyeProps of eyes ) {
+      this.makeEye( eyeProps )
+    }
 
     this.tint( { color } )
 

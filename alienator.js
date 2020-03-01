@@ -64,7 +64,9 @@ function create () {
   alien = new Alien( { game, x, y, mutable: true, dna, onDNAChange: dnaToHash } )
   console.log( 'ALIEN', alien )
 
-  // alien.makeEye( { index: 1 } )
+  for ( const eye of alien.eyes ) {
+    makeEyeDraggable( { eye } )
+  }
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
   console.log( 'UI', ui )
@@ -104,7 +106,7 @@ function hashToDNA ( opt ) {
     mapping: {
       body: 'bodyID',
       head: 'headID',
-      // eyes: 'eyes',
+      eyes: 'eyes',
       color: 'color',
     },
   } )
@@ -117,8 +119,13 @@ function hashToDNA ( opt ) {
   } ), ( pair ) => pair[ 0 ] !== undefined ) )
 
   if ( dna.eyes !== undefined ) {
-    console.log( 'PREPARE EYES' )
-    dna.eyes = dna.eyes.split( eyeSeparator2 ) //.forEach( ( eyeProps ) => eyeProps.split( eyeSeparator2 ) )
+    dna.eyes = _.map( _.map( dna.eyes.split( eyeSeparator2 ), ( eyePropsString ) => eyePropsString.split( eyeSeparator1 ) ), ( values ) => {
+      return {
+        index: Number( values[ 0 ] ),
+        x: Number( values[ 1 ] ),
+        y: Number( values[ 2 ] ),
+      }
+    } )
   }
 
   return dna
@@ -281,20 +288,26 @@ function makeEye ( opt ) {
   } )
 
   const eye = alien.makeEye( { parent, x, y, index, blink: false, attach: false } )
-  eye.previousValidPosition = new Phaser.Point( x, y )
   eye.alpha = alpha
   eye.index = index
   eye.order = order
   eye.origin = origin
   eye.iris.tint = color
+
+  makeEyeDraggable( { eye } )
+
+  return eye
+}
+
+
+function makeEyeDraggable ( { eye } ) {
+  eye.previousValidPosition = new Phaser.Point( eye.x, eye.y )
   eye.inputEnabled = true
   eye.input.enableDrag( false, true )
   eye.input.enableSnap( 1, 1, true, true )
   eye.events.onDragStart.add( handleEyeDragStart )
   eye.events.onDragUpdate.add( handleEyeDragUpdate )
   eye.events.onDragStop.add( handleEyeDragStop )
-
-  return eye
 }
 
 
