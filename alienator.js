@@ -61,12 +61,10 @@ function create () {
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
-  alien = new Alien( { game, x, y, mutable: true, dna, onDNAChange: dnaToHash } )
+  alien = new Alien( { game, x, y, mutable: true, dna, onDNAChange: handleDNAChange } )
   console.log( 'ALIEN', alien )
 
-  for ( const eye of alien.eyes ) {
-    makeEyeDraggable( { eye } )
-  }
+  makeEyesDraggable()
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
   console.log( 'UI', ui )
@@ -95,6 +93,13 @@ function create () {
 
 // CONTINUE HERE:
 // hashToDNA doesn't quite work yet, it messes up when eyes: 'eyes' is uncommented
+
+
+function handleDNAChange ( opt ) {
+  const { dna } = opt || {}
+  dnaToHash( { dna } )
+  makeEyesDraggable()
+}
 
 
 function hashToDNA ( opt ) {
@@ -154,10 +159,10 @@ function dnaToHash ( opt ) {
 
   let separator = ''
 
-  if ( this.dna.eyes.length > 0 ) {
+  if ( dna.eyes.length > 0 ) {
     hash += `${ separator1 }eyes${ separator2 }`
 
-    for ( const eye of this.dna.eyes ) {
+    for ( const eye of dna.eyes ) {
       hash += separator + eye.index + eyeSeparator1 + eye.x + eyeSeparator1 + eye.y
       separator = eyeSeparator2
     }
@@ -297,6 +302,15 @@ function makeEye ( opt ) {
   makeEyeDraggable( { eye } )
 
   return eye
+}
+
+
+function makeEyesDraggable () {
+  if ( alien === undefined ) return
+
+  for ( const eye of alien.eyes ) {
+    makeEyeDraggable( { eye } )
+  }
 }
 
 
