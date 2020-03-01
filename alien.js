@@ -559,8 +559,6 @@ export default class Alien {
   }
 
 
-  // TO DO: instead of the alpha tint probably better to make a faded colour of the current tint so that the head/body overlap isn't
-  // obvious with an alpha value < 1
   eyeToBodyHitTest ( { eye } ) {
     if ( this.combination === undefined ) {
       if ( eye.eyeball.overlap( this.head ) || eye.eyeball.overlap( this.body ) ) {

@@ -71,32 +71,26 @@ function create () {
 
   game.world.addChild( alien.group )
 
-  // console.log( 'CHILD INDEX', alien.group.parent.getChildIndex( alien.group ) )
-  // alien.group.parent.setChildIndex( alien.group, 0 )
-
   game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
-
-  // game.input.addMoveCallback( hitTest )
 }
-
-
-// function hitTest ( pointer ) {
-//   for ( const eye of alien.eyes ) {
-//     if ( eye.hitTest( { pointer } ) ) console.log( 'EYE', eye.index, 'HIT' )
-//   }
-// }
-
-
-// CONTINUE HERE:
-// hashToDNA doesn't quite work yet, it messes up when eyes: 'eyes' is uncommented
 
 
 function handleDNAChange ( opt ) {
   const { dna } = opt || {}
+
+  if ( ui !== undefined ) {
+    const uiEyes = _.filter( ui.buttons, ( button ) => button.eyeball !== undefined )
+
+    // detach existing eyes from the UI because they will be re-created on a DNA change
+    for ( const eye of uiEyes ) {
+      ui.detachButton( eye )
+    }
+  }
+
   dnaToHash( { dna } )
   makeEyesDraggable()
 }
