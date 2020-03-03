@@ -27,6 +27,12 @@ import Alien from "./alien.js"
 // - could try Phaser.Physics collisions for eyes instead of the hit test, but that's probably not easy and could take some time,
 //   however, it could be better for performance as the hit test is quite expensive, especially noticeable on lower spec devices
 
+// - One more page for the beginning (I will send you the design)
+// - Bigger color wheel
+// - Bigger oath texts
+// - Alien quality text page (“Tell us what alienates you”)
+// - The page to see all the existing aliens (Click to see their alien qualities)
+
 const game = new Phaser.Game( 1200, 1600, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
