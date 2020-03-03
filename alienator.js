@@ -136,7 +136,7 @@ function dnaToHash ( opt ) {
     separator1: ',',
     separator2: '=',
     eyeSeparator1: ';',
-    eyeSeparator2: '|',
+    eyeSeparator2: '+',
     mapping: {
       body: 'bodyID',
       head: 'headID',
