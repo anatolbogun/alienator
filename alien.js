@@ -478,6 +478,8 @@ export default class Alien {
     eye.addChild( eye.closed )
     eye.position.set( x, y )
 
+    eye.attach = () => this.attachEye( { eye } )
+    eye.detach = () => this.deachEye( { eye } )
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
     eye.open = () => this.openEye( { eye } )
@@ -488,7 +490,7 @@ export default class Alien {
     eye.reset()
 
     if ( blink ) eye.startBlinking()
-    if ( attach ) this.attachEye( { eye } )
+    if ( attach ) eye.attach()
 
     return eye
   }
@@ -717,6 +719,25 @@ export default class Alien {
     tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
     tl.call( () => this.detachEye( { eye } ) )
     tl.call( () => eye.destroy() )
+  }
+
+
+  hideAndDestroyOutOfBodyEyes () {
+    for ( const eye of this.eyes ) {
+      console.log( 'EYE HIT TEST', this.eyeToBodyHitTest( { eye } ), eye )
+      if ( !this.eyeToBodyHitTest( { eye } ) ) {
+        eye.stopBlinking()
+        eye.hideAndDestroy()
+      }
+    }
+  }
+
+
+  destroyAttachedEyes () {
+    for ( const eye of this.eyes ) {
+      eye.detach()
+      eye.destroy()
+    }
   }
 
 
