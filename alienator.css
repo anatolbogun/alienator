@@ -1,8 +1,16 @@
+@font-face {
+  font-family: "BC Alphapipe";
+  font-style: normal;
+  font-weight: 400;
+  src: url("assets/bc-alphapipe.ttf");
+}
+
 body {
   margin: 0;
   width: 100%;
   height: 100%;
   background-color: #ffffff;
+  font-family: "BC Alphapipe";
 }
 
 canvas {

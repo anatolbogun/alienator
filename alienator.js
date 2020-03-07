@@ -419,7 +419,7 @@ function makeOath ( opt ) {
     panelColor: 0x000000,
     textMargin: 50,
     textStyle: {
-      font: 'BC Alphapipe',
+      font: 'BC Alphapipe, sans-serif',
       fontSize: '56px',
       fill: '#ffffff',
       align: 'left',
