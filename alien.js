@@ -98,7 +98,7 @@ export default class Alien {
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
-      groundY: 0.65,
+      groundY: 0.6,
     } )
 
     this.game = game
@@ -237,7 +237,7 @@ export default class Alien {
       eyes: _.isArray( this.dna.eyes ) ? this.dna.eyes : [],
       blink: true,
       positionOnGround: true,
-      logDNA: true,
+      logDNA: false,
     } )
 
     this.hideCombinations()
@@ -272,8 +272,11 @@ export default class Alien {
     this.destroyEyes()
 
     for ( const eyeProps of eyes ) {
-      this.makeEye( eyeProps )
+      const eye = this.makeEye( eyeProps )
+      // console.log( 'EYE ->', eye.eyeball.frameName, this.eyeToBodyHitTest( { eye } ) ) // this line doesn't necessarily get called
     }
+
+    // this.hideAndDestroyOutOfBodyEyes()
 
     this.tint( { color } )
 
@@ -498,7 +501,7 @@ export default class Alien {
 
   attachEye ( opt ) {
     const { eye, logDNA } = _.defaults( opt || {}, {
-      logDNA: true,
+      logDNA: false,
     } )
 
     this.eyes.push( eye )
@@ -563,6 +566,11 @@ export default class Alien {
 
   eyeToBodyHitTest ( { eye } ) {
     if ( this.combination === undefined ) {
+      console.log( 'EYE', eye )
+      console.log( 'EYEBALL', eye.eyeball.frameName )
+      console.log( 'HEAD', this.head.frameName )
+      console.log( 'BODY', this.body.frameName )
+
       if ( eye.eyeball.overlap( this.head ) || eye.eyeball.overlap( this.body ) ) {
         let hitsNeeded = eye.hitTestPoints.length
 

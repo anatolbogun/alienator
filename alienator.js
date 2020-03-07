@@ -28,12 +28,11 @@ import Alien from "./alien.js"
 //   however, it could be better for performance as the hit test is quite expensive, especially noticeable on lower spec devices
 
 // - One more page for the beginning (I will send you the design)
-// - Bigger color wheel
 // - Bigger oath texts
 // - Alien quality text page (“Tell us what alienates you”)
 // - The page to see all the existing aliens (Click to see their alien qualities)
 
-const game = new Phaser.Game( 1200, 1600, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
+const game = new Phaser.Game( 1200, 1800, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
 
 let alien
 let ui
@@ -73,7 +72,7 @@ function create () {
   makeEyesDraggable()
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
-  console.log( 'UI', ui )
+  // console.log( 'UI', ui )
 
   game.world.addChild( alien.group )
 
@@ -175,7 +174,7 @@ function dnaToHash ( opt ) {
 
 
 function makeUI ( opt ) {
-  const { parent, edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY, randomXPosFactor, doneXPosFactor } = _.defaults( opt || {}, {
+  const { parent, edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY } = _.defaults( opt || {}, {
     edgeMargin: 30,
     headYPosFactor: 0.4,
     bodyYPosFactor: 0.6,
@@ -238,7 +237,7 @@ function makeUI ( opt ) {
   const nextBodyButton = makeButton( { group, key: 'nextBody', frameKey: 'next', onClick: () => alien.showNextItem( { type: 'body' } ) } )
   nextBodyButton.position.set( bounds.right - randomButton.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
 
-  const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.5 } )
+  const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.43 } )
   group.oath = oath
 
   return group
@@ -412,18 +411,49 @@ function capitalize ( string ) {
 
 
 function makeOath ( opt ) {
-  const { x, y, textOffsetY } = _.defaults( opt, {
+  const { x, y, widthFactor, heightFactor, panelRadius, textOffsetY, panelColor, textMargin, textStyle, text } = _.defaults( opt, {
+    widthFactor: 0.95,
+    heightFactor: 0.62,
+    panelRadius: 50,
     textOffsetY: -8,
+    panelColor: 0x000000,
+    textMargin: 50,
+    textStyle: {
+      font: 'BC Alphapipe',
+      fontSize: '56px',
+      fill: '#ffffff',
+      align: 'left',
+      boundsAlignH: 'left',
+      boundsAlignV: 'top',
+    },
+    text: `To join this planet and become a proud Alien, you must take the following oath:
+
+Do you solemnly swear that you will support and defend the differences of all aliens of this planet, foreign and domestic;
+
+that you will bear true faith and allegiance to the same;
+
+that you will be open-minded to face the unknown; and that you will be proud of the alienness you and others have.`,
   } )
 
   const group = game.add.group()
   group.visible = false
 
-  const panel = game.add.sprite( 0, 0, 'assets', 'panel', group )
-  panel.anchor.set( 0.5, 0.5 )
+  const width = game.world.width * widthFactor
+  const height = game.world.height * heightFactor
+  const textWidth = width - 2 * textMargin
+  const textHeight = height - 2 * textMargin
 
-  const text = game.add.sprite( 0, textOffsetY, 'assets', 'oath', group )
-  text.anchor.set( 0.5, 0.5 )
+  group.pivot.set( width / 2, height / 2 )
+
+  const panel = game.add.graphics( 0, 0, group )
+  panel.beginFill( panelColor )
+  panel.drawRoundedRect( 0, 0, width, height, panelRadius )
+
+  textStyle.wordWrap = true
+  textStyle.wordWrapWidth = textWidth
+
+  const textObj = game.add.text( textMargin, textMargin, text, textStyle, group )
+  textObj.setTextBounds( 0, 0, textWidth, textHeight )
 
   group.showPos = { x, y }
   group.hidePos = { x, y: -panel.height / 2 }
@@ -448,11 +478,12 @@ function showOath () {
   tl.staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
   tl.staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
   tl.to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
-  tl.to( [ ui.colorSelector.sprite, ui.randomButton ], 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+  tl.to( ui.randomButton, 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+  tl.to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
   tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
   tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  tl.to( alien.group, 0.5, { y: 320, ease: Back.easeOut }, 0.3 )
-  tl.to( alien.group.scale, 0.5, { x: 0.4, y: 0.4, ease: Power1.easeOut }, 0.3 )
+  tl.to( alien.group, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
+  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
 
