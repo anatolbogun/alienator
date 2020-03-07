@@ -9,6 +9,12 @@ import Alien from "./alien.js"
 // - Instagram API? (probably not possible)
 //
 // THINGS TO REFINE:
+// - Currently there's an issue when I'm trying to check if eyes are on the body after a DNA change,
+//   no idea why this doesn't work properly. Ideally I'd store eyes of a head-body combination and when
+//   changing head/body it'll check if the eyes are still on the body, and would remove eyes that aren't,
+//   but because I stored eyes for a head/body combination when I go back the eyes will be there again;
+//   another option is not to store eyes but just remove those that are outside the body;
+//   or, the simplest way is to just remove all eyes when the head or body changes
 // - if possible for the random generator we need a way to automatically place eyes,
 //   ideally with a random placement on the shape with validation as user drag and drop;
 //   maybe a while loop that picks random positions within the body part bounds and places
@@ -28,7 +34,6 @@ import Alien from "./alien.js"
 //   however, it could be better for performance as the hit test is quite expensive, especially noticeable on lower spec devices
 
 // - One more page for the beginning (I will send you the design)
-// - Bigger oath texts
 // - Alien quality text page (“Tell us what alienates you”)
 // - The page to see all the existing aliens (Click to see their alien qualities)
 
