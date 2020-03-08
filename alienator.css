@@ -17,3 +17,7 @@ canvas {
   margin: auto;
   background-color: transparent;
 }
+
+.transparent {
+  opacity: 0;
+}
