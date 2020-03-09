@@ -1,4 +1,5 @@
 import Alien from "./alien.js"
+import TextInputManager from "./text-input-manager.js"
 
 // TO DO
 //
@@ -81,11 +82,11 @@ function create () {
 
   game.world.addChild( alien.group )
 
-  game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
-  game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
+  // game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
+  // game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
+  // game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
+  // game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
+  // game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
 }
 
 
@@ -573,12 +574,44 @@ function hideOath () {
 // }
 
 
-function makeTraits () {
-  const input = $( '<input class="transparent">' )
-  $( 'body' ).append( input )
-  input.focus()
-  input.on( 'change', () => console.log( this ) )
-  game.input.keyboard.onDownCallback = () => window.requestAnimationFrame( () => console.log( input[ 0 ].value ) )
+function makeTraits ( opt ) {
+  const { x, y, widthFactor, heightFactor, panelRadius, panelColor, textMargin } = _.defaults( opt || {}, {
+    x: 0,
+    y: 0,
+    widthFactor: 0.95,
+    heightFactor: 0.62,
+    panelRadius: 50,
+    panelColor: 0x666666, // 0x000000,
+    textMargin: 50,
+  } )
+
+  const group = game.add.group()
+  group.position.set( x, y )
+
+  const width = game.world.width * widthFactor
+  const height = game.world.height * heightFactor
+  const textWidth = width - 2 * textMargin
+  const textHeight = height - 2 * textMargin
+
+  group.pivot.set( width / 2, height / 2 )
+
+  const panel = game.add.graphics( 0, 0, group )
+  panel.beginFill( panelColor )
+  panel.drawRoundedRect( 0, 0, width, height, panelRadius )
+
+  const textInputManager = new TextInputManager( { game } )
+  const input1 = textInputManager.addTextField( {
+    parent: group,
+    x: textMargin,
+    y: textMargin,
+    width: textWidth,
+    height: 220,
+    edgeRadius: 30,
+    borderThickness: 5,
+    textStyle: {
+      maxLines: 3,
+    }
+  } )
 }
 
 
