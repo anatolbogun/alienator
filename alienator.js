@@ -594,6 +594,16 @@ function makeTraits ( opt ) {
 
 
 function showTraits () {
+  // for mobile devices we need to change the scaleMode on this screen, otherwise the soft keyboard messes with the canvas scaling
+  const scaleFactorInversedX = game.scale.scaleFactorInversed.x
+  const scaleFactorInversedY = game.scale.scaleFactorInversed.y
+  game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
+  game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
+
+  // TO DO:
+  // - test the scaleMode on iOS
+  // - remember to revert the scaleMode when we leave this screen
+
   TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
   gsap.delayedCall( 0.5, () => {
     ui.traits.show()
