@@ -84,11 +84,20 @@ function create () {
 
   game.world.addChild( alien.group )
 
+  game.scale.onResize = handleResize
+
   // game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
   // game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
   // game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
   // game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
   // game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
+}
+
+
+function handleResize () {
+  for ( const textField of ui.traits.textFields ) {
+    textField.updateHtmlText()
+  }
 }
 
 
@@ -518,12 +527,13 @@ function makeTraits ( opt ) {
     widthFactor: 0.95,
     heightFactor: 0.62,
     panelRadius: 50,
-    panelColor: 0x666666, // 0x000000,
+    panelColor: 0x000000,
     textMargin: 50,
   } )
 
   const group = game.add.group()
   group.position.set( x, y )
+  group.alpha = 0
 
   const width = game.world.width * widthFactor
   const height = game.world.height * heightFactor
@@ -535,9 +545,8 @@ function makeTraits ( opt ) {
   panel.beginFill( panelColor )
   panel.drawRoundedRect( 0, 0, width, height, panelRadius )
 
-  const input1 = new TextField( {
+  const textField1 = new TextField( {
     game,
-    text: 'abc',
     parent: group,
     x: textMargin,
     y: textMargin,
@@ -547,11 +556,12 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     focus: true,
-    // fadedOut: true,
+    // hidden: true,
+    fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
-  const input2 = new TextField( {
+  const textField2 = new TextField( {
     game,
     parent: group,
     x: textMargin,
@@ -562,15 +572,32 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     focus: false,
+    // hidden: true,
+    fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 
-  // gsap.delayedCall( 3, () => input1.fadeIn() )
+  group.textFields = [ textField1, textField2 ]
+
+  group.fadeOut = () => {
+    TweenMax.to( group, 0.5, { alpha: 0 } )
+    textField1.fadeOut()
+    textField2.fadeOut()
+  }
+
+  group.show = () => {
+    TweenMax.to( group, 0.5, { alpha: 1 } )
+    textField1.fadeIn()
+    textField2.fadeIn()
+  }
+
+  return group
 }
 
 
 function showTraits () {
-
+  TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
+  gsap.delayedCall( 0.5, () => ui.traits.show() )
 }
 
 

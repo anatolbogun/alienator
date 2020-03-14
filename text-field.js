@@ -5,7 +5,7 @@ export default class TextField extends Phaser.Group {
       game, id, parent, text, x, y, width, height, padding, multiLine,
       borderThickness, borderColor, borderColorFocus, borderAlpha, borderAlphaFocus, fillColor, fillColorFocus, fillAlpha, fillAlphaFocus, edgeRadius,
       fontFamily, fontSize, fontColor, textAlign,
-      parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, onChange
+      parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, hidden, onChange
     } = _.defaults( opt || {}, {
       text: '',
       x: 0,
@@ -32,6 +32,7 @@ export default class TextField extends Phaser.Group {
       cssStyle: 'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
       focus: false,
       fadedOut: false,
+      hidden: false,
     } )
 
     super( game, parent )
@@ -65,6 +66,7 @@ export default class TextField extends Phaser.Group {
     window.htmlText = this.htmlText
 
     if ( fadedOut ) this.setFadeOut()
+    if ( hidden ) this.hide()
     if ( focus ) this.htmlText.focus()
 
     window.requestAnimationFrame( () => this.updateHtmlText() )
@@ -158,12 +160,12 @@ export default class TextField extends Phaser.Group {
 
 
   hideHtmlText () {
-    this.htmlText.style.opacity = 0
+    this.htmlText.style.display = 'none'
   }
 
 
   showHtmlText () {
-    this.htmlText.style.opacity = 1
+    this.htmlText.style.display = 'auto'
   }
 
 
