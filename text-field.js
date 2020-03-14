@@ -175,7 +175,7 @@ export default class TextField extends Phaser.Group {
 
 
   showHtmlText () {
-    this.htmlText.style.display = 'auto'
+    this.htmlText.style.display = 'initial'
   }
 
 
@@ -186,6 +186,7 @@ export default class TextField extends Phaser.Group {
 
 
   setFadeIn () {
+    this.show()
     this.alpha = 1
     tthis.htmlText.style.opacity = 1
   }
@@ -195,6 +196,8 @@ export default class TextField extends Phaser.Group {
     const { duration, onComplete } = _.defaults( opt || {}, {
       duration: 0.5,
     } )
+
+    this.show()
 
     const tl = new TimelineMax()
     tl.to( this, duration, { alpha: 1 } )

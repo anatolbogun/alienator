@@ -555,8 +555,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    focus: true,
-    // hidden: true,
+    hidden: true,
     fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
@@ -571,8 +570,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    focus: false,
-    // hidden: true,
+    hidden: true,
     fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
@@ -597,8 +595,10 @@ function makeTraits ( opt ) {
 
 function showTraits () {
   TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
-  gsap.delayedCall( 0.5, () => ui.traits.show() )
-  ui.traits.textFields[ 0 ].focus()
+  gsap.delayedCall( 0.5, () => {
+    ui.traits.show()
+    ui.traits.textFields[ 0 ].focus()
+  } )
 }
 
 
