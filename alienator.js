@@ -1,12 +1,14 @@
 import Alien from "./alien.js"
-import TextInputManager from "./text-input-manager.js"
+// import TextInputManager from "./text-input-manager.js"
+import TextField from './text-field.js'
 
 // TO DO
 //
 // CRUCIAL:
-// - save DNA including eyes
+// - save DNA including eyes into database
 // - add text input
-// - export as image
+// - export as image/s
+// - list aliens and what alienates as gallery or similar
 // - Instagram API? (probably not possible)
 //
 // THINGS TO REFINE:
@@ -599,18 +601,32 @@ function makeTraits ( opt ) {
   panel.beginFill( panelColor )
   panel.drawRoundedRect( 0, 0, width, height, panelRadius )
 
-  const textInputManager = new TextInputManager( { game } )
-  const input1 = textInputManager.addTextField( {
+  const input1 = new TextField( {
+    game,
     parent: group,
     x: textMargin,
     y: textMargin,
     width: textWidth,
     height: 220,
+    multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    textStyle: {
-      maxLines: 3,
-    }
+    focus: true,
+    onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
+  } )
+
+  const input2 = new TextField( {
+    game,
+    parent: group,
+    x: textMargin,
+    y: textMargin + 420,
+    width: textWidth,
+    height: 220,
+    multiLine: true,
+    edgeRadius: 30,
+    borderThickness: 5,
+    focus: false,
+    onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 }
 
