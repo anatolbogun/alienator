@@ -511,71 +511,6 @@ function hideOath () {
 }
 
 
-// function makeTraits ( opt ) {
-//   const { x, y, input1YFactor, input2YFactor, widthFactor, heightFactor, padding, borderWidth, borderColor, borderRadius, panelColor, panelRadius, textMargin, font, fontSize, fill } = _.defaults( opt, {
-//     x: 0,
-//     y: 0,
-//     input1YFactor: 0.25,
-//     input2YFactor: 0.5,
-//     textFieldWidthFactor: 0.8,
-//     widthFactor: 0.95,
-//     heightFactor: 0.62,
-//     padding: 10,
-//     borderWidth: 1,
-//     borderColor: '#000000',
-//     borderRadius: 10,
-//     panelColor: 0x000000,
-//     textMargin: 50,
-//     font: 'BC Alphapipe, sans-serif',
-//     fontSize: '56px',
-//     fill: '#000000',
-//   } )
-
-//   const group = game.add.group()
-//   // group.visible = false
-
-//   const width = game.world.width * widthFactor
-//   const height = game.world.height * heightFactor
-//   const textWidth = width - textMargin * 2
-
-//   group.pivot.set( width / 2, height / 2 )
-
-//   const panel = game.add.graphics( 0, 0, group )
-//   panel.beginFill( panelColor )
-//   panel.drawRoundedRect( 0, 0, width, height, panelRadius )
-
-//   group.showPos = { x, y }
-//   // group.hidePos = { x, y: -panel.height / 2 }
-//   group.hidePos = { x, y }
-
-//   group.position.set( group.hidePos.x, group.hidePos.y )
-
-//   game.add.plugin( PhaserInput.Plugin )
-
-//   const inputs = []
-
-//   for ( const inputYFactor of [ input1YFactor, input2YFactor ] ) {
-//     const inputY = height * inputYFactor
-
-//     const input = game.add.inputField( textMargin, inputY, {
-//       font: `${ fontSize } ${ font }`,
-//       fill,
-//       width: textWidth,
-//       padding,
-//       borderWidth,
-//       borderColor,
-//       borderRadius,
-//     } )
-
-//     group.add( input )
-
-//     inputs.push( input )
-//   }
-
-//   return group
-// }
-
-
 function makeTraits ( opt ) {
   const { x, y, widthFactor, heightFactor, panelRadius, panelColor, textMargin } = _.defaults( opt || {}, {
     x: 0,
@@ -593,7 +528,6 @@ function makeTraits ( opt ) {
   const width = game.world.width * widthFactor
   const height = game.world.height * heightFactor
   const textWidth = width - 2 * textMargin
-  const textHeight = height - 2 * textMargin
 
   group.pivot.set( width / 2, height / 2 )
 
@@ -603,6 +537,7 @@ function makeTraits ( opt ) {
 
   const input1 = new TextField( {
     game,
+    text: 'abc',
     parent: group,
     x: textMargin,
     y: textMargin,
@@ -612,6 +547,7 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     focus: true,
+    // fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
@@ -628,6 +564,8 @@ function makeTraits ( opt ) {
     focus: false,
     onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
+
+  // gsap.delayedCall( 3, () => input1.fadeIn() )
 }
 
 

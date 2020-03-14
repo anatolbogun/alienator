@@ -5,7 +5,7 @@ export default class TextField extends Phaser.Group {
       game, id, parent, text, x, y, width, height, padding, multiLine,
       borderThickness, borderColor, borderColorFocus, borderAlpha, borderAlphaFocus, fillColor, fillColorFocus, fillAlpha, fillAlphaFocus, edgeRadius,
       fontFamily, fontSize, fontColor, textAlign,
-      parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, onChange
+      parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, onChange
     } = _.defaults( opt || {}, {
       text: '',
       x: 0,
@@ -31,6 +31,7 @@ export default class TextField extends Phaser.Group {
       parentDom: 'body',
       cssStyle: 'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
       focus: false,
+      fadedOut: false,
     } )
 
     super( game, parent )
@@ -63,11 +64,10 @@ export default class TextField extends Phaser.Group {
 
     window.htmlText = this.htmlText
 
+    if ( fadedOut ) this.setFadeOut()
     if ( focus ) this.htmlText.focus()
 
     window.requestAnimationFrame( () => this.updateHtmlText() )
-
-    game.input.keyboard.onDownCallback = () => this.updateHtmlText()
   }
 
 
@@ -89,6 +89,7 @@ export default class TextField extends Phaser.Group {
     htmlText.style.padding = `${ padding }px`
     htmlText.onfocus = () => this.handleFocus()
     htmlText.onblur = () => this.handleBlur()
+    htmlText.onkeydown = () => this.updateHtmlText()
 
     return htmlText
   }
@@ -97,6 +98,7 @@ export default class TextField extends Phaser.Group {
   handleFocus () {
     this.box.visible = false
     this.boxFocus.visible = true
+    this.updateHtmlText()
   }
 
 
@@ -115,8 +117,6 @@ export default class TextField extends Phaser.Group {
     const width = ( this.width - this.padding * 2 ) * canvasScale
     const height = ( this.height - this.padding * 2 ) * canvasScale
     const padding = this.padding * canvasScale
-
-    console.log( 'UPDATING', this.id, this.htmlText.value )
 
     this.htmlText.style.left = `${ x }px`
     this.htmlText.style.top = `${ y }px`
@@ -164,6 +164,42 @@ export default class TextField extends Phaser.Group {
 
   showHtmlText () {
     this.htmlText.style.opacity = 1
+  }
+
+
+  setFadeOut () {
+    this.alpha = 0
+    this.htmlText.style.opacity = 0
+  }
+
+
+  setFadeIn () {
+    this.alpha = 1
+    tthis.htmlText.style.opacity = 1
+  }
+
+
+  fadeIn ( opt ) {
+    const { duration, onComplete } = _.defaults( opt || {}, {
+      duration: 0.5,
+    } )
+
+    const tl = new TimelineMax()
+    tl.to( this, duration, { alpha: 1 } )
+    tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
+    if ( onComplete !== undefined ) onComplete()
+  }
+
+
+  fadeOut ( opt ) {
+    const { duration, onComplete } = _.defaults( opt || {}, {
+      duration: 0.5,
+    } )
+
+    const tl = new TimelineMax()
+    tl.to( this, duration, { alpha: 0 } )
+    tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
+    if ( onComplete !== undefined ) onComplete()
   }
 
 }
