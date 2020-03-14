@@ -598,6 +598,7 @@ function makeTraits ( opt ) {
 function showTraits () {
   TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
   gsap.delayedCall( 0.5, () => ui.traits.show() )
+  ui.traits.textFields[ 0 ].focus()
 }
 
 

@@ -97,6 +97,16 @@ export default class TextField extends Phaser.Group {
   }
 
 
+  focus () {
+    this.htmlText.focus()
+  }
+
+
+  blur () {
+    this.htmlText.blur()
+  }
+
+
   handleFocus () {
     this.box.visible = false
     this.boxFocus.visible = true
