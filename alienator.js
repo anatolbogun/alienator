@@ -670,6 +670,11 @@ function hideResult () {
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
+  const scaleFactorInversedX = game.scale.scaleFactorInversed.x
+  const scaleFactorInversedY = game.scale.scaleFactorInversed.y
+  game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
+  game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
+
   const tl = new TimelineMax()
   tl.set( ui.traits, { visible: true } )
   tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
