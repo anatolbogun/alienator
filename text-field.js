@@ -96,11 +96,13 @@ export default class TextField extends Phaser.Group {
 
   focus () {
     this.htmlText.focus()
+    return this
   }
 
 
   blur () {
     this.htmlText.blur()
+    return this
   }
 
 
@@ -146,6 +148,8 @@ export default class TextField extends Phaser.Group {
     this.htmlText.style.padding = `${ padding }px`
 
     this.handleKeyDown() //just in case the text changed
+
+    return this
   }
 
 
@@ -162,6 +166,7 @@ export default class TextField extends Phaser.Group {
   hide () {
     this.visible = false
     this.hideHtmlText()
+    return this
   }
 
 
@@ -169,22 +174,26 @@ export default class TextField extends Phaser.Group {
     this.visible = true
     this.updateHtmlText()
     this.showHtmlText()
+    return this
   }
 
 
   hideHtmlText () {
     this.htmlText.style.display = 'none'
+    return this
   }
 
 
   showHtmlText () {
     this.htmlText.style.display = 'initial'
+    return this
   }
 
 
   setFadeOut () {
     this.alpha = 0
     this.htmlText.style.opacity = 0
+    return this
   }
 
 
@@ -192,17 +201,20 @@ export default class TextField extends Phaser.Group {
     this.show()
     this.alpha = 1
     this.htmlText.style.opacity = 1
+    return this
   }
 
 
   setFadeOutText () {
     this.htmlText.style.opacity = 0
+    return this
   }
 
 
   setFadeInText () {
     this.show()
     this.htmlText.style.opacity = 1
+    return this
   }
 
 
@@ -217,6 +229,8 @@ export default class TextField extends Phaser.Group {
     tl.to( this, duration, { alpha: 1 } )
     tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
     if ( onComplete !== undefined ) onComplete()
+
+    return this
   }
 
 
@@ -229,6 +243,8 @@ export default class TextField extends Phaser.Group {
     tl.to( this, duration, { alpha: 0 } )
     tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
     if ( onComplete !== undefined ) onComplete()
+
+    return this
   }
 
 
@@ -242,6 +258,8 @@ export default class TextField extends Phaser.Group {
     const tl = new TimelineMax()
     tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
     if ( onComplete !== undefined ) onComplete()
+
+    return this
   }
 
 
@@ -253,6 +271,8 @@ export default class TextField extends Phaser.Group {
     const tl = new TimelineMax()
     tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
     if ( onComplete !== undefined ) onComplete()
+
+    return this
   }
 
 }

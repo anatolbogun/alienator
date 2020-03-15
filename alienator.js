@@ -610,6 +610,8 @@ function showTraits () {
   game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
+  ui.traits.textFields[ 0 ].show().setFadeOutText()
+  ui.traits.textFields[ 1 ].show().setFadeOutText()
 
   const tl = new TimelineMax()
   tl.set( ui.traits, { visible: true } )
