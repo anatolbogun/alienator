@@ -568,7 +568,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
+    // onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
   game.add.text( textMargin, textMargin + 465, '2.', textStyle, group )
@@ -583,7 +583,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
+    // onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 
   group.textFields = [ textField1, textField2 ]
