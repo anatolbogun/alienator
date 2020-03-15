@@ -12,6 +12,7 @@ import TextField from './text-field.js'
 // - Instagram API? (probably not possible)
 //
 // THINGS TO REFINE:
+// - favicon
 // - Currently there's an issue when I'm trying to check if eyes are on the body after a DNA change,
 //   no idea why this doesn't work properly. Ideally I'd store eyes of a head-body combination and when
 //   changing head/body it'll check if the eyes are still on the body, and would remove eyes that aren't,

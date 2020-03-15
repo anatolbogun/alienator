@@ -66,10 +66,11 @@ export default class TextField extends Phaser.Group {
     window.htmlText = this.htmlText
 
     if ( fadedOut ) this.setFadeOut()
-    if ( hidden ) this.hide()
     if ( focus ) this.htmlText.focus()
 
     window.requestAnimationFrame( () => this.updateHtmlText() )
+
+    if ( hidden ) this.hide()
   }
 
 
@@ -83,15 +84,15 @@ export default class TextField extends Phaser.Group {
     const htmlText = $( `<${ tag } id="${ this.id }"${ cssClassParam }${ cssStyleParam }>` ).get( 0 )
     if ( parentDom !== undefined ) $( parentDom ).append( htmlText )
     htmlText.style.fontFamily = fontFamily
-    htmlText.style.fontSize = `${ fontSize }px`
+    // htmlText.style.fontSize = `${ fontSize }px`
     htmlText.style.color = fontColor
     htmlText.style.textAlign = textAlign
-    htmlText.style.width = `${ width - padding * 2 }px`
-    htmlText.style.height = `${ height - padding * 2 }px`
-    htmlText.style.padding = `${ padding }px`
+    // htmlText.style.width = `${ width - padding * 2 }px`
+    // htmlText.style.height = `${ height - padding * 2 }px`
+    // htmlText.style.padding = `${ padding }px`
     htmlText.onfocus = () => this.handleFocus()
     htmlText.onblur = () => this.handleBlur()
-    htmlText.onkeydown = () => this.updateHtmlText()
+    htmlText.onkeydown = () => this.handleKeyDown()
 
     return htmlText
   }
@@ -120,6 +121,17 @@ export default class TextField extends Phaser.Group {
   }
 
 
+  handleKeyDown () {
+    if ( this.onChange !== undefined ) {
+      // requestAnimationFrame to give the htmlText a chance to get the latest user input, otherwise this may lag one character behind
+      window.requestAnimationFrame( () => {
+        if ( this.previousText !== this.text ) this.onChange( this )
+        this.previousText = this.text
+      } )
+    }
+  }
+
+
   updateHtmlText () {
     const canvasScale = this.game.canvas.offsetWidth / this.game.canvas.width
     const globalPosition = this.toGlobal( new Phaser.Point() )
@@ -137,13 +149,7 @@ export default class TextField extends Phaser.Group {
     this.htmlText.style.height = `${ height }px`
     this.htmlText.style.padding = `${ padding }px`
 
-    if ( this.onChange !== undefined ) {
-      // requestAnimationFrame to give the htmlText a chance to get the latest user input, otherwise this may lag one character behind
-      window.requestAnimationFrame( () => {
-        if ( this.previousText !== this.text ) this.onChange( this )
-        this.previousText = this.text
-      } )
-    }
+    this.handleKeyDown() //just in case the text changed
   }
 
 
@@ -165,6 +171,7 @@ export default class TextField extends Phaser.Group {
 
   show () {
     this.visible = true
+    this.updateHtmlText()
     this.showHtmlText()
   }
 
