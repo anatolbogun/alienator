@@ -191,7 +191,18 @@ export default class TextField extends Phaser.Group {
   setFadeIn () {
     this.show()
     this.alpha = 1
-    tthis.htmlText.style.opacity = 1
+    this.htmlText.style.opacity = 1
+  }
+
+
+  setFadeOutText () {
+    this.htmlText.style.opacity = 0
+  }
+
+
+  setFadeInText () {
+    this.show()
+    this.htmlText.style.opacity = 1
   }
 
 
@@ -216,6 +227,30 @@ export default class TextField extends Phaser.Group {
 
     const tl = new TimelineMax()
     tl.to( this, duration, { alpha: 0 } )
+    tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
+    if ( onComplete !== undefined ) onComplete()
+  }
+
+
+  fadeInText ( opt ) {
+    const { duration, onComplete } = _.defaults( opt || {}, {
+      duration: 0.5,
+    } )
+
+    this.show()
+
+    const tl = new TimelineMax()
+    tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
+    if ( onComplete !== undefined ) onComplete()
+  }
+
+
+  fadeOutText ( opt ) {
+    const { duration, onComplete } = _.defaults( opt || {}, {
+      duration: 0.5,
+    } )
+
+    const tl = new TimelineMax()
     tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
     if ( onComplete !== undefined ) onComplete()
   }

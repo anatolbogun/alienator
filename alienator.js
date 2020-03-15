@@ -45,6 +45,7 @@ const game = new Phaser.Game( 1200, 1800, Phaser.CANVAS, '', { preload: preload,
 
 let alien
 let ui
+let currentScreen = 'editor'
 
 
 function preload () {
@@ -76,6 +77,7 @@ function create () {
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
   alien = new Alien( { game, x, y, mutable: true, dna, onDNAChange: handleDNAChange } )
+  alien.origin = { x, y }
   console.log( 'ALIEN', alien )
 
   makeEyesDraggable()
@@ -486,13 +488,12 @@ that you will be open-minded to face the unknown; and that you will be proud of 
 
 
 function showOath () {
+  currentScreen = 'oath'
   ui.disableButtons()
   ui.colorSelector.inputEnabled = false
   ui.oath.enabled = true
 
   const tl = new TimelineMax()
-  // tl.call( ui.disableButtons )
-  // tl.set( ui.colorSelector, { inputEnabled: false } )
   tl.set( ui.oath, { visible: true } )
   tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
   tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
@@ -513,6 +514,7 @@ function showOath () {
 
 
 function hideOath () {
+  currentScreen = 'editor'
   ui.oath.timeline.reverse()
   ui.enableButtons()
   ui.colorSelector.inputEnabled = true
@@ -533,8 +535,6 @@ function makeTraits ( opt ) {
   } )
 
   const group = game.add.group()
-  group.position.set( x, y )
-  group.alpha = 0
 
   const width = game.world.width * widthFactor
   const height = game.world.height * heightFactor
@@ -568,8 +568,6 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    hidden: true,
-    fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
@@ -585,44 +583,102 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
-    hidden: true,
-    fadedOut: true,
     onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 
   group.textFields = [ textField1, textField2 ]
 
-  group.fadeOut = () => {
-    TweenMax.to( group, 0.5, { alpha: 0 } )
-    textField1.fadeOut()
-    textField2.fadeOut()
-  }
+  group.showPos = { x, y }
+  group.hidePos1 = { x, y: game.world.height + panel.height / 2 }
+  group.hidePos2 = { x, y: -panel.height / 2 }
 
-  group.show = () => {
-    TweenMax.to( group, 0.5, { alpha: 1 } )
-    textField1.fadeIn()
-    textField2.fadeIn()
-  }
+  group.position.set( group.hidePos1.x, group.hidePos1.y )
+  group.visible = false
 
   return group
 }
 
 
 function showTraits () {
+  currentScreen = 'traits'
   // for mobile devices we need to change the scaleMode on this screen, otherwise the soft keyboard messes with the canvas scaling
   const scaleFactorInversedX = game.scale.scaleFactorInversed.x
   const scaleFactorInversedY = game.scale.scaleFactorInversed.y
   game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
   game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
+  ui.cancelButton.inputEnabled = false
+  ui.okButton.inputEnabled = false
 
-  // TO DO:
-  // - remember to revert the scaleMode when we leave this screen
+  const tl = new TimelineMax()
+  tl.set( ui.traits, { visible: true } )
+  tl.to( ui.oath, 0.75, _.extend( ui.oath.hidePos, { ease: Back.easeInOut } ), 0 )
+  tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
+  tl.call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
+  tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+  tl.call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 )
+  tl.call( () => ui.cancelButton.inputEnabled = true )
+  tl.call( () => ui.okButton.inputEnabled = true )
+}
 
-  TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
-  gsap.delayedCall( 0.5, () => {
-    ui.traits.show()
-    ui.traits.textFields[ 0 ].focus()
-  } )
+
+function hideTraits () {
+  currentScreen = 'oath'
+
+  ui.cancelButton.inputEnabled = false
+  ui.okButton.inputEnabled = false
+
+  const tl = new TimelineMax()
+  tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos1, { ease: Back.easeInOut } ), 0 )
+  tl.to( ui.oath, 0.75, _.extend( ui.oath.showPos, { ease: Back.easeInOut } ), 0 )
+  tl.set( ui.traits, { visible: false }, 0.75 )
+  tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
+  tl.call( () => ui.cancelButton.inputEnabled = true )
+  tl.call( () => ui.okButton.inputEnabled = true )
+
+  for ( const textField of ui.traits.textFields ) {
+    textField.blur()
+    textField.hideHtmlText()
+  }
+}
+
+
+function showResult () {
+  currentScreen = 'result'
+
+  ui.cancelButton.inputEnabled = false
+  ui.okButton.inputEnabled = false
+
+  const tl = new TimelineMax()
+  tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
+  tl.to( alien.group, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
+  tl.to( alien.group.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
+  tl.set( ui.traits, { visible: false }, 0.75 )
+  tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
+  tl.call( () => ui.cancelButton.inputEnabled = true )
+  tl.call( () => ui.okButton.inputEnabled = true )
+
+  for ( const textField of ui.traits.textFields ) {
+    textField.blur()
+    textField.hideHtmlText()
+  }
+}
+
+
+function hideResult () {
+  currentScreen = 'traits'
+
+  ui.cancelButton.inputEnabled = false
+  ui.okButton.inputEnabled = false
+
+  const tl = new TimelineMax()
+  tl.set( ui.traits, { visible: true } )
+  tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
+  tl.to( alien.group, 0.5, { y: 120, ease: Back.easeOut }, 0 )
+  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
+  tl.call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
+  tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+  tl.call( () => ui.cancelButton.inputEnabled = true )
+  tl.call( () => ui.okButton.inputEnabled = true )
 }
 
 
@@ -665,16 +721,37 @@ function makeColorSelector ( opt ) {
 function handleClick ( { type } ) {
   switch ( type ) {
     case 'ok': {
-      if ( ui.oath.enabled ) {
-        showTraits()
-      } else {
-        showOath()
+      switch ( currentScreen ) {
+        case 'editor': {
+          showOath()
+          break
+        }
+        case 'oath': {
+          showTraits()
+          break
+        }
+        case 'traits': {
+          showResult()
+          break
+        }
       }
-
       break
     }
     case 'cancel': {
-      hideOath()
+      switch ( currentScreen ) {
+        case 'oath': {
+          hideOath()
+          break
+        }
+        case 'traits': {
+          hideTraits()
+          break
+        }
+        case 'result': {
+          hideResult()
+          break
+        }
+      }
       break
     }
   }
