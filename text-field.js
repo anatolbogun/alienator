@@ -84,12 +84,8 @@ export default class TextField extends Phaser.Group {
     const htmlText = $( `<${ tag } id="${ this.id }"${ cssClassParam }${ cssStyleParam }>` ).get( 0 )
     if ( parentDom !== undefined ) $( parentDom ).append( htmlText )
     htmlText.style.fontFamily = fontFamily
-    // htmlText.style.fontSize = `${ fontSize }px`
     htmlText.style.color = fontColor
     htmlText.style.textAlign = textAlign
-    // htmlText.style.width = `${ width - padding * 2 }px`
-    // htmlText.style.height = `${ height - padding * 2 }px`
-    // htmlText.style.padding = `${ padding }px`
     htmlText.onfocus = () => this.handleFocus()
     htmlText.onblur = () => this.handleBlur()
     htmlText.onkeydown = () => this.handleKeyDown()

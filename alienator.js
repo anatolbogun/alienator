@@ -546,13 +546,25 @@ function makeTraits ( opt ) {
   panel.beginFill( panelColor )
   panel.drawRoundedRect( 0, 0, width, height, panelRadius )
 
+  const textStyle = {
+    font: 'BC Alphapipe, sans-serif',
+    fontSize: '56px',
+    fill: '#ffffff',
+    align: 'left',
+    boundsAlignH: 'left',
+    boundsAlignV: 'top',
+  }
+
+  game.add.text( textMargin, textMargin, 'Please tell us two things that alienate you.', textStyle, group )
+  game.add.text( textMargin, textMargin + 100, '1.', textStyle, group )
+
   const textField1 = new TextField( {
     game,
     parent: group,
     x: textMargin,
-    y: textMargin,
+    y: textMargin + 180,
     width: textWidth,
-    height: 220,
+    height: 240,
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
@@ -561,13 +573,15 @@ function makeTraits ( opt ) {
     onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
+  game.add.text( textMargin, textMargin + 465, '2.', textStyle, group )
+
   const textField2 = new TextField( {
     game,
     parent: group,
     x: textMargin,
-    y: textMargin + 420,
+    y: textMargin + 540,
     width: textWidth,
-    height: 220,
+    height: 240,
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
@@ -602,7 +616,6 @@ function showTraits () {
   game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
 
   // TO DO:
-  // - test the scaleMode on iOS
   // - remember to revert the scaleMode when we leave this screen
 
   TweenMax.to( ui.oath, 0.5, { alpha: 0 } )
