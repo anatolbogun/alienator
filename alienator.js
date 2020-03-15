@@ -568,6 +568,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
+    hidden: true,
     // onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
@@ -583,6 +584,7 @@ function makeTraits ( opt ) {
     multiLine: true,
     edgeRadius: 30,
     borderThickness: 5,
+    hidden: true,
     // onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 
