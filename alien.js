@@ -632,6 +632,45 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  // total width of head and body or combination, whichever applies
+  get totalWidth () {
+    if ( this.combination === undefined ) {
+      return Math.max( this.head.width, this.body.width)
+    } else {
+      return this.combination.width
+    }
+  }
+
+  // total height of head and body or combination, whichever applies
+  get totalHeight () {
+    if ( this.combination === undefined ) {
+      return this.head.height * this.head.anchor.y + this.body.height * ( 1 - this.body.anchor.y )
+    } else {
+      return this.combination.height
+    }
+  }
+
+
+  // the x position from the left canvas edge
+  get left () {
+    if ( this.combination === undefined ) {
+      return this.x - Math.max( this.head.width * this.head.anchor.x, this.body.width * this.body.anchor.x )
+    } else {
+      return this.x - this.combination.width / 2
+    }
+  }
+
+
+  // the y position from the top canvas edge
+  get top () {
+    if ( this.combination === undefined ) {
+      return this.y - this.head.height * this.head.anchor.y
+    } else {
+      return this.y - this.combination.height / 2
+    }
+  }
+
+
   showNextItem ( { type } ) {
     const id = this.mapping[ type ][ ++this.dna[ `${ type }ID` ] ] === undefined ? 0 : this.dna[ `${ type }ID` ]
     const dna = { [ `${ type }ID` ]: id }

@@ -667,7 +667,13 @@ function showResult () {
   tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
-  tl.call( () => takeScreenshot( { x: 200, y: 200, width: 800, height: 800, onComplete: ( image ) => saveImage( { image } ) } ) )
+  tl.call( () => takeScreenshot( {
+    x: alien.left,
+    y: alien.top,
+    width: alien.totalWidth,
+    height: alien.totalHeight,
+    onComplete: ( image ) => saveImage( { image } ),
+  } ) )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()
@@ -700,7 +706,6 @@ function hideResult () {
 
 
 function saveImage ( { image } ) {
-  console.log( 'IMAGE', image )
   window.location.href = image
 }
 
