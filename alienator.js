@@ -41,7 +41,21 @@ import TextField from './text-field.js'
 // - Alien quality text page (“Tell us what alienates you”)
 // - The page to see all the existing aliens (Click to see their alien qualities)
 
-const game = new Phaser.Game( 1200, 1800, Phaser.CANVAS, '', { preload: preload, create: create, update: update } )
+
+const game = new Phaser.Game( {
+  width: 1200,
+  height: 1800,
+  renderer: Phaser.WEBGL,
+  transparent: false,
+  antialias: true,
+  scaleMode: Phaser.ScaleManager.SHOW_ALL,
+  preserveDrawingBuffer: true,
+  state: {
+    preload,
+    create,
+    update,
+  },
+} )
 
 let alien
 let ui
@@ -68,7 +82,6 @@ function create () {
 
   game.input.maxPointers = 1
   game.stage.backgroundColor = 0xffffff
-  game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
   game.scale.parentIsWindow = true
 
   const dna = hashToDNA()
@@ -660,6 +673,7 @@ function showResult () {
   tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
+  tl.call( () => saveImage() )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()
@@ -688,6 +702,13 @@ function hideResult () {
   tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
+}
+
+
+function saveImage () {
+  // const image = game.canvas.toDataURL( 'image/png' ) // .replace( 'image/png', 'image/octet-stream' )
+  const image = game.canvas.toDataURL( 'image/png' ).replace( 'image/png', 'image/octet-stream' )
+  window.location.href = image
 }
 
 

@@ -566,10 +566,6 @@ export default class Alien {
 
   eyeToBodyHitTest ( { eye } ) {
     if ( this.combination === undefined ) {
-      console.log( 'EYE', eye )
-      console.log( 'EYEBALL', eye.eyeball.frameName )
-      console.log( 'HEAD', this.head.frameName )
-      console.log( 'BODY', this.body.frameName )
 
       if ( eye.eyeball.overlap( this.head ) || eye.eyeball.overlap( this.body ) ) {
         let hitsNeeded = eye.hitTestPoints.length
@@ -732,7 +728,6 @@ export default class Alien {
 
   hideAndDestroyOutOfBodyEyes () {
     for ( const eye of this.eyes ) {
-      console.log( 'EYE HIT TEST', this.eyeToBodyHitTest( { eye } ), eye )
       if ( !this.eyeToBodyHitTest( { eye } ) ) {
         eye.stopBlinking()
         eye.hideAndDestroy()
