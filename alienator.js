@@ -98,15 +98,9 @@ function create () {
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
   // console.log( 'UI', ui )
 
-  game.world.addChild( alien.group )
+  game.world.addChild( alien )
 
   game.scale.onResize = handleResize
-
-  // game.input.keyboard.addKey( Phaser.Keyboard.DOWN ).onDown.add( () => alien.showPreviousItem( { type: 'body' } ) )
-  // game.input.keyboard.addKey( Phaser.Keyboard.UP ).onDown.add( () => alien.showNextItem( { type: 'body' } ) )
-  // game.input.keyboard.addKey( Phaser.Keyboard.LEFT ).onDown.add( () => alien.showPreviousItem( { type: 'head' } ) )
-  // game.input.keyboard.addKey( Phaser.Keyboard.RIGHT ).onDown.add( () => alien.showNextItem( { type: 'head' } ) )
-  // game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR ).onDown.add( () => alien.randomize() )
 }
 
 
@@ -361,8 +355,8 @@ function makeEyeDraggable ( { eye } ) {
 
 
 function handleEyeDragStart ( eye ) {
-  eye.initialDrag = eye.parent !== alien.group
-  alien.group.addChild( eye )
+  eye.initialDrag = eye.parent !== alien
+  alien.addChild( eye )
   eye.iris.tint = alien.getIrisColor()
   eye.stopBlinking()
 }
@@ -517,8 +511,8 @@ function showOath () {
   tl.to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
   tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
   tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  tl.to( alien.group, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
-  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+  tl.to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
+  tl.to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
 
@@ -667,8 +661,8 @@ function showResult () {
 
   const tl = new TimelineMax()
   tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
-  tl.to( alien.group, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
-  tl.to( alien.group.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
+  tl.to( alien, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
+  tl.to( alien.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
   tl.set( ui.traits, { visible: false }, 0.75 )
   tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
@@ -696,8 +690,8 @@ function hideResult () {
   const tl = new TimelineMax()
   tl.set( ui.traits, { visible: true } )
   tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
-  tl.to( alien.group, 0.5, { y: 120, ease: Back.easeOut }, 0 )
-  tl.to( alien.group.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
+  tl.to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0 )
+  tl.to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
   tl.call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
   tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )

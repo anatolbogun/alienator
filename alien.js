@@ -89,7 +89,7 @@ const bodyPartProps = {
 }
 
 
-export default class Alien {
+export default class Alien extends Phaser.Group {
 
   constructor( opt ) {
     const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, onDNAChange } = _.defaults( opt, {
@@ -101,6 +101,10 @@ export default class Alien {
       groundY: 0.6,
     } )
 
+    super( game, parent, 'alien' )
+
+    this.position.set( x, y )
+
     this.game = game
     this.atlasKey = atlasKey
     this.atlasKeyCombinations = atlasKeyCombinations
@@ -109,13 +113,9 @@ export default class Alien {
     this.dna = {}
     this.onDNAChange = onDNAChange
 
-    this.group = this.game.make.group()
-    if ( parent !== undefined ) parent.addChild( group )
-    this.group.position.set( x, y )
-
     this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD: true } )
-    this.bodies = this.makeItems( { parent: this.group, type: BODY, props: bodyPartProps.bodies, withBMD: true } )
-    this.heads = this.makeItems( { parent: this.group, type: HEAD, props: bodyPartProps.heads, withBMD: true } )
+    this.bodies = this.makeItems( { parent: this, type: BODY, props: bodyPartProps.bodies, withBMD: true } )
+    this.heads = this.makeItems( { parent: this, type: HEAD, props: bodyPartProps.heads, withBMD: true } )
     this.eyes = []
 
     this.mapping = {
@@ -140,7 +140,7 @@ export default class Alien {
       y: 0,
     } )
 
-    return this.group.toLocal( { x, y }, from )
+    return this.toLocal( { x, y }, from )
   }
 
 
@@ -154,7 +154,7 @@ export default class Alien {
         const parts = frameName.split( '-' )
         const bodyID = _.toNumber( _.trimStart( parts[ 0 ], 'body' ) )
         const headID = _.toNumber( _.trimStart( parts[ 1 ], 'head' ) )
-        const image = this.game.add.sprite( 0, 0, atlasKey, frameName, this.group )
+        const image = this.game.add.sprite( 0, 0, atlasKey, frameName, this )
         image.visible = false
         image.anchor.set( 0.5, 0.5 )
         const combination = { headID, bodyID, image }
@@ -256,7 +256,7 @@ export default class Alien {
 
       head.addChild( this.neck )
 
-      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
+      if ( positionOnGround ) this.y = this.game.world.height * this.groundY - body.height + body.height * body.anchor.y
     } else {
       this.hideHeads()
       this.hideBodies()
@@ -266,7 +266,7 @@ export default class Alien {
       this.dna.headID = headID
       this.dna.bodyID = bodyID
 
-      if ( positionOnGround ) this.group.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
+      if ( positionOnGround ) this.y = this.game.world.height * this.groundY - this.combination.height * this.combination.anchor.y
     }
 
     this.destroyEyes()
@@ -457,7 +457,7 @@ export default class Alien {
 
   makeEye ( opt ) {
     const { parent, index, x, y, blink, attach } = _.defaults( opt || {}, {
-      parent: this.group,
+      parent: this,
       index: 0,
       x: 0,
       y: 0,
