@@ -673,7 +673,7 @@ function showResult () {
   tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
-  tl.call( () => saveImage() )
+  tl.call( () => takeScreenshot( { x: 200, y: 200, width: 800, height: 800, onComplete: ( image ) => saveImage( { image } ) } ) )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()
@@ -705,10 +705,36 @@ function hideResult () {
 }
 
 
-function saveImage () {
-  // const image = game.canvas.toDataURL( 'image/png' ) // .replace( 'image/png', 'image/octet-stream' )
-  const image = game.canvas.toDataURL( 'image/png' ).replace( 'image/png', 'image/octet-stream' )
+function saveImage ( { image } ) {
+  console.log( 'IMAGE', image )
   window.location.href = image
+}
+
+
+function takeScreenshot ( opt ) {
+  const { x, y, width, height, mimeType, onComplete } = _.defaults( opt || {}, {
+    x: 0,
+    y: 0,
+    width: game.world.width,
+    height: game.world.height,
+    mimeType: 'image/octet-stream',
+  } )
+
+  const screenshot = new Image
+
+  screenshot.onload = () => {
+    // crop the image in a new temporary canvas
+    const tempCanvas = document.createElement( 'canvas' )
+    const context = tempCanvas.getContext( '2d' )
+    tempCanvas.width = width
+    tempCanvas.height = height
+    context.drawImage( screenshot, x, y, width, height, 0, 0, width, height )
+    // for some reason the .replace() on the next line has to happen right after .toDataURL() or it won't take any effect; maybe because it's not instant to create the dataURL?
+    const dataURL = mimeType == undefined ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace( 'image/png', mimeType )
+    if ( onComplete !== undefined ) onComplete( dataURL )
+  }
+
+  screenshot.src = game.canvas.toDataURL( 'image/png' )
 }
 
 
