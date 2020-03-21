@@ -46,7 +46,7 @@ const game = new Phaser.Game( {
   width: 1200,
   height: 1800,
   renderer: Phaser.WEBGL,
-  transparent: false,
+  transparent: true, // this also defines if the saved PNG is transparent or not
   antialias: true,
   scaleMode: Phaser.ScaleManager.SHOW_ALL,
   preserveDrawingBuffer: true,
@@ -660,6 +660,7 @@ function showResult () {
   ui.okButton.inputEnabled = false
 
   const tl = new TimelineMax()
+  tl.call( () => alien.stopAllBlinking() )
   tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
   tl.to( alien, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
   tl.to( alien.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
@@ -674,6 +675,7 @@ function showResult () {
     height: alien.totalHeight,
     onComplete: ( image ) => saveImage( { image } ),
   } ) )
+  tl.call( () => alien.resumeAllBlinking() )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()

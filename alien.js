@@ -485,6 +485,7 @@ export default class Alien extends Phaser.Group {
     eye.detach = () => this.deachEye( { eye } )
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
+    eye.resumeBlinking = () => this.resumeBlinking( { eye } )
     eye.open = () => this.openEye( { eye } )
     eye.close = () => this.closeEye( { eye } )
     eye.reset = () => this.resetEye( { eye } )
@@ -717,6 +718,18 @@ export default class Alien extends Phaser.Group {
   stopAllBlinking () {
     for ( const eye of this.eyes ) {
       eye.stopBlinking()
+    }
+  }
+
+
+  resumeBlinking ( { eye } ) {
+    if ( eye.blinkTL !== undefined ) eye.blinkTL.play()
+  }
+
+
+  resumeAllBlinking () {
+    for ( const eye of this.eyes ) {
+      eye.resumeBlinking()
     }
   }
 
