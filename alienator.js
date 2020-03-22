@@ -708,7 +708,31 @@ function hideResult () {
 
 
 function saveImage ( { image } ) {
-  window.location.href = image
+  if ( image === undefined ) return
+
+  console.log( 'DNA', alien.dna )
+
+  console.log( 'SENDING DATA', {
+    image,
+    body: alien.dna.bodyID,
+    head: alien.dna.headID,
+    color: alien.dna.color,
+  } )
+
+  $.ajax( {
+    type: 'POST',
+    url: 'save.php',
+    data: {
+      body: alien.dna.bodyID,
+      head: alien.dna.headID,
+      color: alien.dna.color,
+      image,
+    }
+  } ).done( function ( output ) {
+    console.log( 'IMAGE SAVED ON SERVER.' )
+    console.log( output )
+    // window.location.href = image
+  } )
 }
 
 
@@ -718,7 +742,7 @@ function takeScreenshot ( opt ) {
     y: 0,
     width: game.world.width,
     height: game.world.height,
-    mimeType: 'image/octet-stream',
+    // mimeType: 'image/octet-stream', // if downloading the image we need image/octet-stream , but that's not good for saving it
   } )
 
   const screenshot = new Image
