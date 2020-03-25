@@ -28,10 +28,35 @@ print_r( $data );
 
 $sql = 'INSERT INTO aliens ( body, head, color ) VALUES ( :body, :head, :color )';
 $statement = $conn -> prepare( $sql );
-print_r( $statement );
+// print_r( $statement );
 $statement -> execute( $data );
 
-var_dump( $statement -> errorInf );
+$eyesData = json_decode( stripslashes( $_POST[ 'eyes' ] ) );
+print_r( $eyesData );
+
+$sql = 'SELECT LAST_INSERT_ID() AS id';
+$statement = $conn->prepare($sql);
+$statement -> execute();
+$alienID = $statement -> fetch()[ 'id' ];
+
+foreach ( $eyesData as $eyeData ) {
+  print_r( $eyeData -> x );
+
+  $data = [
+    'alienID' => $alienID,
+    'type' => $eyeData -> index,
+    'x' => $eyeData -> x,
+    'y' => $eyeData -> y,
+  ];
+
+  $sql = 'INSERT INTO eyes ( alienID, type, x, y ) VALUES ( :alienID, :type, :x, :y )';
+  $statement = $conn -> prepare( $sql );
+  print_r( $statement );
+  $statement -> execute( $data );
+  echo 'PDO' . $statement -> debugDumpParams();
+}
+
+// var_dump( $statement -> errorInf );
 
 // foreach ( $statement as $row ) {
 //   print_r( $row );

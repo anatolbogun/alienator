@@ -726,6 +726,7 @@ function saveImage ( { image } ) {
       body: alien.dna.bodyID,
       head: alien.dna.headID,
       color: alien.dna.color,
+      eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
       image,
     }
   } ).done( function ( output ) {
