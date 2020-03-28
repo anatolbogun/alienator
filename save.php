@@ -76,6 +76,8 @@ function getDebugDumpParamsString ( $statement ) {
 function sendResponse ( $success, $alienID, $error ) {
   if ( !$success && $alienID ) {
     // if for any reason saving fails we delete the alien from the database in case it has been created
+    // note that the MySQL alienID auto increment will not be adjusted and skip this entry
+    // eyes will automatically be deleted due to the alienID foreign key constraint and ON DELETE CASCADE
     $data = [
       'id' => $alienID,
     ];

@@ -5,14 +5,12 @@ import TextField from './text-field.js'
 // TO DO
 //
 // CRUCIAL:
-// - save DNA including eyes into database
-// - add text input
-// - export as image/s
+// - save image with text
 // - list aliens and what alienates as gallery or similar
 // - Instagram API? (probably not possible)
 //
 // THINGS TO REFINE:
-// - favicon
+// - user input text length needs to be limited both on client and server side
 // - Currently there's an issue when I'm trying to check if eyes are on the body after a DNA change,
 //   no idea why this doesn't work properly. Ideally I'd store eyes of a head-body combination and when
 //   changing head/body it'll check if the eyes are still on the body, and would remove eyes that aren't,
@@ -38,7 +36,6 @@ import TextField from './text-field.js'
 //   however, it could be better for performance as the hit test is quite expensive, especially noticeable on lower spec devices
 
 // - One more page for the beginning (I will send you the design)
-// - Alien quality text page (“Tell us what alienates you”)
 // - The page to see all the existing aliens (Click to see their alien qualities)
 
 
