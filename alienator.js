@@ -54,9 +54,11 @@ const game = new Phaser.Game( {
   },
 } )
 
+let background
 let alien
 let ui
 let currentScreen = 'editor'
+let screenshots
 
 
 function preload () {
@@ -81,6 +83,9 @@ function create () {
   game.stage.backgroundColor = 0xffffff
   game.scale.parentIsWindow = true
 
+  background = makeBackGround()
+  background.visible = false
+
   const dna = hashToDNA()
   // console.log( 'HASH TO DNA', dna )
 
@@ -98,6 +103,14 @@ function create () {
   game.world.addChild( alien )
 
   game.scale.onResize = handleResize
+}
+
+
+function makeBackGround () {
+  const graphics = game.add.graphics( 0, 0 )
+  graphics.beginFill( 0xffffff )
+  graphics.drawRect( 0, 0, game.world.width, game.world.height )
+  return graphics
 }
 
 
@@ -656,6 +669,8 @@ function showResult () {
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
+  screenshots = {}
+
   const tl = new TimelineMax()
   tl.call( () => alien.stopAllBlinking() )
   tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
@@ -665,14 +680,38 @@ function showResult () {
   tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
   tl.call( () => ui.cancelButton.inputEnabled = true )
   tl.call( () => ui.okButton.inputEnabled = true )
+
+  // cropped transparent image
   tl.call( () => takeScreenshot( {
     x: alien.left,
     y: alien.top,
     width: alien.totalWidth,
     height: alien.totalHeight,
-    onComplete: ( image ) => save( { image } ),
+    onComplete: ( image ) => {
+      screenshots.avatar = image
+      background.visible = true
+      requestAnimationFrame( () => {
+
+        takeScreenshot( {
+          x: game.world.width / 6,
+          y: game.world.height / 4.5,
+          width: game.world.width / 1.5,
+          height: game.world.width / 1.5,
+          onComplete: ( image ) => {
+            screenshots.alien = image
+            save( { images: screenshots } )
+
+            // TO DO: white background with text
+
+            // back to normal
+            background.visible = false
+            alien.resumeAllBlinking()
+          },
+        } )
+      } )
+
+    },
   } ) )
-  tl.call( () => alien.resumeAllBlinking() )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()
@@ -704,9 +743,7 @@ function hideResult () {
 }
 
 
-function save ( { image } ) {
-  if ( image === undefined ) return
-
+function save ( { images } ) {
   const data = {
     body: alien.dna.bodyID,
     head: alien.dna.headID,
@@ -714,7 +751,8 @@ function save ( { image } ) {
     trait1: ui.traits.textFields[ 0 ].text,
     trait2: ui.traits.textFields[ 1 ].text,
     eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
-    image,
+    imageAvatar: images.avatar,
+    image: images.alien,
   }
 
   $.ajax( {

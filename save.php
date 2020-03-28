@@ -60,16 +60,40 @@ foreach ( $eyesData as $eyeData ) {
 }
 
 
-$image = $_POST[ 'image' ];
-$image = str_replace( 'data:image/png;base64,', '', $image );
-$image = str_replace( ' ', '+', $image );
-$data = base64_decode( $image );
-// $filename = uniqid();
-$file = $config[ 'userData' ][ 'folder' ] . '/' . $alienID . '.png';
-$saveImageSuccess = file_put_contents( $file, $data );
+$images = [
+  $_POST[ 'imageAvatar' ],
+  $_POST[ 'image' ],
+];
 
-$error = $saveImageSuccess ? '' : 'image ' . $file . ' could not be saved (' . $saveImageSuccess . ' bytes written).';
-sendResponse( (bool) $saveImageSuccess, $alienID, $error );
+$suffixes = [
+  'avatar',
+  '',
+  'traits',
+];
+
+$i = 0;
+
+foreach ( $images as $image ) {
+  saveImage( $image, $alienID, $suffixes[ $i ] );
+  $i++;
+}
+
+sendResponse( true, $alienID );
+
+
+function saveImage ( $image, $alienID, $suffix = '' ) {
+  $image = str_replace( 'data:image/png;base64,', '', $image );
+  $image = str_replace( ' ', '+', $image );
+  $data = base64_decode( $image );
+  $file = $GLOBALS[ 'config' ][ 'userData' ][ 'folder' ] . '/' . $alienID . $suffix . '.png';
+  $saveImageSuccess = file_put_contents( $file, $data );
+
+  if ( !$saveImageSuccess ) {
+    $error = $saveImageSuccess ? '' : 'image ' . $file . ' could not be saved (' . $saveImageSuccess . ' bytes written).';
+    sendResponse( false, $alienID, $error );
+  }
+}
+
 
 
 function getDebugDumpParamsString ( $statement ) {
@@ -81,7 +105,7 @@ function getDebugDumpParamsString ( $statement ) {
 }
 
 
-function sendResponse ( $success, $alienID, $error ) {
+function sendResponse ( $success, $alienID, $error = null ) {
   if ( !$success && $alienID ) {
     // if for any reason saving fails we delete the alien from the database in case it has been created
     // note that the MySQL alienID auto increment will not be adjusted and skip this entry
