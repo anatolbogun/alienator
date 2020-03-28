@@ -3,6 +3,14 @@
 // TO DO:
 // - Do we want to save an optional email address?
 
+// NOTES:
+// - to create database see database-structure.sql
+// - to clear all recods and reset auto increment run SQL:
+//   SET FOREIGN_KEY_CHECKS = 0;
+//   TRUNCATE table aliens;
+//   TRUNCATE table eyes;
+//   SET FOREIGN_KEY_CHECKS = 1;
+
 $config = parse_ini_file( 'config.ini', true );
 
 $mysql = $config[ 'mysql' ];
@@ -56,8 +64,8 @@ $image = $_POST[ 'image' ];
 $image = str_replace( 'data:image/png;base64,', '', $image );
 $image = str_replace( ' ', '+', $image );
 $data = base64_decode( $image );
-$filename = uniqid();
-$file = $config[ 'userData' ][ 'folder' ] . '/' . $filename . '.png';
+// $filename = uniqid();
+$file = $config[ 'userData' ][ 'folder' ] . '/' . $alienID . '.png';
 $saveImageSuccess = file_put_contents( $file, $data );
 
 $error = $saveImageSuccess ? '' : 'image ' . $file . ' could not be saved (' . $saveImageSuccess . ' bytes written).';
