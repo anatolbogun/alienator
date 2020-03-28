@@ -673,7 +673,7 @@ function showResult () {
     y: alien.top,
     width: alien.totalWidth,
     height: alien.totalHeight,
-    onComplete: ( image ) => saveImage( { image } ),
+    onComplete: ( image ) => save( { image } ),
   } ) )
   tl.call( () => alien.resumeAllBlinking() )
 
@@ -707,16 +707,21 @@ function hideResult () {
 }
 
 
-function saveImage ( { image } ) {
+function save ( { image } ) {
   if ( image === undefined ) return
 
   console.log( 'DNA', alien.dna )
+
+  console.log( 'TEXT FIELDS', ui.traits.textFields )
 
   console.log( 'SENDING DATA', {
     image,
     body: alien.dna.bodyID,
     head: alien.dna.headID,
     color: alien.dna.color,
+    trait1: ui.traits.textFields[ 0 ].text,
+    trait2: ui.traits.textFields[ 1 ].text,
+    eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
   } )
 
   $.ajax( {
@@ -726,6 +731,8 @@ function saveImage ( { image } ) {
       body: alien.dna.bodyID,
       head: alien.dna.headID,
       color: alien.dna.color,
+      trait1: ui.traits.textFields[ 0 ].text,
+      trait2: ui.traits.textFields[ 1 ].text,
       eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
       image,
     }

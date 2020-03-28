@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Mar 25, 2020 at 03:09 PM
+-- Generation Time: Mar 28, 2020 at 07:07 AM
 -- Server version: 5.7.26
 -- PHP Version: 7.4.2
 
@@ -22,6 +22,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `aliens` (
   `id` int(10) UNSIGNED NOT NULL,
+  `utcTimeStamp` datetime DEFAULT NULL,
   `body` tinyint(3) UNSIGNED NOT NULL,
   `head` tinyint(3) UNSIGNED NOT NULL,
   `color` int(10) UNSIGNED NOT NULL,
