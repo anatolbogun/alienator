@@ -736,9 +736,8 @@ function save ( { image } ) {
       eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
       image,
     }
-  } ).done( function ( output ) {
-    console.log( 'IMAGE SAVED ON SERVER.' )
-    console.log( output )
+  } ).done( function ( response ) {
+    console.log( 'AJAX RESPONSE:', JSON.parse( response ) )
     // window.location.href = image
   } )
 }
