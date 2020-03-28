@@ -707,32 +707,20 @@ function hideResult () {
 function save ( { image } ) {
   if ( image === undefined ) return
 
-  console.log( 'DNA', alien.dna )
-
-  console.log( 'TEXT FIELDS', ui.traits.textFields )
-
-  console.log( 'SENDING DATA', {
-    image,
+  const data = {
     body: alien.dna.bodyID,
     head: alien.dna.headID,
     color: alien.dna.color,
     trait1: ui.traits.textFields[ 0 ].text,
     trait2: ui.traits.textFields[ 1 ].text,
     eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
-  } )
+    image,
+  }
 
   $.ajax( {
     type: 'POST',
     url: 'save.php',
-    data: {
-      body: alien.dna.bodyID,
-      head: alien.dna.headID,
-      color: alien.dna.color,
-      trait1: ui.traits.textFields[ 0 ].text,
-      trait2: ui.traits.textFields[ 1 ].text,
-      eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
-      image,
-    }
+    data,
   } ).done( function ( response ) {
     console.log( 'AJAX RESPONSE:', JSON.parse( response ) )
     // window.location.href = image
