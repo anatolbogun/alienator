@@ -666,6 +666,9 @@ function hideTraits () {
 function showResult () {
   currentScreen = 'result'
 
+  alien.trait1 = ui.traits.textFields[ 0 ].text
+  alien.trait2 = ui.traits.textFields[ 1 ].text
+
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
@@ -748,8 +751,8 @@ function save ( { images } ) {
     body: alien.dna.bodyID,
     head: alien.dna.headID,
     color: alien.dna.color,
-    trait1: ui.traits.textFields[ 0 ].text,
-    trait2: ui.traits.textFields[ 1 ].text,
+    trait1: alien.dna.trait1,
+    trait2: alien.dna.trait2,
     eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
     imageAvatar: images.avatar,
     image: images.alien,
@@ -761,6 +764,7 @@ function save ( { images } ) {
     data,
   } ).done( function ( response ) {
     console.log( 'AJAX RESPONSE:', JSON.parse( response ) )
+    alien.logDNA()
     // window.location.href = image
   } )
 }

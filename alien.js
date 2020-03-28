@@ -672,6 +672,26 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  set trait1 ( text ) {
+    this.dna.trait1 = text
+  }
+
+
+  get trait1 () {
+    return this.dna.trait1
+  }
+
+
+  set trait2 ( text ) {
+    this.dna.trait2 = text
+  }
+
+
+  get trait2 () {
+    return this.dna.trait2
+  }
+
+
   showNextItem ( { type } ) {
     const id = this.mapping[ type ][ ++this.dna[ `${ type }ID` ] ] === undefined ? 0 : this.dna[ `${ type }ID` ]
     const dna = { [ `${ type }ID` ]: id }
