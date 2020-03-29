@@ -2,7 +2,7 @@
 
 "colorPicker":
 {
-	"frame": {"x":1,"y":1,"w":602,"h":602},
+	"frame": {"x":1,"y":738,"w":602,"h":602},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":602,"h":602},
@@ -10,7 +10,7 @@
 },
 "uiCancel":
 {
-	"frame": {"x":361,"y":605,"w":178,"h":178},
+	"frame": {"x":605,"y":1098,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -18,7 +18,7 @@
 },
 "uiCancelDown":
 {
-	"frame": {"x":1,"y":605,"w":178,"h":178},
+	"frame": {"x":605,"y":738,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -26,15 +26,31 @@
 },
 "uiCancelOver":
 {
-	"frame": {"x":181,"y":605,"w":178,"h":178},
+	"frame": {"x":605,"y":918,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
 	"sourceSize": {"w":178,"h":178}
 },
+"uiCommunity":
+{
+	"frame": {"x":729,"y":1,"w":726,"h":735},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":726,"h":735},
+	"sourceSize": {"w":726,"h":735}
+},
+"uiCommunityOver":
+{
+	"frame": {"x":1,"y":1,"w":726,"h":735},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":726,"h":735},
+	"sourceSize": {"w":726,"h":735}
+},
 "uiNext":
 {
-	"frame": {"x":785,"y":361,"w":166,"h":178},
+	"frame": {"x":1145,"y":918,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -42,7 +58,7 @@
 },
 "uiNextDown":
 {
-	"frame": {"x":785,"y":1,"w":166,"h":178},
+	"frame": {"x":1145,"y":738,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -50,7 +66,7 @@
 },
 "uiNextOver":
 {
-	"frame": {"x":785,"y":181,"w":166,"h":178},
+	"frame": {"x":1313,"y":738,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -58,7 +74,7 @@
 },
 "uiOk":
 {
-	"frame": {"x":605,"y":181,"w":178,"h":178},
+	"frame": {"x":785,"y":1098,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -66,7 +82,7 @@
 },
 "uiOkDown":
 {
-	"frame": {"x":541,"y":605,"w":178,"h":178},
+	"frame": {"x":785,"y":738,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -74,7 +90,7 @@
 },
 "uiOkOver":
 {
-	"frame": {"x":605,"y":1,"w":178,"h":178},
+	"frame": {"x":785,"y":918,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -82,7 +98,7 @@
 },
 "uiPrevious":
 {
-	"frame": {"x":337,"y":785,"w":166,"h":178},
+	"frame": {"x":1313,"y":1098,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -90,7 +106,7 @@
 },
 "uiPreviousDown":
 {
-	"frame": {"x":1,"y":785,"w":166,"h":178},
+	"frame": {"x":1145,"y":1098,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -98,7 +114,7 @@
 },
 "uiPreviousOver":
 {
-	"frame": {"x":169,"y":785,"w":166,"h":178},
+	"frame": {"x":1313,"y":918,"w":166,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":178},
@@ -106,7 +122,7 @@
 },
 "uiRandom":
 {
-	"frame": {"x":721,"y":721,"w":178,"h":178},
+	"frame": {"x":965,"y":1098,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -114,7 +130,7 @@
 },
 "uiRandomDown":
 {
-	"frame": {"x":605,"y":361,"w":178,"h":178},
+	"frame": {"x":965,"y":738,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -122,7 +138,7 @@
 },
 "uiRandomOver":
 {
-	"frame": {"x":721,"y":541,"w":178,"h":178},
+	"frame": {"x":965,"y":918,"w":178,"h":178},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":178,"h":178},
@@ -133,8 +149,8 @@
 	"version": "1.0",
 	"image": "assets.png",
 	"format": "RGBA8888",
-	"size": {"w":952,"h":964},
+	"size": {"w":1480,"h":1341},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:3ce18ee9befedc6c368d5dc19931f980:b896d1c2193f865a6c9307d7cf633385:a759b6bbc8381ac9c472b28f589ad0d6$"
+	"smartupdate": "$TexturePacker:SmartUpdate:dc8ceb6fcf442fa50db73bcd547a06d6:497e576e541590b048d5690421ba1031:a759b6bbc8381ac9c472b28f589ad0d6$"
 }
 }

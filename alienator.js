@@ -38,6 +38,10 @@ import TextField from './text-field.js'
 // - One more page for the beginning (I will send you the design)
 // - The page to see all the existing aliens (Click to see their alien qualities)
 
+// CONTINUE WITH:
+// - display aliens (gallery style)
+// - display aliens in Phaser (non mutable aliens are probably best)
+
 
 const game = new Phaser.Game( {
   width: 1200,
@@ -59,6 +63,10 @@ let alien
 let ui
 let currentScreen = 'editor'
 let screenshots
+
+const imageExportWidth = 800
+const imageExportHeight = 800
+const communityURL = './aliens'
 
 
 function preload () {
@@ -87,7 +95,6 @@ function create () {
   background.visible = false
 
   const dna = hashToDNA()
-  // console.log( 'HASH TO DNA', dna )
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
@@ -274,6 +281,9 @@ function makeUI ( opt ) {
   const nextBodyButton = makeButton( { group, key: 'nextBody', frameKey: 'next', onClick: () => alien.showNextItem( { type: 'body' } ) } )
   nextBodyButton.position.set( bounds.right - randomButton.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
 
+  const communityButton = makeButton( { group, key: 'community', frameKey: 'community', inputEnabled: false, visible: false, onClick: () => goToCommunity() } )
+  communityButton.position.set( colorSelector.sprite.x, colorSelector.sprite.y )
+
   const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.43 } )
   group.oath = oath
 
@@ -418,7 +428,7 @@ function makeNewUiEye ( { eye } ) {
 
 
 function makeButton ( opt ) {
-  const { key, atlasKey, frameKey, x, y, anchorX, anchorY, alpha, inputEnabled, group, onClick } = _.defaults( opt || {}, {
+  const { key, atlasKey, frameKey, x, y, anchorX, anchorY, alpha, visible, inputEnabled, group, onClick } = _.defaults( opt || {}, {
     atlasKey: 'assets',
     frameKey: opt.key,
     x: 0,
@@ -426,6 +436,7 @@ function makeButton ( opt ) {
     anchorX: 0.5,
     anchorY: 0.5,
     alpha: 1,
+    visible: true,
     inputEnabled: true,
   } )
 
@@ -434,6 +445,7 @@ function makeButton ( opt ) {
   button.anchor.set( anchorX, anchorY )
   button.origin = _.clone( button.position )
   button.alpha = alpha
+  button.visible = visible
   button.inputEnabled = inputEnabled
 
   if ( group !== undefined ) {
@@ -510,23 +522,21 @@ function showOath () {
   ui.colorSelector.inputEnabled = false
   ui.oath.enabled = true
 
-  const tl = new TimelineMax()
-  tl.set( ui.oath, { visible: true } )
-  tl.staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
-  tl.staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
-  tl.staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
-  tl.staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
-  tl.to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
-  tl.to( ui.randomButton, 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
-  tl.to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
-  tl.to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
-  tl.to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-  tl.to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
-  tl.to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
-  tl.call( () => ui.cancelButton.inputEnabled = true )
-  tl.call( () => ui.okButton.inputEnabled = true )
-
-  ui.oath.timeline = tl
+  ui.oath.timeline = new TimelineMax()
+    .set( ui.oath, { visible: true } )
+    .staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
+    .staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
+    .staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
+    .staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
+    .to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
+    .to( ui.randomButton, 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+    .to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
+    .to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
+    .to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
+    .to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
+    .to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+    .call( () => ui.cancelButton.inputEnabled = true )
+    .call( () => ui.okButton.inputEnabled = true )
 }
 
 
@@ -630,15 +640,15 @@ function showTraits () {
   ui.traits.textFields[ 0 ].show().setFadeOutText()
   ui.traits.textFields[ 1 ].show().setFadeOutText()
 
-  const tl = new TimelineMax()
-  tl.set( ui.traits, { visible: true } )
-  tl.to( ui.oath, 0.75, _.extend( ui.oath.hidePos, { ease: Back.easeInOut } ), 0 )
-  tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
-  tl.call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
-  tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
-  tl.call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 )
-  tl.call( () => ui.cancelButton.inputEnabled = true )
-  tl.call( () => ui.okButton.inputEnabled = true )
+  new TimelineMax()
+    .set( ui.traits, { visible: true } )
+    .to( ui.oath, 0.75, _.extend( ui.oath.hidePos, { ease: Back.easeInOut } ), 0 )
+    .to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
+    .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 )
+    .call( () => ui.cancelButton.inputEnabled = true )
+    .call( () => ui.okButton.inputEnabled = true )
 }
 
 
@@ -648,13 +658,13 @@ function hideTraits () {
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
-  const tl = new TimelineMax()
-  tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos1, { ease: Back.easeInOut } ), 0 )
-  tl.to( ui.oath, 0.75, _.extend( ui.oath.showPos, { ease: Back.easeInOut } ), 0 )
-  tl.set( ui.traits, { visible: false }, 0.75 )
-  tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
-  tl.call( () => ui.cancelButton.inputEnabled = true )
-  tl.call( () => ui.okButton.inputEnabled = true )
+  new TimelineMax()
+    .to( ui.traits, 0.75, _.extend( ui.traits.hidePos1, { ease: Back.easeInOut } ), 0 )
+    .to( ui.oath, 0.75, _.extend( ui.oath.showPos, { ease: Back.easeInOut } ), 0 )
+    .set( ui.traits, { visible: false }, 0.75 )
+    .set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
+    .call( () => ui.cancelButton.inputEnabled = true )
+    .call( () => ui.okButton.inputEnabled = true )
 
   for ( const textField of ui.traits.textFields ) {
     textField.blur()
@@ -666,8 +676,9 @@ function hideTraits () {
 function showResult () {
   currentScreen = 'result'
 
-  alien.trait1 = ui.traits.textFields[ 0 ].text
-  alien.trait2 = ui.traits.textFields[ 1 ].text
+  alien.dna.trait1 = ui.traits.textFields[ 0 ].text
+  alien.dna.trait2 = ui.traits.textFields[ 1 ].text
+  alien.updateTraits()
 
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
@@ -675,14 +686,21 @@ function showResult () {
   screenshots = {}
 
   const tl = new TimelineMax()
-  tl.call( () => alien.stopAllBlinking() )
-  tl.to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
-  tl.to( alien, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
-  tl.to( alien.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
-  tl.set( ui.traits, { visible: false }, 0.75 )
-  tl.set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
-  tl.call( () => ui.cancelButton.inputEnabled = true )
-  tl.call( () => ui.okButton.inputEnabled = true )
+    .call( () => alien.stopAllBlinking() )
+    .to( ui.traits, 0.75, _.extend( ui.traits.hidePos2, { ease: Back.easeInOut } ), 0 )
+    .to( alien, 0.5, { y: alien.origin.y, ease: Back.easeIn }, 0 )
+    .to( alien.scale, 0.5, { x: 1, y: 1, ease: Power1.easeIn }, 0 )
+    .set( ui.traits, { visible: false }, 0.75 )
+    .set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
+
+  // here we need to take 3 screenshots: cropped transparent avatar, with white background, with white background and traits text
+  // when all 3 are taken the data and images are sent to the server to be saved
+
+  const scaleByWidth = alien.totalWidth / alien.totalHeight > imageExportWidth / imageExportHeight
+
+  // scale the avatar to the defined maximum imageExportWidth and imageExportHeight, keeping aspect ratio
+  const outputWidth = scaleByWidth ? imageExportWidth : alien.totalWidth * ( imageExportHeight / alien.totalHeight )
+  const outputHeight = scaleByWidth ? alien.totalHeight * ( imageExportWidth / alien.totalWidth ) : imageExportHeight
 
   // cropped transparent image
   tl.call( () => takeScreenshot( {
@@ -690,25 +708,47 @@ function showResult () {
     y: alien.top,
     width: alien.totalWidth,
     height: alien.totalHeight,
+    outputWidth,
+    outputHeight,
     onComplete: ( image ) => {
       screenshots.avatar = image
       background.visible = true
       requestAnimationFrame( () => {
 
+        // white background, no text
         takeScreenshot( {
           x: game.world.width / 6,
           y: game.world.height / 4.5,
-          width: game.world.width / 1.5,
-          height: game.world.width / 1.5,
+          width: game.world.width / 1.5, // this should be a square (calculate width/height as with the avatar above if this should change)
+          height: game.world.width / 1.5, // this should be a square
+          outputWidth: imageExportWidth,
+          outputHeight: imageExportHeight,
           onComplete: ( image ) => {
             screenshots.alien = image
-            save( { images: screenshots } )
 
-            // TO DO: white background with text
+            alien.showTraits( {
+              onComplete: () => {
+                // white background, with text
+                takeScreenshot( {
+                  x: 0,
+                  y: game.world.height / 40,
+                  width: game.world.width,  // this should be a square
+                  height: game.world.width,  // this should be a square
+                  outputWidth: imageExportWidth, // game.world.width / 1.5,
+                  outputHeight: imageExportHeight, // game.world.width / 1.5,
+                  onComplete: ( image ) => {
+                    screenshots.traits = image
 
-            // back to normal
-            background.visible = false
-            alien.resumeAllBlinking()
+                    // back to normal
+                    background.visible = false
+                    alien.resumeAllBlinking()
+
+                    // enable buttons after all screenshots are taken
+                    ui.cancelButton.inputEnabled = true
+                    ui.okButton.inputEnabled = true
+                  }
+                } )
+            } } )
           },
         } )
       } )
@@ -734,15 +774,46 @@ function hideResult () {
   game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE
   game.scale.setUserScale( scaleFactorInversedX, scaleFactorInversedY, 0, 0 )
 
-  const tl = new TimelineMax()
-  tl.set( ui.traits, { visible: true } )
-  tl.to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
-  tl.to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0 )
-  tl.to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
-  tl.call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
-  tl.call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
-  tl.call( () => ui.cancelButton.inputEnabled = true )
-  tl.call( () => ui.okButton.inputEnabled = true )
+  new TimelineMax()
+    .set( ui.traits, { visible: true } )
+    .to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
+    .to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0 )
+    .to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
+    .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.cancelButton.inputEnabled = true )
+    .call( () => ui.okButton.inputEnabled = true )
+}
+
+
+function showComplete () {
+  currentScreen = 'complete'
+
+  ui.cancelButton.inputEnabled = false
+  ui.okButton.inputEnabled = false
+  ui.communityButton.inputEnabled = true
+  ui.communityButton.visible = true
+
+  const alienScale = 0.25
+  const alienY = ui.communityButton.y - ui.communityButton.height / 2 - alien.body.height * alien.body.anchor.y * alienScale
+
+  alien.hideTraits()
+  save( { images: screenshots } )
+
+  new TimelineMax()
+    .to( ui.cancelButton, { duration: 0.5, x: -ui.cancelButton.width, angle: -360, ease: Power1.easeIn }, 0 )
+    .to( ui.okButton, { duration: 0.5, x: game.world.width + ui.okButton.width, angle: 360, ease: Power1.easeIn }, 0 )
+    .from( ui.communityButton, { duration: 1, y: game.world.height + ui.communityButton.height / 2, ease: Power1.easeOut }, 0.25 )
+    .to( alien, { duration: 0.5, y: alienY }, 0.75 )
+    .to( alien.scale, { duration: 0.5, x: alienScale, y: alienScale }, 0.75 )
+}
+
+function goToCommunity () {
+  alien.hideTraits( {
+    onComplete: () => {
+      window.location.href = communityURL
+    }
+  } )
 }
 
 
@@ -756,26 +827,34 @@ function save ( { images } ) {
     eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),
     imageAvatar: images.avatar,
     image: images.alien,
+    imageTraits: images.traits,
   }
+
+  console.log( 'SAVING …' )
+  // TO DO: add a saving visualisation
 
   $.ajax( {
     type: 'POST',
     url: 'save.php',
     data,
   } ).done( function ( response ) {
-    console.log( 'AJAX RESPONSE:', JSON.parse( response ) )
+    console.log( 'SAVING COMPLETE, SERVER RESPONSE:', JSON.parse( response ) )
     alien.logDNA()
     // window.location.href = image
   } )
 }
 
 
+// x, y, width and height are the crop area
+// if defined outputWidth and outputHeight are the resulting output size (this scales the image)
 function takeScreenshot ( opt ) {
-  const { x, y, width, height, mimeType, onComplete } = _.defaults( opt || {}, {
+  const { x, y, width, height, outputWidth, outputHeight, mimeType, onComplete } = _.defaults( opt || {}, {
     x: 0,
     y: 0,
     width: game.world.width,
     height: game.world.height,
+    outputWidth: opt.width || game.world.width,
+    outputHeight: opt.height || game.world.height,
     // mimeType: 'image/octet-stream', // if downloading the image we need image/octet-stream , but that's not good for saving it
   } )
 
@@ -785,9 +864,9 @@ function takeScreenshot ( opt ) {
     // crop the image in a new temporary canvas
     const tempCanvas = document.createElement( 'canvas' )
     const context = tempCanvas.getContext( '2d' )
-    tempCanvas.width = width
-    tempCanvas.height = height
-    context.drawImage( screenshot, x, y, width, height, 0, 0, width, height )
+    tempCanvas.width = outputWidth
+    tempCanvas.height = outputHeight
+    context.drawImage( screenshot, x, y, width, height, 0, 0, outputWidth, outputHeight )
     // for some reason the .replace() on the next line has to happen right after .toDataURL() or it won't take any effect; maybe because it's not instant to create the dataURL?
     const dataURL = mimeType == undefined ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace( 'image/png', mimeType )
     if ( onComplete !== undefined ) onComplete( dataURL )
@@ -847,6 +926,10 @@ function handleClick ( { type } ) {
         }
         case 'traits': {
           showResult()
+          break
+        }
+        case 'result': {
+          showComplete()
           break
         }
       }

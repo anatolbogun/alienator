@@ -92,14 +92,41 @@ const bodyPartProps = {
 export default class Alien extends Phaser.Group {
 
   constructor( opt ) {
-    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, onDNAChange } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, textStyle, traitProperties, onDNAChange } = _.defaults( opt, {
       x: 0,
       y: 0,
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
       groundY: 0.6,
+      textStyle: _.defaults( opt.textStyle || {}, {
+        font: 'BC Alphapipe, sans-serif',
+        fontSize: '56px',
+        fill: '#ffffff',
+        align: 'left',
+        boundsAlignH: 'center',
+        boundsAlignV: 'middle',
+      } ),
+      traitProperties: _.defaults( opt.traitProperties || {}, {
+        width: opt.game.world.width * 0.6,
+        height: opt.game.world.height * 0.085,
+        padding: opt.game.world.width * 0.02,
+        edgeRadius: opt.game.world.width * 0.04,
+        x1: opt.game.world.width * -0.05,
+        x2: opt.game.world.width * 0.05,
+        yMargin1: opt.game.world.height * -0.14,
+        yMargin2: opt.game.world.height * -0.05,
+        color: 0x000000,
+        fromYOffset: opt.game.world.height * 0.1, // the tween from y position
+        fromScale: 0.5, // the tween from scale
+        toYOffset: 0,
+        toScale: 0.5,
+        horizontalSway: opt.game.world.width * 0.0125,
+        verticalSway: opt.game.world.width * -0.00625,
+      } )
     } )
+
+    traitProperties.textStyle = textStyle
 
     super( game, parent, 'alien' )
 
@@ -110,7 +137,8 @@ export default class Alien extends Phaser.Group {
     this.atlasKeyCombinations = atlasKeyCombinations
     this.validColors = validColors
     this.groundY = groundY
-    this.dna = {}
+    this.traitProperties = traitProperties
+    this.dna = { trait1: dna.trait1 || '', trait2: dna.trait2 || '' }
     this.onDNAChange = onDNAChange
 
     this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD: true } )
@@ -126,6 +154,8 @@ export default class Alien extends Phaser.Group {
 
     this.randomize( { logDNA: false } )
     this.make( dna )
+
+    this.makeTraits( this.traitProperties )
   }
 
 
@@ -283,6 +313,137 @@ export default class Alien extends Phaser.Group {
     if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
 
     if ( logDNA ) this.logDNA()
+  }
+
+
+  makeTraits ( opt ) {
+    const { x1, x2, yMargin1, yMargin2, width, height, padding, edgeRadius, color, textStyle } = opt
+
+    this.trait1 = this.makeTrait( { text: this.dna.trait1, x: x1, yMargin: yMargin1, width, height, padding, edgeRadius, color, textStyle } )
+    this.trait2 = this.makeTrait( { text: this.dna.trait2, x: x2, yMargin: yMargin2, width, height, padding, edgeRadius, color, textStyle } )
+  }
+
+
+  makeTrait ( opt ) {
+    const { text, x, yMargin, width, height, padding, edgeRadius, color, textStyle } = opt
+
+    const group = this.game.add.group( this )
+    group.alpha = 0
+
+    const textWidth = width - 2 * padding
+    const textHeight = height - 2 * padding
+
+    group.pivot.set( width / 2, height / 2 )
+
+    const box = this.game.add.graphics( 0, 0, group )
+    box.beginFill( color )
+    box.drawRoundedRect( 0, 0, width, height, edgeRadius )
+
+    textStyle.wordWrap = true
+    textStyle.wordWrapWidth = textWidth
+
+    const textObj = this.game.add.text( padding, padding, '', textStyle, group )
+    textObj.setTextBounds( 0, 0, textWidth, textHeight )
+
+    group.updatePosition = () => {
+      const y = this.top - this.y + yMargin
+      group.position.set( x, y )
+      group.targetPosition = { x, y }
+      return group
+    }
+
+    group.setText = ( text ) => {
+      if ( text === undefined ) return
+
+      textObj.text = text
+      this.fitTextToBounds( { textObj } )
+      return group
+    }
+
+    group.setText( text )
+    group.updatePosition()
+
+    return group
+  }
+
+
+  updateTraits () {
+    for ( const key of [ 'trait1', 'trait2' ] ) {
+      const trait = this[ key ]
+      const text = this.dna[ key ]
+      trait.setText( text )
+      trait.updatePosition()
+    }
+  }
+
+
+  showTraits ( opt ) {
+    const { duration, fromScale, fromYOffset, sway, onComplete } = _.defaults( opt || {}, {
+      duration: 1,
+      fromScale: this.traitProperties.fromScale,
+      fromYOffset: this.traitProperties.fromYOffset,
+      sway: true
+    } )
+
+    const tl = new TimelineMax()
+      .set( [ this.trait1, this.trait2 ], { alpha: 0, y: this.trait1.targetPosition.y + fromYOffset } )
+      .set( this.trait1.scale, { x: fromScale, y: fromScale } )
+      .set( this.trait2.scale, { x: fromScale, y: fromScale } )
+      .to( this.trait1, { duration, y: this.trait1.targetPosition.y, alpha: 1, ease: Power2.easeIn }, 0 )
+      .to( this.trait1.scale, { duration, x: 1, y: 1, ease: Power2.easeOut }, 0 )
+      .to( this.trait2, { duration, y: this.trait2.targetPosition.y, alpha: 1, ease: Power2.easeIn }, duration / 2 )
+      .to( this.trait2.scale, { duration, x: 1, y: 1, ease: Power2.easeOut }, duration / 2 )
+
+    if ( onComplete !== undefined ) tl.call( onComplete )
+    if ( sway ) tl.call( () => this.swayTraits( { duration: duration * 2 } ) )
+  }
+
+
+  hideTraits ( opt ) {
+    const { duration, toScale, toYOffset, onComplete } = _.defaults( opt || {}, {
+      duration: 0.4,
+      toScale: this.traitProperties.toScale,
+      toYOffset: this.traitProperties.toYOffset,
+    } )
+
+    const tl = new TimelineMax()
+      .to( this.trait1, { duration, y: this.trait1.targetPosition.y + toYOffset, alpha: 0, ease: Power2.easeIn }, 0 )
+      .to( this.trait1.scale, { duration, x: toScale, y: toScale, ease: Back.easeIn}, 0 )
+      .to( this.trait2, { duration, y: this.trait2.targetPosition.y + toYOffset, alpha: 0, ease: Power2.easeIn }, duration / 2 )
+      .to( this.trait2.scale, { duration, x: toScale, y: toScale, ease: Back.easeIn }, duration / 2 )
+
+    if ( this.swayTl !== undefined ) tl.call( () => this.swayTl.kill() )
+    if ( onComplete !== undefined ) tl.call( onComplete )
+  }
+
+
+  swayTraits ( opt ) {
+    const { duration, horizontalSway, verticalSway } = _.defaults( opt || {}, {
+      duration: 2,
+      horizontalSway: this.traitProperties.horizontalSway,
+      verticalSway: this.traitProperties.verticalSway,
+    } )
+
+    if ( this.swayTl !== undefined ) this.swayTl.kill()
+
+    this.swayTl = new TimelineMax()
+      .to( this.trait1, { duration: duration, y: this.trait1.targetPosition.y + verticalSway, ease: Power1.easeInOut, repeat: -1, yoyo: true }, 0 )
+      .to( this.trait2, { duration: duration, y: this.trait2.targetPosition.y + verticalSway, ease: Power1.easeInOut, repeat: -1, yoyo: true }, 0 )
+      .to( this.trait1, { duration: duration, x: this.trait1.targetPosition.x + horizontalSway, ease: Power1.easeInOut, repeat: -1, yoyo: true }, 0 )
+      .to( this.trait2, { duration: duration, x: this.trait2.targetPosition.x - horizontalSway, ease: Power1.easeInOut, repeat: -1, yoyo: true }, 0 )
+  }
+
+
+  fitTextToBounds ( opt ) {
+    const { textObj, minFontSize } = _.defaults( opt, {
+      minFontSize: 24,
+    } )
+
+    if ( textObj.height <= textObj.textBounds.height ) return
+
+    while ( textObj.height > textObj.textBounds.height && textObj.fontSize > minFontSize ) {
+      textObj.fontSize -= 1
+    }
   }
 
 
@@ -669,26 +830,6 @@ export default class Alien extends Phaser.Group {
     } else {
       return this.y - this.combination.height / 2
     }
-  }
-
-
-  set trait1 ( text ) {
-    this.dna.trait1 = text
-  }
-
-
-  get trait1 () {
-    return this.dna.trait1
-  }
-
-
-  set trait2 ( text ) {
-    this.dna.trait2 = text
-  }
-
-
-  get trait2 () {
-    return this.dna.trait2
   }
 
 

@@ -63,6 +63,7 @@ foreach ( $eyesData as $eyeData ) {
 $images = [
   $_POST[ 'imageAvatar' ],
   $_POST[ 'image' ],
+  $_POST[ 'imageTraits' ],
 ];
 
 $suffixes = [
