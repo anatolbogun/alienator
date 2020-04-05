@@ -67,6 +67,7 @@ let background
 let alien
 let planet
 let ui
+let notice
 let currentScreen = 'editor'
 let screenshots
 let completeTimeline
@@ -125,6 +126,8 @@ function create () {
   ui.traits.textFields[ 1 ].text = dna.trait2
 
   game.world.addChild( alien )
+
+  notice = makeNotice( { parent: game.world, x: alien.x, y: alien.y, width: game.world.width * 0.8, height: game.world.height * 0.2 } )
 
   game.scale.onResize = handleResize
 }
@@ -750,6 +753,80 @@ function hideTraits () {
 }
 
 
+function makeNotice ( opt ) {
+  const { parent, x, y, width, height, color, alpha, edgeRadius, padding, textStyle } = _.defaults( opt || {}, {
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    color: 0x000000,
+    alpha: 1,
+    edgeRadius: 50,
+    padding: 40,
+    textStyle: {
+      font: 'BC Alphapipe, sans-serif',
+      fontSize: '56px',
+      fill: '#ffffff',
+      align: 'center',
+      boundsAlignH: 'center',
+      boundsAlignV: 'middle',
+    }
+  } )
+
+  const group = game.add.group( parent )
+  group.position.set( x, y )
+  group.origin = { x, y }
+  group.alpha = 0
+  group.scale.set( 0 )
+
+  const box = game.add.graphics( 0, 0, group )
+
+  box.beginFill( color )
+  box.drawRoundedRect( 0, 0, width, height, edgeRadius )
+  box.alpha = alpha
+  box.pivot.set( width / 2, height / 2 )
+
+  const textWidth = width - 2 * padding
+  const textHeight = height - 2 * padding
+  textStyle.wordWrap = true
+  textStyle.wordWrapWidth = textWidth
+
+  const textObj = game.add.text( 0, 0, '', textStyle, group )
+  textObj.setTextBounds( -textWidth / 2, -textHeight / 2, textWidth, textHeight )
+
+  group.show = ( opt ) => {
+    const { text, x, y } = _.defaults( opt || {}, {
+      x: group.origin.x,
+      y: group.origin.y,
+    } )
+
+    if ( text !== undefined ) textObj.text = text
+
+    group.isShowing = true
+
+    group.position.set( x, y )
+
+    new TimelineMax()
+      .to( group, { duration: 0.5, alpha: 1 }, 0 )
+      .to( group.scale, { duration: 0.5, x: 1, y: 1, ease: Back.easeOut }, 0 )
+  }
+
+  group.hide = () => {
+    if ( !group.isShowing ) return
+
+    group.isShowing = false
+
+    new TimelineMax()
+      .to( group, { duration: 0.5, alpha: 0 }, 0 )
+      .to( group.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeIn }, 0 )
+  }
+
+  game.input.onDown.add( () => group.hide() )
+
+  return group
+}
+
+
 function showResult () {
   currentScreen = 'result'
 
@@ -1034,7 +1111,11 @@ function handleClick ( { type } ) {
     case 'ok': {
       switch ( currentScreen ) {
         case 'editor': {
-          showOath()
+          if ( !alien.hasEyes() ) {
+            notice.show( { text: 'This alien needs some eyes.\nDrag them onto the body.' } )
+          } else {
+            showOath()
+          }
           break
         }
         case 'oath': {

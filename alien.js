@@ -688,6 +688,11 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  hasEyes () {
+    return this.dna.eyes.length > 0
+  }
+
+
   hitTest ( { item, x, y } ) {
     if ( item.bmd === undefined || !item.bmd.inputEnabled ) return console.warn( 'Hittest target doesn\'t have bitmap data attached or the bitmap data is not input enabled.' )
 
