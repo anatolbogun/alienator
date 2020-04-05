@@ -124,6 +124,7 @@ export default class TextField extends Phaser.Group {
     if ( this.onChange !== undefined ) {
       // requestAnimationFrame to give the htmlText a chance to get the latest user input, otherwise this may lag one character behind
       window.requestAnimationFrame( () => {
+        this.text = this.text.replace( /[\n\s]+/gm, ' ' )
         if ( this.previousText !== this.text ) this.onChange( this )
         this.previousText = this.text
       } )
