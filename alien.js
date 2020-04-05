@@ -344,6 +344,7 @@ export default class Alien extends Phaser.Group {
 
     const textObj = this.game.add.text( padding, padding, '', textStyle, group )
     textObj.setTextBounds( 0, 0, textWidth, textHeight )
+    textObj.originFontSize = textObj.fontSize
 
     group.updatePosition = () => {
       const y = this.top - this.y + yMargin
@@ -356,6 +357,7 @@ export default class Alien extends Phaser.Group {
       if ( text === undefined ) return
 
       textObj.text = text
+      textObj.fontSize = textObj.originFontSize
       this.fitTextToBounds( { textObj } )
       return group
     }
