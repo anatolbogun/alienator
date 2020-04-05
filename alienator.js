@@ -670,12 +670,9 @@ function makeTraits ( opt ) {
 
 
 function makeTextWarning ( opt ) {
-  const { parent, x, y, alpha, scale, text, textStyle } = _.defaults( opt || {}, {
+  const { parent, x, y, textStyle } = _.defaults( opt || {}, {
     x: 0,
     y: 0,
-    alpha: 0,
-    scale: 0,
-    text: `max ${ traitMaxLength } characters`,
     textStyle: {
       font: 'BC Alphapipe, sans-serif',
       fontSize: '56px',
@@ -686,25 +683,54 @@ function makeTextWarning ( opt ) {
     }
   } )
 
-  const warning = game.add.text( x, y, text, textStyle, parent )
+  const warning = game.add.text( x, y, '', textStyle, parent )
   warning.setTextBounds( 0, 0, 0, 0 )
-  warning.alpha = alpha
-  warning.scale.set( scale )
+  warning.alpha = 0
+  warning.scale.set( 0 )
+
+  warning.show = ( opt ) => {
+    const { text } = opt
+
+    if ( text !== undefined ) warning.text = text
+
+    if ( warning.showTl !== undefined && warning.showTl.progress() < 1 ) return
+
+    warning.showTl = new TimelineMax()
+      .to( warning, { duration: 0.5, alpha: 1 }, 0 )
+      .to( warning.scale, { duration: 0.5, x: 1, y: 1, ease: Back.easeOut }, 0 )
+  }
+
+  warning.hide = () => {
+    if ( warning.hideTl !== undefined && warning.hideTl.progress() < 1 ) return
+    warning.hideTl = new TimelineMax()
+      .to( warning, { duration: 0.5, alpha: 0 }, 0 )
+      .to( warning.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeIn }, 0 )
+  }
 
   return warning
 }
 
 
 function handleTextFieldChange( textField ) {
-  if ( textField.text.length > 99 ) {
-    new TimelineMax()
-      .to( textField.warning, { duration: 0.5, alpha: 1 }, 0 )
-      .to( textField.warning.scale, { duration: 0.5, x: 1, y: 1, ease: Back.easeOut }, 0 )
+  if ( textField.text.length > traitMaxLength - 1 ) {
+    textField.warning.show( { text: `max ${ traitMaxLength } characters` } )
   } else {
-    new TimelineMax()
-      .to( textField.warning, { duration: 0.5, alpha: 0 }, 0 )
-      .to( textField.warning.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeIn }, 0 )
+    textField.warning.hide()
   }
+}
+
+
+function validateTextFields () {
+  let valid = true
+
+  for ( const textField of ui.traits.textFields ) {
+    if ( textField.text.length === 0 || !textField.text.match( /\S/gm ) ) {
+      textField.warning.show( { text: `enter text please` } )
+      valid = false
+    }
+  }
+
+  return valid
 }
 
 
@@ -1123,7 +1149,7 @@ function handleClick ( { type } ) {
           break
         }
         case 'traits': {
-          showResult()
+          if ( validateTextFields() ) showResult()
           break
         }
         case 'result': {
