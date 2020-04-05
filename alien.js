@@ -98,6 +98,7 @@ export default class Alien extends Phaser.Group {
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
+      dna: {},
       groundY: 0.6,
       textStyle: _.defaults( opt.textStyle || {}, {
         font: 'BC Alphapipe, sans-serif',

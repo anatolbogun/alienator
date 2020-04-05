@@ -1,4 +1,5 @@
-import Alien from "./alien.js"
+import Alien from './alien.js'
+import Planet from './planet.js'
 // import TextInputManager from "./text-input-manager.js"
 import TextField from './text-field.js'
 
@@ -60,10 +61,13 @@ const game = new Phaser.Game( {
 
 let background
 let alien
+let planet
 let ui
 let currentScreen = 'editor'
 let screenshots
+let completeTimeline
 
+const useUrlHash = false
 const imageExportWidth = 800
 const imageExportHeight = 800
 const communityURL = './aliens'
@@ -94,7 +98,7 @@ function create () {
   background = makeBackGround()
   background.visible = false
 
-  const dna = hashToDNA()
+  const dna = useUrlHash ? hashToDNA() : undefined
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
@@ -113,9 +117,13 @@ function create () {
 }
 
 
-function makeBackGround () {
+function makeBackGround ( opt ) {
+  const { color } = _.defaults( opt || {}, {
+    color: 0xffffff,
+  } )
+
   const graphics = game.add.graphics( 0, 0 )
-  graphics.beginFill( 0xffffff )
+  graphics.beginFill( color )
   graphics.drawRect( 0, 0, game.world.width, game.world.height )
   return graphics
 }
@@ -140,7 +148,7 @@ function handleDNAChange ( opt ) {
     }
   }
 
-  dnaToHash( { dna } )
+  if ( useUrlHash ) dnaToHash( { dna } )
   makeEyesDraggable()
 }
 
@@ -280,9 +288,6 @@ function makeUI ( opt ) {
 
   const nextBodyButton = makeButton( { group, key: 'nextBody', frameKey: 'next', onClick: () => alien.showNextItem( { type: 'body' } ) } )
   nextBodyButton.position.set( bounds.right - randomButton.width / 2 - edgeMargin, bounds.height * bodyYPosFactor + previousNextButtonOffsetY )
-
-  const communityButton = makeButton( { group, key: 'community', frameKey: 'community', inputEnabled: false, visible: false, onClick: () => goToCommunity() } )
-  communityButton.position.set( colorSelector.sprite.x, colorSelector.sprite.y )
 
   const oath = makeOath( { x: bounds.centerX, y: bounds.height * 0.43 } )
   group.oath = oath
@@ -596,7 +601,6 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,
-    // onChange: ( textField ) => console.log( 'TEXT input1 CHANGED TO:', textField.text )
   } )
 
   game.add.text( textMargin, textMargin + 465, '2.', textStyle, group )
@@ -612,7 +616,6 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,
-    // onChange: ( textField ) => console.log( 'TEXT input2 CHANGED TO:', textField.text )
   } )
 
   group.textFields = [ textField1, textField2 ]
@@ -787,33 +790,66 @@ function hideResult () {
 
 
 function showComplete () {
+  const textStyle = {
+    font: 'BC Alphapipe, sans-serif',
+    fontSize: '56px',
+    fill: '#ffffff',
+    align: 'center',
+    boundsAlignH: 'center',
+    boundsAlignV: 'top',
+  }
+
   currentScreen = 'complete'
+
+  planet = new Planet( { game, parent: game.world, x: game.world.centerX } )
+  planet.y = game.world.centerY + planet.height
+  game.world.setChildIndex( planet, 1 )
 
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
-  ui.communityButton.inputEnabled = true
-  ui.communityButton.visible = true
 
-  const alienScale = 0.25
-  const alienY = ui.communityButton.y - ui.communityButton.height / 2 - alien.body.height * alien.body.anchor.y * alienScale
+  const text = 'Integrating alien into community.\nPlease be patient.'
+  planet.text = game.add.text( 0, 400, text, textStyle, planet )
+  planet.text.setTextBounds( 0, 0, 0, 0 )
+  planet.text.alpha = 0
 
-  alien.hideTraits()
-  save( { images: screenshots } )
+  const alienScale = 0
+  const brightness = { value: 1 }
 
-  new TimelineMax()
+  completeTimeline = new TimelineMax( { paused: true } )
     .to( ui.cancelButton, { duration: 0.5, x: -ui.cancelButton.width, angle: -360, ease: Power1.easeIn }, 0 )
     .to( ui.okButton, { duration: 0.5, x: game.world.width + ui.okButton.width, angle: 360, ease: Power1.easeIn }, 0 )
-    .from( ui.communityButton, { duration: 1, y: game.world.height + ui.communityButton.height / 2, ease: Power1.easeOut }, 0.25 )
-    .to( alien, { duration: 0.5, y: alienY }, 0.75 )
-    .to( alien.scale, { duration: 0.5, x: alienScale, y: alienScale }, 0.75 )
+    .to( brightness, {
+      duration: 1, value: 0, onUpdate: ( () => {
+        const rgbValue = Math.round( brightness.value * 255 )
+        const color = Phaser.Color.RGBtoString( rgbValue, rgbValue, rgbValue )
+        $( 'body' ).css( 'backgroundColor', color )
+      } )
+    }, 0.25 )
+    .to( planet, { duration: 1, y: game.world.height / 2, ease: Back.easeOut }, 0.25 )
+    .to( alien.scale, { duration: 1, x: alienScale, y: alienScale }, 0.25 )
+    .to( planet.text, { duration: 1, alpha: 1 } )
+
+  alien.hideTraits( {
+    onComplete: () => completeTimeline.play()
+  } )
+
+  save( { images: screenshots } )
 }
 
+
 function goToCommunity () {
-  alien.hideTraits( {
-    onComplete: () => {
-      window.location.href = communityURL
-    }
-  } )
+  const tl = new TimelineMax( { paused: true } )
+  .to( planet.text, { duration: 0.5, alpha: 0 } )
+  .to( planet, { duration: 0.5, alpha: 0 }, 0.5 )
+  .to( planet.scale, { duration: 0.5, x: 0, y: 0 }, 0.5 )
+  .call( () => window.location.href = communityURL )
+
+  if ( completeTimeline.progress() === 1 ) {
+    tl.play()
+  } else {
+    completeTimeline.call( () => tl.play() )
+  }
 }
 
 
@@ -840,6 +876,7 @@ function save ( { images } ) {
   } ).done( function ( response ) {
     console.log( 'SAVING COMPLETE, SERVER RESPONSE:', JSON.parse( response ) )
     alien.logDNA()
+    goToCommunity()
     // window.location.href = image
   } )
 }
