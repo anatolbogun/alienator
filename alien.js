@@ -111,7 +111,7 @@ export default class Alien extends Phaser.Group {
       traitProperties: _.defaults( opt.traitProperties || {}, {
         width: opt.game.world.width * 0.6,
         height: opt.game.world.height * 0.085,
-        padding: opt.game.world.width * 0.02,
+        padding: opt.game.world.width * 0.01,
         edgeRadius: opt.game.world.width * 0.04,
         x1: opt.game.world.width * -0.05,
         x2: opt.game.world.width * 0.05,

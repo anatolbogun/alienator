@@ -75,6 +75,7 @@ const useUrlHash = false
 const useLocalStorage = true
 const imageExportWidth = 800
 const imageExportHeight = 800
+const traitMaxLength = 100
 const communityURL = './aliens'
 
 
@@ -625,10 +626,14 @@ function makeTraits ( opt ) {
     width: textWidth,
     height: 240,
     multiLine: true,
+    maxLength: traitMaxLength,
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,
+    onChange: handleTextFieldChange,
   } )
+
+  textField1.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 100 } )
 
   game.add.text( textMargin, textMargin + 465, '2.', textStyle, group )
 
@@ -643,7 +648,10 @@ function makeTraits ( opt ) {
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,
+    onChange: handleTextFieldChange,
   } )
+
+  textField2.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 465 } )
 
   group.textFields = [ textField1, textField2 ]
 
@@ -655,6 +663,45 @@ function makeTraits ( opt ) {
   group.visible = false
 
   return group
+}
+
+
+function makeTextWarning ( opt ) {
+  const { parent, x, y, alpha, scale, text, textStyle } = _.defaults( opt || {}, {
+    x: 0,
+    y: 0,
+    alpha: 0,
+    scale: 0,
+    text: `max ${ traitMaxLength } characters`,
+    textStyle: {
+      font: 'BC Alphapipe, sans-serif',
+      fontSize: '56px',
+      fill: '#f57e20',
+      align: 'right',
+      boundsAlignH: 'right',
+      boundsAlignV: 'top',
+    }
+  } )
+
+  const warning = game.add.text( x, y, text, textStyle, parent )
+  warning.setTextBounds( 0, 0, 0, 0 )
+  warning.alpha = alpha
+  warning.scale.set( scale )
+
+  return warning
+}
+
+
+function handleTextFieldChange( textField ) {
+  if ( textField.text.length > 99 ) {
+    new TimelineMax()
+      .to( textField.warning, { duration: 0.5, alpha: 1 }, 0 )
+      .to( textField.warning.scale, { duration: 0.5, x: 1, y: 1, ease: Back.easeOut }, 0 )
+  } else {
+    new TimelineMax()
+      .to( textField.warning, { duration: 0.5, alpha: 0 }, 0 )
+      .to( textField.warning.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeIn }, 0 )
+  }
 }
 
 
@@ -706,8 +753,9 @@ function hideTraits () {
 function showResult () {
   currentScreen = 'result'
 
-  alien.dna.trait1 = ui.traits.textFields[ 0 ].text
-  alien.dna.trait2 = ui.traits.textFields[ 1 ].text
+  // trait max length is already set for the text field, but just in case
+  alien.dna.trait1 = ui.traits.textFields[ 0 ].text.substr( 0, traitMaxLength )
+  alien.dna.trait2 = ui.traits.textFields[ 1 ].text.substr( 0, traitMaxLength )
 
   if ( useLocalStorage ) dnaToLocalStorage()
 

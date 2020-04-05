@@ -2,7 +2,7 @@ export default class TextField extends Phaser.Group {
 
   constructor ( opt ) {
     const {
-      game, id, parent, text, x, y, width, height, padding, multiLine,
+      game, id, parent, text, x, y, width, height, padding, multiLine, maxLength,
       borderThickness, borderColor, borderColorFocus, borderAlpha, borderAlphaFocus, fillColor, fillColorFocus, fillAlpha, fillAlphaFocus, edgeRadius,
       fontFamily, fontSize, fontColor, textAlign,
       parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, hidden, onChange
@@ -14,6 +14,7 @@ export default class TextField extends Phaser.Group {
       height: 10,
       padding: 20,
       multiLine: false,
+      maxLength: 100,
       borderThickness: 1,
       borderColor: 0x000000,
       borderColorFocus: 0xf57e20,
@@ -55,11 +56,12 @@ export default class TextField extends Phaser.Group {
     this.width = width
     this.height = height
     this.padding = padding
+    this.maxLength = maxLength
     this.onChange = onChange
     this.fontSize = fontSize
     this.previousText = text
 
-    this.htmlText = this.makeHtmlText( { parentDom, cssStyle, cssStyleFocus, cssId, cssClass, fontFamily, fontSize, fontColor, textAlign, width, height, padding, multiLine } )
+    this.htmlText = this.makeHtmlText( { parentDom, cssStyle, cssStyleFocus, cssId, cssClass, fontFamily, fontColor, textAlign, multiLine } )
     this.text = text
     this.cssBorder = this.htmlText.style.border
 
@@ -73,13 +75,14 @@ export default class TextField extends Phaser.Group {
 
 
   makeHtmlText ( opt ) {
-    const { parentDom, cssStyle, cssClass, fontFamily, fontSize, fontColor, textAlign, width, height, padding, multiLine } = opt
+    const { parentDom, cssStyle, cssClass, fontFamily, fontColor, textAlign, multiLine } = opt
 
     const cssClassParam = cssClass === undefined ? '' : ` class="${ cssClass }"`
     const cssStyleParam = cssStyle === undefined ? '' : ` style="${ cssStyle }"`
     const tag = multiLine ? 'textarea' : 'input'
     if ( this.id === undefined ) this.id = `textField${ $( tag ).length }`
-    const htmlText = $( `<${ tag } id="${ this.id }"${ cssClassParam }${ cssStyleParam }>` ).get( 0 )
+    const maxLength = this.maxLength === undefined ? '' : ` maxLength="${ this.maxLength }" `
+    const htmlText = $( `<${ tag } id="${ this.id }"${ cssClassParam }${ cssStyleParam }${ maxLength }>` ).get( 0 )
     if ( parentDom !== undefined ) $( parentDom ).append( htmlText )
     htmlText.style.fontFamily = fontFamily
     htmlText.style.color = fontColor
