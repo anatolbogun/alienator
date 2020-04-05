@@ -122,8 +122,8 @@ function create () {
   makeEyesDraggable()
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
-  ui.traits.textFields[ 0 ].text = dna.trait1
-  ui.traits.textFields[ 1 ].text = dna.trait2
+  ui.traits.textFields[ 0 ].text = alien.dna.trait1
+  ui.traits.textFields[ 1 ].text = alien.dna.trait2
 
   game.world.addChild( alien )
 
@@ -180,7 +180,7 @@ function dnaToLocalStorage () {
 
 
 function localStorageToDNA () {
-  return JSON.parse( localStorage.getItem( 'dna' ) )
+  return JSON.parse( localStorage.getItem( 'dna' ) ) || undefined
 }
 
 
