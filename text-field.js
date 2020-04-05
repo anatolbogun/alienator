@@ -63,8 +63,6 @@ export default class TextField extends Phaser.Group {
     this.text = text
     this.cssBorder = this.htmlText.style.border
 
-    window.htmlText = this.htmlText
-
     if ( fadedOut ) this.setFadeOut()
     if ( focus ) this.htmlText.focus()
 

@@ -43,6 +43,10 @@ import TextField from './text-field.js'
 // - display aliens (gallery style)
 // - display aliens in Phaser (non mutable aliens are probably best)
 
+// NICE TO HAVE:
+// - save a unique ID (SHA?) with each alien so that it can be edited; that's not really hard, just load the alien dna from that id
+//   and run an update query instead of creating a new entry
+
 
 const game = new Phaser.Game( {
   width: 1200,
@@ -68,6 +72,7 @@ let screenshots
 let completeTimeline
 
 const useUrlHash = false
+const useLocalStorage = true
 const imageExportWidth = 800
 const imageExportHeight = 800
 const communityURL = './aliens'
@@ -98,7 +103,13 @@ function create () {
   background = makeBackGround()
   background.visible = false
 
-  const dna = useUrlHash ? hashToDNA() : undefined
+  const dna = ( () => {
+    switch ( true ) {
+      case useUrlHash: return hashToDNA() // note: the URL hash does not include raits
+      case useLocalStorage: return localStorageToDNA()
+      default: return
+    }
+  } )()
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
@@ -109,7 +120,8 @@ function create () {
   makeEyesDraggable()
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
-  // console.log( 'UI', ui )
+  ui.traits.textFields[ 0 ].text = dna.trait1
+  ui.traits.textFields[ 1 ].text = dna.trait2
 
   game.world.addChild( alien )
 
@@ -149,7 +161,22 @@ function handleDNAChange ( opt ) {
   }
 
   if ( useUrlHash ) dnaToHash( { dna } )
+  if ( useLocalStorage ) dnaToLocalStorage()
   makeEyesDraggable()
+}
+
+
+function dnaToLocalStorage () {
+  if ( alien === undefined || alien.dna === undefined ) return
+
+  const exportDNA = _.pick( alien.dna, [ 'bodyID', 'headID', 'color', 'trait1', 'trait2' ] )
+  exportDNA.eyes = _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) )
+  localStorage.setItem( 'dna', JSON.stringify( exportDNA ) )
+}
+
+
+function localStorageToDNA () {
+  return JSON.parse( localStorage.getItem( 'dna' ) )
 }
 
 
@@ -681,6 +708,9 @@ function showResult () {
 
   alien.dna.trait1 = ui.traits.textFields[ 0 ].text
   alien.dna.trait2 = ui.traits.textFields[ 1 ].text
+
+  if ( useLocalStorage ) dnaToLocalStorage()
+
   alien.updateTraits()
 
   ui.cancelButton.inputEnabled = false
@@ -771,6 +801,8 @@ function hideResult () {
 
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
+
+  alien.hideTraits()
 
   const scaleFactorInversedX = game.scale.scaleFactorInversed.x
   const scaleFactorInversedY = game.scale.scaleFactorInversed.y
