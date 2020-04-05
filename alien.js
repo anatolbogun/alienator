@@ -92,7 +92,7 @@ const bodyPartProps = {
 export default class Alien extends Phaser.Group {
 
   constructor( opt ) {
-    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, textStyle, traitProperties, onDNAChange } = _.defaults( opt, {
+    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, logDNAChange, textStyle, traitProperties, onDNAChange } = _.defaults( opt, {
       x: 0,
       y: 0,
       atlasKey: 'alien',
@@ -100,6 +100,7 @@ export default class Alien extends Phaser.Group {
       mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
       dna: {},
       groundY: 0.6,
+      logDNAChange: false,
       textStyle: _.defaults( opt.textStyle || {}, {
         font: 'BC Alphapipe, sans-serif',
         fontSize: '56px',
@@ -138,6 +139,7 @@ export default class Alien extends Phaser.Group {
     this.atlasKeyCombinations = atlasKeyCombinations
     this.validColors = validColors
     this.groundY = groundY
+    this.logDNAChange = logDNAChange
     this.traitProperties = traitProperties
     this.dna = { trait1: dna.trait1 || '', trait2: dna.trait2 || '' }
     this.onDNAChange = onDNAChange
@@ -153,7 +155,7 @@ export default class Alien extends Phaser.Group {
       eye: this.eyes,
     }
 
-    this.randomize( { logDNA: false } )
+    this.randomize()
     this.make( dna )
 
     this.makeTraits( this.traitProperties )
@@ -203,37 +205,35 @@ export default class Alien extends Phaser.Group {
   }
 
 
-  randomize ( opt = {} ) {
-    const { logDNA } = opt
-
+  randomize () {
     const bodyID = this.sampleArrayIndex( this.bodies )
     const headID = this.sampleArrayIndex( this.heads )
     const color = this.getRandomColor()
 
     // this.makeRandomEyes()
 
-    this.make( { bodyID, headID, color, logDNA } )
+    this.make( { bodyID, headID, color } )
   }
 
 
-  makeRandomEyes ( opt ) {
-    const { num, positions } = _.defaults( opt || {}, {
-      num: 1,
-      positions: [
-        { x: -50, y: 0 },
-        { x: 50, y: 0 },
-      ],
-    } )
+  // makeRandomEyes ( opt ) {
+  //   const { num, positions } = _.defaults( opt || {}, {
+  //     num: 1,
+  //     positions: [
+  //       { x: -50, y: 0 },
+  //       { x: 50, y: 0 },
+  //     ],
+  //   } )
 
-    this.destroyEyes()
+  //   this.destroyEyes()
 
-    for ( const i of _.range( num ) ) {
-      const { x, y } = positions[ i ]
-      const index = _.random( bodyPartProps.eyeballs.length - 1 )
-      const eye = this.makeEye( { index, x, y } )
-      this.eyeTest( { eye } )
-    }
-  }
+  //   for ( const i of _.range( num ) ) {
+  //     const { x, y } = positions[ i ]
+  //     const index = _.random( bodyPartProps.eyeballs.length - 1 )
+  //     const eye = this.makeEye( { index, x, y } )
+  //     this.eyeTest( { eye } )
+  //   }
+  // }
 
 
   // returns false if the eye is overlapping another eye or if it exceeds the body
@@ -268,7 +268,7 @@ export default class Alien extends Phaser.Group {
       eyes: _.isArray( this.dna.eyes ) ? this.dna.eyes : [],
       blink: true,
       positionOnGround: true,
-      logDNA: false,
+      logDNA: this.logDNAChange,
     } )
 
     this.hideCombinations()
@@ -304,16 +304,15 @@ export default class Alien extends Phaser.Group {
 
     for ( const eyeProps of eyes ) {
       const eye = this.makeEye( eyeProps )
-      // console.log( 'EYE ->', eye.eyeball.frameName, this.eyeToBodyHitTest( { eye } ) ) // this line doesn't necessarily get called
     }
-
-    // this.hideAndDestroyOutOfBodyEyes()
 
     this.tint( { color } )
 
     if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
 
     if ( logDNA ) this.logDNA()
+
+    requestAnimationFrame( () => this.hideAndDestroyOutOfBodyEyes() )
   }
 
 
@@ -664,7 +663,7 @@ export default class Alien extends Phaser.Group {
 
   attachEye ( opt ) {
     const { eye, logDNA } = _.defaults( opt || {}, {
-      logDNA: false,
+      logDNA: this.logDNAChange,
     } )
 
     this.eyes.push( eye )
@@ -933,6 +932,8 @@ export default class Alien extends Phaser.Group {
 
     if ( this.onDNAChange !== undefined ) this.onDNAChange( { dna: this.dna } )
 
+    eye.stopBlinking()
+
     const tl = new TimelineMax()
     tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
     tl.call( () => this.detachEye( { eye } ) )
@@ -943,7 +944,6 @@ export default class Alien extends Phaser.Group {
   hideAndDestroyOutOfBodyEyes () {
     for ( const eye of this.eyes ) {
       if ( !this.eyeToBodyHitTest( { eye } ) ) {
-        eye.stopBlinking()
         eye.hideAndDestroy()
       }
     }
