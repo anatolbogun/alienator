@@ -77,7 +77,7 @@ const useLocalStorage = true
 const imageExportWidth = 800
 const imageExportHeight = 800
 const traitMaxLength = 100
-const communityURL = './aliens'
+const aliensURL = './aliens/'
 
 
 function preload () {
@@ -1025,12 +1025,12 @@ function showComplete () {
 }
 
 
-function goToCommunity () {
+function goToAliens () {
   const tl = new TimelineMax( { paused: true } )
   .to( planet.text, { duration: 0.5, alpha: 0 } )
   .to( planet, { duration: 0.5, alpha: 0 }, 0.5 )
   .to( planet.scale, { duration: 0.5, x: 0, y: 0 }, 0.5 )
-  .call( () => window.location.href = communityURL )
+  .call( () => window.location.href = aliensURL )
 
   if ( completeTimeline.progress() === 1 ) {
     tl.play()
@@ -1066,7 +1066,7 @@ function save ( { images } ) {
 
     if ( responseObj.success ) {
       // alien.logDNA()
-      goToCommunity()
+      goToAliens()
     } else {
       notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be saved.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
     }

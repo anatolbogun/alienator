@@ -14,7 +14,7 @@
 $config = parse_ini_file( 'config.ini', true );
 
 $mysql = $config[ 'mysql' ];
-$conn = new PDO('mysql:host=' . $mysql['host'] . ';dbname=' . $mysql['database'], $mysql['user'], $mysql['password']);
+$pdo = new PDO('mysql:host=' . $mysql['host'] . ';dbname=' . $mysql['database'], $mysql['user'], $mysql['password']);
 
 $data = [
   'body' => $_POST[ 'body' ],
@@ -25,7 +25,7 @@ $data = [
 ];
 
 $sql = "INSERT INTO aliens ( utcTimeStamp, uuid, body, head, color, trait1, trait2 ) VALUES ( UTC_TIMESTAMP(), REPLACE(UUID(),'-',''), :body, :head, :color, :trait1, :trait2 )";
-$statement = $conn -> prepare( $sql );
+$statement = $pdo -> prepare( $sql );
 $sqlSuccess = $statement -> execute( $data );
 
 if ( !$sqlSuccess ) {
@@ -37,7 +37,7 @@ if ( !$sqlSuccess ) {
 $eyesData = json_decode( stripslashes( $_POST[ 'eyes' ] ) );
 
 $sql = 'SELECT LAST_INSERT_ID() AS id';
-$statement = $conn->prepare($sql);
+$statement = $pdo -> prepare($sql);
 $statement -> execute();
 $alienID = $statement -> fetch()[ 'id' ];
 
@@ -50,7 +50,7 @@ foreach ( $eyesData as $eyeData ) {
   ];
 
   $sql = 'INSERT INTO eyes ( alienID, type, x, y ) VALUES ( :alienID, :type, :x, :y )';
-  $statement = $conn -> prepare( $sql );
+  $statement = $pdo -> prepare( $sql );
   $sqlSuccess = $statement -> execute( $data );
 
   if ( !$sqlSuccess ) {
