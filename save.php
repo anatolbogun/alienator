@@ -24,7 +24,7 @@ $data = [
   'trait2' => $_POST['trait2'],
 ];
 
-$sql = 'INSERT INTO aliens ( utcTimeStamp, body, head, color, trait1, trait2 ) VALUES ( UTC_TIMESTAMP(), :body, :head, :color, :trait1, :trait2 )';
+$sql = "INSERT INTO aliens ( utcTimeStamp, uuid, body, head, color, trait1, trait2 ) VALUES ( UTC_TIMESTAMP(), REPLACE(UUID(),'-',''), :body, :head, :color, :trait1, :trait2 )";
 $statement = $conn -> prepare( $sql );
 $sqlSuccess = $statement -> execute( $data );
 

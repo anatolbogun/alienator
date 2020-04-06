@@ -780,7 +780,7 @@ function hideTraits () {
 
 
 function makeNotice ( opt ) {
-  const { parent, x, y, width, height, color, alpha, edgeRadius, padding, textStyle } = _.defaults( opt || {}, {
+  const { parent, x, y, width, height, color, alpha, edgeRadius, padding, persistent, textStyle } = _.defaults( opt || {}, {
     x: 0,
     y: 0,
     width: 100,
@@ -789,6 +789,7 @@ function makeNotice ( opt ) {
     alpha: 1,
     edgeRadius: 50,
     padding: 40,
+    persistent: false,
     textStyle: {
       font: 'BC Alphapipe, sans-serif',
       fontSize: '56px',
@@ -804,6 +805,7 @@ function makeNotice ( opt ) {
   group.origin = { x, y }
   group.alpha = 0
   group.scale.set( 0 )
+  group.persistent = persistent
 
   const box = game.add.graphics( 0, 0, group )
 
@@ -821,24 +823,26 @@ function makeNotice ( opt ) {
   textObj.setTextBounds( -textWidth / 2, -textHeight / 2, textWidth, textHeight )
 
   group.show = ( opt ) => {
-    const { text, x, y } = _.defaults( opt || {}, {
+    const { text, x, y, persistent } = _.defaults( opt || {}, {
       x: group.origin.x,
       y: group.origin.y,
+      persistent: false,
     } )
 
-    if ( text !== undefined ) textObj.text = text
+    group.persistent = persistent
 
-    group.isShowing = true
+    if ( text !== undefined ) textObj.text = text
 
     group.position.set( x, y )
 
     new TimelineMax()
       .to( group, { duration: 0.5, alpha: 1 }, 0 )
       .to( group.scale, { duration: 0.5, x: 1, y: 1, ease: Back.easeOut }, 0 )
+      .call( () => group.isShowing = true )
   }
 
   group.hide = () => {
-    if ( !group.isShowing ) return
+    if ( !group.isShowing || group.persistent ) return
 
     group.isShowing = false
 
@@ -1057,10 +1061,15 @@ function save ( { images } ) {
     url: 'save.php',
     data,
   } ).done( function ( response ) {
-    console.log( 'SAVING COMPLETE, SERVER RESPONSE:', JSON.parse( response ) )
-    alien.logDNA()
-    goToCommunity()
-    // window.location.href = image
+    const responseObj = JSON.parse( response )
+    console.log( 'SAVING COMPLETE, SERVER RESPONSE:', responseObj )
+
+    if ( responseObj.success ) {
+      // alien.logDNA()
+      goToCommunity()
+    } else {
+      notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be saved.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
+    }
   } )
 }
 
