@@ -1058,7 +1058,7 @@ function save ( { images } ) {
 
   $.ajax( {
     type: 'POST',
-    url: 'save.php',
+    url: 'save',
     data,
   } ).done( function ( response ) {
     const responseObj = JSON.parse( response )
