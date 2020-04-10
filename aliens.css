@@ -13,3 +13,72 @@ body {
   font-family: "BC Alphapipe";
   color: #ffffff;
 }
+
+h1 {
+  text-align: center;
+  margin: 0px;
+  padding: 0.5em 0px 0.5em 0px;
+  font-size: 2.5em;
+}
+
+a {
+  cursor: pointer;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+figure {
+  margin: 0px;
+  /* padding: 0px; */
+  /* border: 1px solid red; */
+}
+
+.hidden {
+  display: none;
+}
+
+#aliens * {
+  /* border: 1px solid red; */
+}
+
+#aliens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: top;
+  position: relative;
+}
+
+.alien {
+  position: relative;
+  max-width: 25em;
+  margin: 0.5em;
+}
+
+.alien a {
+  display: block;
+}
+
+.alien img {
+  position: relative;
+  width: 100%;
+  border-radius: 2em;
+}
+
+.alien p {
+  margin: 0.5em 0px 0px 0px;
+  padding: 0px 2em;
+  text-align: center;
+}
+
+.alien .image {
+  display: block;
+}
+
+.alien .traits {
+  display: none;
+}
