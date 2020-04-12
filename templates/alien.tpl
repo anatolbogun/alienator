@@ -7,5 +7,5 @@
   </a>
   <p class="hidden">{$alien.trait1}</p>
   <p class="hidden">{$alien.trait2}</p>
-  <p><a href="/aliens"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></a></p>
+  <p class="info"><a href="/aliens"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></a></p>
 </section>

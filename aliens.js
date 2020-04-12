@@ -35,6 +35,8 @@ function utcToUserTime () {
     // already converted times won't be converted again
     timeElement.outerHTML = `<time>${ utcToUserTimeStamp( timeElement.innerHTML ) }</time>`
   }
+
+  TweenMax.to( $( `#aliens .alien .info` ), { duration: 0.5, css: { opacity: 1 } } )
 }
 
 

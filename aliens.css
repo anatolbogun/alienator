@@ -93,3 +93,7 @@ a:hover {
 .alien .traits {
   display: none;
 }
+
+.alien .info {
+  opacity: 0;
+}
