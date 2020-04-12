@@ -26,6 +26,7 @@ h1 {
   font-size: 2.5em;
 }
 
+
 a {
   cursor: pointer;
   color: #ffffff;
@@ -50,29 +51,40 @@ a:hover {
 
 .alien {
   position: relative;
-  max-width: 25em;
+  width: 18em;
+  padding: 0.5em;
   margin: 0.5em;
+  border-radius: 2.2em;
+  background-color: #333333;
 }
 
 .alien a {
   display: block;
 }
 
+.alien > a {
+  width: 18em;
+  height: 18em;
+  border-radius: 2em;
+  background-color: #000000;
+}
+
 .alien img {
   position: relative;
-  width: 25em;
-  height: 25em;
+  width: 18em;
+  height: 18em;
   border-radius: 2em;
 }
 
 .alien p {
   margin: 0.5em 0px 0px 0px;
-  padding: 0px 2em;
+  padding: 0px 0em;
   text-align: center;
 }
 
 .alien .image {
   display: block;
+  opacity: 0;
 }
 
 .alien .traits {

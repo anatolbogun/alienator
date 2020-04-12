@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <title>{$title|default:"We Are All Aliens"}</title>
   <base href="/" />
+  <script type="text/javascript" src="lodash.min.js"></script>
   <script type="text/javascript" src="gsap.min.js"></script>
   <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="jquery.lazy.min.js"></script>
   <script type="text/javascript" src="aliens.js"></script>
   <link rel="stylesheet" href="aliens.css">
-  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
 
   <!-- favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
