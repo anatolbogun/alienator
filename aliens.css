@@ -82,9 +82,12 @@ a:hover {
   text-align: center;
 }
 
+.alien .images {
+  opacity: 0;
+}
+
 .alien .image {
   display: block;
-  opacity: 0;
 }
 
 .alien .traits {

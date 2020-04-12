@@ -94,11 +94,11 @@ function lazyLoadImages ( opt ) {
 
       if ( elements.hasClass( 'image' ) ) {
         elements.on( 'load', () => {
-          const delay = Math.random() * maxDelay
-          new TimelineMax( { delay } )
-            .fromTo( elements, { css: { opacity: 0 } }, { duration: 0.25, ease: "power4.in", css: { opacity: 0.5 } } )
-            .to( elements, { duration: 0.25, ease: "power4.out", css: { opacity: 0.1 } } )
-            .to( elements, { duration: 0.5, ease: "bounce.out", css: { opacity: 1 } } )
+          const parent = elements.parent()
+          new TimelineMax( { delay: Math.random() * maxDelay } )
+            .fromTo( parent, { css: { opacity: 0 } }, { duration: 0.25, ease: "power4.in", css: { opacity: 0.5 } } )
+            .to( parent, { duration: 0.25, ease: "power4.out", css: { opacity: 0.1 } } )
+            .to( parent, { duration: 0.5, ease: "bounce.out", css: { opacity: 1 } } )
         } )
       }
     }
