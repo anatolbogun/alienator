@@ -1,28 +1,10 @@
+const userLocale = getUserLocale()
+
+
 $( document ).ready( () => {
-  for ( const timeElement of $( `#aliens time` ) ) {
-    timeElement.innerHTML = utcToUserTimeStamp( timeElement.innerHTML )
-  }
+  utcToUserTime()
 } )
 
-function showTraits ( id ) {
-  $( `#alien${ id } .image:first` ).css( 'display', 'none' )
-  $( `#alien${ id } .traits:first` ).css( 'display', 'block' )
-}
-
-function hideTraits ( id ) {
-  $( `#alien${ id } .image:first` ).css( 'display', 'block' )
-  $( `#alien${ id } .traits:first` ).css( 'display', 'none' )
-}
-
-function toggleTraits ( id ) {
-  if ( $( `#alien${ id } .traits` ).css( 'display' ) === 'none' ) {
-    console.log( 'SHOW TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
-    showTraits( id )
-  } else {
-    console.log( 'HIDE TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
-    hideTraits( id )
-  }
-}
 
 function getUserLocale () {
   if ( navigator.languages != undefined ) {
@@ -34,8 +16,19 @@ function getUserLocale () {
   }
 }
 
+
+function utcToUserTime () {
+  // only check time tags with the utc class
+  for ( const timeElement of $( `#aliens time.utc` ) ) {
+    // remove the utc class so that when this function is called in the future
+    // already converted times won't be converted again
+    timeElement.outerHTML = '<time>' + utcToUserTimeStamp( timeElement.innerHTML ) + '</time>'
+  }
+}
+
+
 // expects a valid timestamp such as 2020-04-10 13:59:57
-function utcToUserTimeStamp ( utcTimeStamp, locale = getUserLocale() ) {
+function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale ) {
   const now = new Date()
 
   const diffYear = now.getFullYear() - now.getUTCFullYear()
@@ -64,4 +57,27 @@ function utcToUserTimeStamp ( utcTimeStamp, locale = getUserLocale() ) {
   } )
 
   return output
+}
+
+
+function showTraits ( id ) {
+  $( `#alien${ id } .image:first` ).css( 'display', 'none' )
+  $( `#alien${ id } .traits:first` ).css( 'display', 'block' )
+}
+
+
+function hideTraits ( id ) {
+  $( `#alien${ id } .image:first` ).css( 'display', 'block' )
+  $( `#alien${ id } .traits:first` ).css( 'display', 'none' )
+}
+
+
+function toggleTraits ( id ) {
+  if ( $( `#alien${ id } .traits` ).css( 'display' ) === 'none' ) {
+    console.log( 'SHOW TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
+    showTraits( id )
+  } else {
+    console.log( 'HIDE TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
+    hideTraits( id )
+  }
 }
