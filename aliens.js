@@ -95,7 +95,10 @@ function lazyLoadImages ( opt ) {
       if ( elements.hasClass( 'image' ) ) {
         elements.on( 'load', () => {
           const delay = Math.random() * maxDelay
-          TweenMax.fromTo( elements, { css: { opacity: 0 } }, { duration: 0.5, delay, css: { opacity: 1 } } )
+          new TimelineMax( { delay } )
+            .fromTo( elements, { css: { opacity: 0 } }, { duration: 0.25, ease: "power4.in", css: { opacity: 0.5 } } )
+            .to( elements, { duration: 0.25, ease: "power4.out", css: { opacity: 0.1 } } )
+            .to( elements, { duration: 0.5, ease: "bounce.out", css: { opacity: 1 } } )
         } )
       }
     }
