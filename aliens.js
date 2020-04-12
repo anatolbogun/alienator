@@ -74,10 +74,8 @@ function hideTraits ( id ) {
 
 function toggleTraits ( id ) {
   if ( $( `#alien${ id } .traits` ).css( 'display' ) === 'none' ) {
-    console.log( 'SHOW TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
     showTraits( id )
   } else {
-    console.log( 'HIDE TRAITS', id, `#alien${ id }`, `#alien${ id } .image`, `#alien${ id } .traits`, $( `#alien${ id } .image` ) )
     hideTraits( id )
   }
 }
