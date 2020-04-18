@@ -2,10 +2,10 @@ const userLocale = getUserLocale()
 
 const dictionary = {
   'ja-JP': {
-    Joined: '入社',
+    Joined: '入星',
   },
   'de-DE': {
-    Joined: 'Mitglied seit',
+    Joined: 'Gelandet am',
   }
 }
 
@@ -41,7 +41,7 @@ function utcToUserTime () {
 
 
 // expects a valid timestamp such as 2020-04-10 13:59:57
-function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale ) {
+function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale, showTime = false ) {
   const now = new Date()
 
   const diffYear = now.getFullYear() - now.getUTCFullYear()
@@ -64,14 +64,18 @@ function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale ) {
   const inputTimeStamp = inputDate.getTime()
   const localTimeStamp = inputTimeStamp + diffTimeStamp
   const outputDate = new Date( localTimeStamp )
-  const output = outputDate.toLocaleDateString( locale, {
+  let output = outputDate.toLocaleDateString( locale, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  } ) + ', ' + outputDate.toLocaleTimeString( locale, {
-    hour: 'numeric',
-    minute: 'numeric',
   } )
+
+  if ( showTime ) {
+    output + ', ' + outputDate.toLocaleTimeString( locale, {
+      hour: 'numeric',
+      minute: 'numeric',
+    } )
+  }
 
   return output
 }
