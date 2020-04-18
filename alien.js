@@ -316,6 +316,23 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  // segments Japanese words for potential line breaks with the TinySegmenter module
+  // We use a zero-width space unicode character \u200b to declare potential line breaks.
+  // This zero-width unicode character is not supported by the Phaser word wrap functions, so
+  // we need to overwrite Phaser.Text.prototype.basicWordWrap to split words at /\s/ instead of ' '.
+  // In basicWordWrap we also run the text through advancedWordWrap to break long words that
+  // would otherwise exceed the wordWrapWidth.
+  // See phaser-extensions.js
+  segmentJapaneseText ( opt ) {
+    const { string, separator } = _.defaults( opt || {}, {
+      separator: '\u200b', // zero-width space unicode character
+    } )
+    const segmenter = new TinySegmenter()
+    const segments = segmenter.segment( string )
+    return segments.join( separator )
+  }
+
+
   makeTraits ( opt ) {
     const { x1, x2, yMargin1, yMargin2, width, height, padding, edgeRadius, color, textStyle } = opt
 
@@ -356,7 +373,7 @@ export default class Alien extends Phaser.Group {
     group.setText = ( text ) => {
       if ( text === undefined ) return
 
-      textObj.text = text
+      textObj.text = this.segmentJapaneseText( { string: text } )
       textObj.fontSize = textObj.originFontSize
       this.fitTextToBounds( { textObj } )
       return group
