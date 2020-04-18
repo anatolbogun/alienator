@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Apr 06, 2020 at 01:56 PM
+-- Generation Time: Apr 18, 2020 at 08:01 AM
 -- Server version: 5.7.26
 -- PHP Version: 7.4.2
 
@@ -27,8 +27,8 @@ CREATE TABLE `aliens` (
   `body` tinyint(3) UNSIGNED NOT NULL,
   `head` tinyint(3) UNSIGNED NOT NULL,
   `color` int(10) UNSIGNED NOT NULL,
-  `trait1` tinytext COLLATE utf8_unicode_ci,
-  `trait2` tinytext COLLATE utf8_unicode_ci
+  `trait1` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `trait2` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
