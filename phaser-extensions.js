@@ -39,6 +39,9 @@ Phaser.Text.prototype.basicWordWrap = function ( text ) {
   text = wrap( { text, separator: ' ' } )
   text = wrap( { text, separator: /\u200B/, replacement: '' } )
 
+  return text
+
   // just to make sure and also break really long words that would exceed the max wordWrapWidth we run this through advancedWordWrap
-  return this.advancedWordWrap( text )
+  // TO DO: this cuts off part of the last letter of a long line of text, try to fix this
+  // return this.advancedWordWrap( text )
 }

@@ -92,12 +92,14 @@ const bodyPartProps = {
 export default class Alien extends Phaser.Group {
 
   constructor( opt ) {
-    const { game, parent, x, y, mutable, atlasKey, atlasKeyCombinations, validColors, dna, groundY, logDNAChange, textStyle, traitProperties, onDNAChange } = _.defaults( opt, {
+    const {
+      game, parent, x, y, atlasKey, atlasKeyCombinations, validColors, dna, groundY, logDNAChange, textStyle, traitProperties, onDNAChange,
+      enabled, pixelPerfectAlpha, pixelPerfectClick, pixelPerfectOver, useHandCursor, onClick,
+    } = _.defaults( opt, {
       x: 0,
       y: 0,
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
-      mutable: false, // TO DO: only create images of DNA, do not create BMDs, other "read only" optimnisations
       dna: {},
       groundY: 0.6,
       logDNAChange: false,
@@ -141,8 +143,10 @@ export default class Alien extends Phaser.Group {
     this.groundY = groundY
     this.logDNAChange = logDNAChange
     this.traitProperties = traitProperties
+    this.traitsVisible = false
     this.dna = { trait1: dna.trait1 || '', trait2: dna.trait2 || '' }
     this.onDNAChange = onDNAChange
+    this.enabled = false
 
     this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD: true } )
     this.bodies = this.makeItems( { parent: this, type: BODY, props: bodyPartProps.bodies, withBMD: true } )
@@ -159,6 +163,8 @@ export default class Alien extends Phaser.Group {
     this.make( dna )
 
     this.makeTraits( this.traitProperties )
+
+    if ( onClick !== undefined ) this.setupClick( { enabled, pixelPerfectAlpha, pixelPerfectClick, pixelPerfectOver, useHandCursor, onClick } )
   }
 
 
@@ -216,26 +222,6 @@ export default class Alien extends Phaser.Group {
   }
 
 
-  // makeRandomEyes ( opt ) {
-  //   const { num, positions } = _.defaults( opt || {}, {
-  //     num: 1,
-  //     positions: [
-  //       { x: -50, y: 0 },
-  //       { x: 50, y: 0 },
-  //     ],
-  //   } )
-
-  //   this.destroyEyes()
-
-  //   for ( const i of _.range( num ) ) {
-  //     const { x, y } = positions[ i ]
-  //     const index = _.random( bodyPartProps.eyeballs.length - 1 )
-  //     const eye = this.makeEye( { index, x, y } )
-  //     this.eyeTest( { eye } )
-  //   }
-  // }
-
-
   // returns false if the eye is overlapping another eye or if it exceeds the body
   eyeTest ( { eye } ) {
     eye.inputEnabled = true
@@ -259,7 +245,6 @@ export default class Alien extends Phaser.Group {
   }
 
 
-  // TO DO: rename dna to opt?
   make ( dna = {} ) {
     const { bodyID, headID, color, eyes, positionOnGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
@@ -313,6 +298,8 @@ export default class Alien extends Phaser.Group {
     if ( logDNA ) this.logDNA()
 
     requestAnimationFrame( () => this.hideAndDestroyOutOfBodyEyes() )
+
+    if ( this.enabled ) this.enable()
   }
 
 
@@ -412,9 +399,13 @@ export default class Alien extends Phaser.Group {
       .to( this.trait1.scale, { duration, x: 1, y: 1, ease: Power2.easeOut }, 0 )
       .to( this.trait2, { duration, y: this.trait2.targetPosition.y, alpha: 1, ease: Power2.easeIn }, duration / 2 )
       .to( this.trait2.scale, { duration, x: 1, y: 1, ease: Power2.easeOut }, duration / 2 )
+      .call( () => this.traitsVisible = true )
 
     if ( onComplete !== undefined ) tl.call( onComplete )
     if ( sway ) tl.call( () => this.swayTraits( { duration: duration * 2 } ) )
+
+
+    this.showTraitsTl = tl
   }
 
 
@@ -430,9 +421,21 @@ export default class Alien extends Phaser.Group {
       .to( this.trait1.scale, { duration, x: toScale, y: toScale, ease: Back.easeIn}, 0 )
       .to( this.trait2, { duration, y: this.trait2.targetPosition.y + toYOffset, alpha: 0, ease: Power2.easeIn }, duration / 2 )
       .to( this.trait2.scale, { duration, x: toScale, y: toScale, ease: Back.easeIn }, duration / 2 )
+      .call( () => this.traitsVisible = false )
 
     if ( this.swayTl !== undefined ) tl.call( () => this.swayTl.kill() )
     if ( onComplete !== undefined ) tl.call( onComplete )
+
+    this.hideTraitsTl = tl
+  }
+
+
+  toggleTraits () {
+    if ( this.traitsVisible && ( this.hideTraitsTl === undefined || this.hideTraitsTl.progress() === 1 ) ) {
+      this.hideTraits()
+    } else if ( this.showTraitsTl === undefined || this.showTraitsTl.progress() === 1 ) {
+      this.showTraits()
+    }
   }
 
 
@@ -979,6 +982,49 @@ export default class Alien extends Phaser.Group {
       eye.detach()
       eye.destroy()
     }
+  }
+
+
+  setupClick ( opt ) {
+    const { enabled, pixelPerfectAlpha, pixelPerfectClick, pixelPerfectOver, useHandCursor, onClick } = _.defaults( opt || {}, {
+      enabled: true,
+      pixelPerfectAlpha: 1,
+      pixelPerfectClick: true,
+      pixelPerfectOver: true,
+      useHandCursor: true,
+    } )
+
+    for ( const item of _.concat( this.heads, this.bodies, _.map( this.combinations, 'image' ) ) ) {
+      if ( item === undefined ) continue
+      item.inputEnabled = true
+      item.input.enabled = false
+      item.input.pixelPerfectAlpha = pixelPerfectAlpha
+      item.input.pixelPerfectClick = pixelPerfectClick
+      item.input.pixelPerfectOver = pixelPerfectOver
+      item.input.useHandCursor = useHandCursor
+      if ( onClick !== undefined ) item.events.onInputDown.add( () => onClick( this ) )
+    }
+
+    if ( enabled ) this.enable()
+  }
+
+
+  // this enables clicks if setupClick was run before; it also updates event listeners when the alien dna is changed
+  enable () {
+    this.disable()
+    if ( this.head !== undefined ) this.head.input.enabled = true
+    if ( this.body !== undefined ) this.body.input.enabled = true
+    if ( this.combination !== undefined ) this.combination.image.input.enabled = true
+    this.enabled = true
+  }
+
+
+  disable () {
+    for ( const item of _.concat( this.heads, this.bodies, _.map( this.combinations, 'image' ) ) ) {
+      item.input.enabled = false
+    }
+
+    this.enabled = false
   }
 
 

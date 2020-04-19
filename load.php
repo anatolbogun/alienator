@@ -1,5 +1,4 @@
 <?php
-
 $config = parse_ini_file( 'config.ini', true );
 
 $mysql = $config[ 'mysql' ];
@@ -20,7 +19,8 @@ $alien = $statement -> fetch( PDO::FETCH_LAZY );
 
 if ( $statement -> rowCount() ) {
   $data = [ 'alienID' => $alien -> id ];
-  $sql = 'SELECT * FROM `eyes` WHERE `alienID` = :alienID';
+  // we need to map type to index; the javascript code uses index due to conflicts with type, but in MySQL index is a reserved keyword and cannot be used as a column name
+  $sql = 'SELECT `type` AS `index`, `x`, `y` FROM `eyes` WHERE `alienID` = :alienID';
   $statement = $pdo -> prepare( $sql );
   $sqlSuccess = $statement -> execute( $data );
 

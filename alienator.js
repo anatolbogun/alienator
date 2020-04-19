@@ -53,7 +53,7 @@ const useUrlHash = false
 const useLocalStorage = true
 const imageExportWidth = 800
 const imageExportHeight = 800
-const traitMaxLength = 100
+const traitMaxLength = 50
 const aliensURL = './aliens/'
 
 
@@ -92,7 +92,7 @@ function create () {
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
-  alien = new Alien( { game, x, y, mutable: true, dna, onDNAChange: handleDNAChange } )
+  alien = new Alien( { game, x, y, dna, onDNAChange: handleDNAChange } )
   alien.origin = { x, y }
   console.log( 'ALIEN', alien )
 
@@ -625,6 +625,7 @@ function makeTraits ( opt ) {
     width: textWidth,
     height: 240,
     multiLine: true,
+    maxLength: traitMaxLength,
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,

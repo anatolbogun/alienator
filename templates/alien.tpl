@@ -1,11 +1,8 @@
 {include file="header.tpl" title="Alien {$alien.id}" showViewer=true}
 
-<header>
-  <img class="logo" src="assets/logo-white.png" />
-  <h1>We Are All Aliens</h1>
+<header class="right">
+  <a href="aliens/"><img class="logo notext" src="assets/logo.png" /></a>
 </header>
-
-<p class="info"><a href="aliens/">Population: {$numAliens}</a></p>
 
 {if !$alien.id}
 
@@ -18,6 +15,8 @@
 
   <main>
     <div id="viewer"></div>
+    <h1 class="name">Alien {$alien.id}</h1>
+    <!--
     <div class="avatar">
       <img src="/user-images/{$alien.id}avatar.png" />
       <p>This is resident {$alien.id}</p>
@@ -37,6 +36,7 @@
         <p class="info"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></p>
       </article>
     </div>
+    -->
   </main>
 
 {/if}

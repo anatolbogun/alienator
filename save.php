@@ -42,6 +42,7 @@ $statement -> execute();
 $alienID = $statement -> fetch()[ 'id' ];
 
 foreach ( $eyesData as $eyeData ) {
+  // we need to map type to index; the javascript code uses index due to conflicts with type, but in MySQL index is a reserved keyword and cannot be used as a column name
   $data = [
     'alienID' => $alienID,
     'type' => $eyeData -> index,

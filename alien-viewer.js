@@ -35,9 +35,6 @@ function create () {
 
 
 function loadDNA ( { id, onLoaded } ) {
-  console.log( 'LOADING …' )
-  // TO DO: add a saving visualisation
-
   $.ajax( {
     type: 'POST',
     url: 'load',
@@ -56,15 +53,41 @@ function loadDNA ( { id, onLoaded } ) {
 
 
 function makeAlien ( { dna } ) {
-  console.log( 'MAKE ALIEN' )
   if ( dna === undefined ) return
 
   const alien = new Alien( {
     game,
     x: game.world.centerX,
     y: game.world.centerY,
+    groundY: 1,
     dna,
+    onClick: ( alien ) => handleClick( alien ),
+    textStyle: {
+      fontSize: '60px',
+      fill: 0xffffff,
+    },
+    traitProperties: {
+      width: game.world.width * 0.8,
+      height: game.world.height * 0.15,
+      yMargin1: game.world.height * -0.25,
+      yMargin2: game.world.height * -0.09,
+      fromYOffset: game.world.height * 0.19,
+      color: 0xffffff,
+    }
   } )
+
+  gsap.delayedCall( 1, () => alien.toggleTraits() )
+
+  // // if the alien needs scaling do this in a requestAnimationFrame callback
+  // requestAnimationFrame( () => {
+  //   const scale = Math.min( game.world.width / alien.width, game.world.height / alien.height )
+  //   alien.scale.set( scale )
+  // } )
+}
+
+
+function handleClick ( alien ) {
+  alien.toggleTraits()
 }
 
 
