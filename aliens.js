@@ -30,18 +30,20 @@ function getUserLocale () {
 
 function utcToUserTime () {
   // only check time tags with the utc class
-  for ( const timeElement of $( `#aliens time.utc` ) ) {
+  for ( const timeElement of $( `.alien time.utc` ) ) {
     // remove the utc class so that when this function is called in the future
     // already converted times won't be converted again
     timeElement.outerHTML = `<time>${ utcToUserTimeStamp( timeElement.innerHTML ) }</time>`
   }
 
-  TweenMax.to( $( `#aliens .alien .info` ), { duration: 0.5, css: { opacity: 1 } } )
+  TweenMax.to( $( `.alien .info` ), { duration: 0.5, css: { opacity: 1 } } )
 }
 
 
 // expects a valid timestamp such as 2020-04-10 13:59:57
 function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale, showTime = false ) {
+  if ( !utcTimeStamp ) return
+
   const now = new Date()
 
   const diffYear = now.getFullYear() - now.getUTCFullYear()

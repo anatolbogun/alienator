@@ -19,26 +19,47 @@ body {
   color: #ffffff;
 }
 
-h1 {
-  text-align: center;
-  margin: 0px;
-  padding: 0.5em 0px 0.5em 0px;
-  font-size: 2.5em;
-}
-
 
 a {
   cursor: pointer;
   color: #ffffff;
-  text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
+header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 0px 2em 0px;
+}
+
+header h1 {
+  text-align: center;
+  margin: 0px;
+  padding: 0px;
+  font-size: 2.5em;
+  white-space: nowrap;
+}
+
+header p {
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
 }
 
 .hidden {
   display: none;
+}
+
+img.logo {
+  width: 20%;
+  min-width: 12em;
+  height: auto;
+  margin-bottom: 2em;
+}
+
+.info {
+  text-align: center;
 }
 
 #aliens {
@@ -60,6 +81,11 @@ a:hover {
 
 .alien a {
   display: block;
+  /* text-decoration: none; */
+}
+
+.alien a:hover {
+  text-decoration: underline;
 }
 
 .alien > a {
@@ -96,4 +122,41 @@ a:hover {
 
 .alien .info {
   opacity: 0;
+}
+
+/* alien profile page */
+
+#aliens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: top;
+  position: relative;
+}
+
+.alien.profile {
+  width: 85vmin;
+  height: 85vmin + 0.1em;
+}
+
+.alien.profile > a {
+  width: 100%;
+  height: auto;
+}
+
+.alien.profile img {
+  width: 100%;
+  height: auto;
+}
+
+.avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0px;
+}
+
+.avatar img {
+  width: 20%;
+  height: auto;
 }

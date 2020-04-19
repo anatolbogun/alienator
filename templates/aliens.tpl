@@ -1,16 +1,20 @@
-{include file="header.tpl" title="Aliens"}
-
+{include file="header.tpl" title="We Are All Aliens"}
 
 <header>
+  <img class="logo" src="assets/logo-white.png" />
   <h1>We Are All Aliens</h1>
 </header>
 
-<main id="aliens">
+<p class="info">Population: {$numAliens}</p>
+
+<main>
+  <div id="aliens">
 
   {foreach $aliens as $alien}
-  {include file="alien.tpl" alien=$alien}
+  {include file="alien-section.tpl" alien=$alien}
   {/foreach}
 
+  </div>
 </main>
 
 {include file="footer.tpl"}

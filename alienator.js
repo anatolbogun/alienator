@@ -1,51 +1,28 @@
 import Alien from './alien.js'
 import Planet from './planet.js'
-// import TextInputManager from "./text-input-manager.js"
 import TextField from './text-field.js'
 
-// TO DO
-//
-// CRUCIAL:
-// - save image with text
-// - list aliens and what alienates as gallery or similar
-// - Instagram API? (probably not possible)
-//
-// THINGS TO REFINE:
-// - user input text length needs to be limited both on client and server side
-// - Currently there's an issue when I'm trying to check if eyes are on the body after a DNA change,
-//   no idea why this doesn't work properly. Ideally I'd store eyes of a head-body combination and when
-//   changing head/body it'll check if the eyes are still on the body, and would remove eyes that aren't,
-//   but because I stored eyes for a head/body combination when I go back the eyes will be there again;
-//   another option is not to store eyes but just remove those that are outside the body;
-//   or, the simplest way is to just remove all eyes when the head or body changes
-// - if possible for the random generator we need a way to automatically place eyes,
+// TO DO:
+// - maybe also display aliens moving across the screen
+// - One more page for the beginning (I will send you the design)
+
+// NICE TO HAVE:
+// - Instagram API to automatically upload new aliens? (probably not possible, the API
+//   seems very limited)
+// - save a unique ID (SHA?) with each alien so that it can be edited; that's not really
+//   hard, just load the alien dna from that id and run an update query instead of creating
+//   a new entry
+// - for the random generator it'd be nice to have a way to automatically place eyes,
 //   ideally with a random placement on the shape with validation as user drag and drop;
 //   maybe a while loop that picks random positions within the body part bounds and places
 //   the eye as long as it does not collide with other eyes; but limit the number of loops
 //   because it's possible that there's just no space left, and I don't think there's a
-//   simple way to check that
-// - eyes on the body should be permitted, however, the random generator should prioritise
-//   to place them on the head
-// - 2 eyes should be prioritised on the same height
-// - save as an image on the server (maybe even png and gif with eye blink)
-// - save user info in the database
-//   alien table: ( id, timestamp, name, 2 traits, dna: headID, bodyID, color)
-// - eyes table (links to aliens table via id): ( id, alienID, eyeID, x, y, eyeTick?, scale? )
-// - display aliens as images
-// - maybe also display aliens moving across the screen
-// - could try Phaser.Physics collisions for eyes instead of the hit test, but that's probably not easy and could take some time,
-//   however, it could be better for performance as the hit test is quite expensive, especially noticeable on lower spec devices
-
-// - One more page for the beginning (I will send you the design)
-// - The page to see all the existing aliens (Click to see their alien qualities)
-
-// CONTINUE WITH:
-// - display aliens (gallery style)
-// - display aliens in Phaser (non mutable aliens are probably best)
-
-// NICE TO HAVE:
-// - save a unique ID (SHA?) with each alien so that it can be edited; that's not really hard, just load the alien dna from that id
-//   and run an update query instead of creating a new entry
+//   simple way to check that; this is really low priority though, it's probably better to
+//   leave some creativity to the user, so it really would be more of a coding challenge.
+// - could try Phaser.Physics collisions for eyes instead of the hit test, but that's
+//   probably not easy and could take some time, however, it could be better for performance
+//   as the hit test is quite expensive, especially noticeable on lower spec devices;
+//   this is also really low priority, it seems to work pretty ok right now.
 
 
 const game = new Phaser.Game( {
