@@ -13,7 +13,7 @@
 
 {else}
 
-  <main>
+  <main id="alien">
     <div id="viewer"></div>
     <h1 class="name">Alien {$alien.id}</h1>
     <!--

@@ -141,12 +141,12 @@ img.logo.notext {
 
 /* alien profile page */
 
-#aliens {
+#alien {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
-  align-items: top;
-  position: relative;
+  align-items: center;
 }
 
 .alien.profile {

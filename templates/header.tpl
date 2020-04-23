@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <title>{$title|default:"We Are All Aliens"}</title>
   <base href="/" />
-  {if $showViewer && $alien.id}
     <script type="text/javascript" src="lodash.min.js"></script>
     <script type="text/javascript" src="gsap.min.js"></script>
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery.lazy.min.js"></script>
     <script type="text/javascript" src="aliens.js"></script>
+  {if $showViewer && $alien.id}
     <script type="text/javascript" src="phaser.min.js"></script>
     <script type="text/javascript" src="phaser-extensions.js"></script>
     <script type="text/javascript" src="tiny-segmenter.js" charset="UTF-8"></script>
