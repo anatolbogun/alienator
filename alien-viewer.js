@@ -1,5 +1,6 @@
 import Alien from './alien.js'
 
+
 const game = new Phaser.Game( {
   width: 1200,
   height: 1200,
@@ -30,23 +31,32 @@ function create () {
 
   console.log( 'GAME', game )
 
+  // to do: not the best way to read the id from the URL, I'd prefer to call a load( id ) function from outside this module, but Safari causes issues
+  const id = Number( window.location.pathname.match( /aliens\/(\d+)/ )[ 1 ] )
+
   loadDNA( { id, onLoaded: ( dna ) => makeAlien( { dna } ) } )
 }
 
 
 function loadDNA ( { id, onLoaded } ) {
+  // if ( id === undefined ) return
+
   $.ajax( {
     type: 'POST',
     url: 'load',
     data: { id },
   } ).done( function ( response ) {
-    const responseObj = JSON.parse( response )
-    console.log( 'LOADING COMPLETE, SERVER RESPONSE:', responseObj )
+    try {
+      const responseObj = JSON.parse( response )
+      console.log( 'LOADING COMPLETE, SERVER RESPONSE:', responseObj )
 
-    if ( responseObj.success ) {
-      if ( onLoaded !== undefined ) onLoaded( responseObj.dna )
-    } else {
-      // notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be loaded.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
+      if ( responseObj.success ) {
+        if ( onLoaded !== undefined ) onLoaded( responseObj.dna )
+      } else {
+        // notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be loaded.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
+      }
+    } catch ( e ) {
+      console.warn( `Could not find alien with ID ${ id }\n`, e )
     }
   } )
 }
