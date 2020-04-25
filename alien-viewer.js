@@ -83,7 +83,7 @@ function makeAlien ( { dna } ) {
       yMargin2: game.world.height * -0.09,
       fromYOffset: game.world.height * 0.19,
       color: 0xffffff,
-    }
+    },
   } )
 
   gsap.delayedCall( 1, () => alien.toggleTraits() )

@@ -159,12 +159,31 @@ export default class Alien extends Phaser.Group {
       eye: this.eyes,
     }
 
+    this.fixDNAPropertyTypes( { dna } )
+
+    if ( dna === undefined ) {
     this.randomize()
+    } else {
     this.make( dna )
+    }
 
     this.makeTraits( this.traitProperties )
 
     if ( onClick !== undefined ) this.setupClick( { enabled, pixelPerfectAlpha, pixelPerfectClick, pixelPerfectOver, useHandCursor, onClick } )
+  }
+
+
+  fixDNAPropertyTypes ( opt ) {
+    const { dna, numberTypes } = _.defaults( opt || {}, {
+      numberTypes: [ 'headID', 'bodyID', 'color', 'index', 'x', 'y' ]
+    } )
+
+    const toNumber = ( value, key, obj ) => {
+      if ( _.includes( numberTypes, key ) ) obj[ key ] = Number( value )
+    }
+
+    _.forOwn( dna, toNumber )
+    _.forEach( dna.eyes, ( eye ) => _.forOwn( eye, toNumber ) )
   }
 
 
