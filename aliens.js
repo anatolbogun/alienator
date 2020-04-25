@@ -30,7 +30,7 @@ function getUserLocale () {
 
 function utcToUserTime () {
   // only check time tags with the utc class
-  for ( const timeElement of $( `.alien time.utc` ) ) {
+  for ( const timeElement of $( `time.utc` ) ) {
     // remove the utc class so that when this function is called in the future
     // already converted times won't be converted again
     timeElement.outerHTML = `<time>${ utcToUserTimeStamp( timeElement.innerHTML ) }</time>`
@@ -62,7 +62,8 @@ function utcToUserTimeStamp ( utcTimeStamp, locale = userLocale, showTime = fals
   const [ year, month, date ] = dateString.split( '-' )
   const [ hours, minutes ] = timeString.split( ':' )
 
-  const inputDate = new Date( year, month, date, hours, minutes )
+  // for new Date() the month is in the range 0 to 11
+  const inputDate = new Date( year, month - 1, date, hours, minutes )
   const inputTimeStamp = inputDate.getTime()
   const localTimeStamp = inputTimeStamp + diffTimeStamp
   const outputDate = new Date( localTimeStamp )
