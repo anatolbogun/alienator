@@ -5,11 +5,11 @@ const game = new Phaser.Game( {
   width: 1200,
   height: 1200,
   renderer: Phaser.WEBGL,
+  parent: 'viewer',
   transparent: true,
   antialias: true,
   scaleMode: Phaser.ScaleManager.SHOW_ALL,
   preserveDrawingBuffer: true,
-  parent: 'viewer',
   state: {
     preload,
     create,
@@ -27,7 +27,8 @@ function preload () {
 
 function create () {
   game.input.maxPointers = 1
-  game.scale.parentIsWindow = true
+  // game.scale.parentIsWindow = true
+  console.log( game.scale.boundingParent )
 
   console.log( 'GAME', game )
 

@@ -1,4 +1,4 @@
-{include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)"}
+{include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="aliens.css"}
 
 <header>
   <img class="logo" src="assets/logo-white.png" />

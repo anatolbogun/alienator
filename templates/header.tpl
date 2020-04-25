@@ -16,7 +16,7 @@
     <script type="module" src="alien-viewer.js"></script>
   {/if}
 
-  <link rel="stylesheet" href="aliens.css">
+  <link rel="stylesheet" href="{$cssFile}">
   <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
 
   <!-- favicons -->

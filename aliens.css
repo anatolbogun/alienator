@@ -8,7 +8,6 @@
 * {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   outline: 0;
-  /* border: 1px solid red; */
 }
 
 body {
@@ -31,15 +30,7 @@ header {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  padding: 0.5em 0px 2em 0px;
-}
-
-header.right {
-  justify-content: flex-end;
-}
-
-header.right a {
-  display: inline;
+  padding: 1.5em 0px 0px 0px;
 }
 
 header h1 {
@@ -48,6 +39,7 @@ header h1 {
   padding: 0px;
   font-size: 2.5em;
   white-space: nowrap;
+  padding-bottom: 1.3em;
 }
 
 header p {
@@ -61,17 +53,10 @@ header p {
 }
 
 img.logo {
-  width: 20%;
-  min-width: 12em;
+  width: 10%;
+  min-width: 8em;
   height: auto;
-  margin-bottom: 2em;
-}
-
-img.logo.notext {
-  width: 20%;
-  min-width: 6em;
-  height: auto;
-  margin-bottom: 0px;
+  margin-bottom: 1em;
 }
 
 .info {
@@ -137,45 +122,4 @@ img.logo.notext {
 
 .alien .info {
   opacity: 0;
-}
-
-/* alien profile page */
-
-#alien {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.alien.profile {
-  width: 85vmin;
-  height: 85vmin + 0.1em;
-}
-
-.alien.profile > a {
-  width: 100%;
-  height: auto;
-}
-
-.alien.profile img {
-  width: 100%;
-  height: auto;
-}
-
-.avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2em 0px;
-}
-
-.avatar img {
-  width: 20%;
-  height: auto;
-}
-
-h1.name {
-  text-align: center;
 }
