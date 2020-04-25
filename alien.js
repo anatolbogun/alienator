@@ -1033,7 +1033,7 @@ export default class Alien extends Phaser.Group {
     this.disable()
     if ( this.head !== undefined ) this.head.input.enabled = true
     if ( this.body !== undefined ) this.body.input.enabled = true
-    if ( this.combination !== undefined ) this.combination.image.input.enabled = true
+    if ( this.combination !== undefined ) this.combination.input.enabled = true
     this.enabled = true
   }
 
