@@ -17,10 +17,10 @@
     <div id="viewer"></div>
   </main>
   <div class="info">
-    <h1 class="name">Alien {$alien.id}</h1>
+    <h1 class="name"><span class="localized">Alien</span> {$alien.name}</h1>
     <p class="hidden">{$alien.trait1}</p>
     <p class="hidden">{$alien.trait2}</p>
-    <p><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></p>
+    <p class="fadein"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></p>
   </div>
 
 {/if}

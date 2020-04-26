@@ -5,7 +5,8 @@
       <img class="traits lazy" data-src="{$alien.id}traits.png" src="assets/blank.png" />
     </div>
   </a>
+  <p class="info"><a href="/aliens/{$alien.id}/">{$alien.name}</a></p>
   <p class="hidden">{$alien.trait1}</p>
   <p class="hidden">{$alien.trait2}</p>
-  <p class="info"><a href="/aliens/{$alien.id}/"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></a></p>
+  <p class="hidden"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></p>
 </section>

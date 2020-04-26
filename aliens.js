@@ -3,6 +3,7 @@ const userLocale = getUserLocale()
 const dictionary = {
   'ja-JP': {
     Joined: '入星',
+    Alien: '異星人',
   },
   'de-DE': {
     Joined: 'Gelandet am',
@@ -36,7 +37,7 @@ function utcToUserTime () {
     timeElement.outerHTML = `<time>${ utcToUserTimeStamp( timeElement.innerHTML ) }</time>`
   }
 
-  TweenMax.to( $( `.alien .info` ), { duration: 0.5, css: { opacity: 1 } } )
+  TweenMax.to( $( `.fadein` ), { duration: 0.5, css: { opacity: 1 } } )
 }
 
 

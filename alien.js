@@ -158,6 +158,7 @@ export default class Alien extends Phaser.Group {
     }
 
     this.dna = _.defaults( dna || {}, {
+      name: '',
       trait1: '',
       trait2: '',
     } )

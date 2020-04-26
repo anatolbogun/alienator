@@ -53,6 +53,7 @@ const useUrlHash = false
 const useLocalStorage = true
 const imageExportWidth = 800
 const imageExportHeight = 800
+const nameMaxLength = 25
 const traitMaxLength = 50
 const aliensURL = './aliens/'
 
@@ -99,8 +100,9 @@ function create () {
   makeEyesDraggable()
 
   ui = makeUI( { parent: game.world, previousNextButtonOffsetY: alienOffsetY } )
-  ui.traits.textFields[ 0 ].text = alien.dna.trait1
-  ui.traits.textFields[ 1 ].text = alien.dna.trait2
+  ui.traits.textFields[ 0 ].text = alien.dna.name
+  ui.traits.textFields[ 1 ].text = alien.dna.trait1
+  ui.traits.textFields[ 2 ].text = alien.dna.trait2
 
   game.world.addChild( alien )
 
@@ -161,7 +163,7 @@ function handleDNAChange ( opt ) {
 function dnaToLocalStorage () {
   if ( alien === undefined || alien.dna === undefined ) return
 
-  const exportDNA = _.pick( alien.dna, [ 'bodyID', 'headID', 'color', 'trait1', 'trait2' ] )
+  const exportDNA = _.pick( alien.dna, [ 'bodyID', 'headID', 'color', 'name', 'trait1', 'trait2' ] )
   exportDNA.eyes = _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) )
   localStorage.setItem( 'dna', JSON.stringify( exportDNA ) )
 }
@@ -606,35 +608,35 @@ function makeTraits ( opt ) {
     boundsAlignV: 'top',
   }
 
-  game.add.text( textMargin, textMargin, 'Please tell us two things that alienate you.', textStyle, group )
-  game.add.text( textMargin, textMargin + 100, '1.', textStyle, group )
+  game.add.text( textMargin, textMargin, 'What is your alien name?', textStyle, group )
 
   const textField1 = new TextField( {
     game,
     parent: group,
     x: textMargin,
-    y: textMargin + 180,
+    y: textMargin + 80,
     width: textWidth,
-    height: 240,
-    multiLine: true,
-    maxLength: traitMaxLength,
+    height: 100,
+    multiLine: false,
+    maxLength: nameMaxLength,
     edgeRadius: 30,
     borderThickness: 5,
     hidden: true,
     onChange: handleTextFieldChange,
   } )
 
-  textField1.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 100 } )
+  textField1.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin, defaultText: 'too long' } )
 
-  game.add.text( textMargin, textMargin + 465, '2.', textStyle, group )
+  game.add.text( textMargin, textMargin + 210, 'Please tell us two things that alienate you.', textStyle, group )
+  game.add.text( textMargin, textMargin + 290, '1.', textStyle, group )
 
   const textField2 = new TextField( {
     game,
     parent: group,
     x: textMargin,
-    y: textMargin + 540,
+    y: textMargin + 360,
     width: textWidth,
-    height: 240,
+    height: 170,
     multiLine: true,
     maxLength: traitMaxLength,
     edgeRadius: 30,
@@ -643,9 +645,28 @@ function makeTraits ( opt ) {
     onChange: handleTextFieldChange,
   } )
 
-  textField2.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 465 } )
+  textField2.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 290 } )
 
-  group.textFields = [ textField1, textField2 ]
+  game.add.text( textMargin, textMargin + 555, '2.', textStyle, group )
+
+  const textField3 = new TextField( {
+    game,
+    parent: group,
+    x: textMargin,
+    y: textMargin + 620,
+    width: textWidth,
+    height: 170,
+    multiLine: true,
+    maxLength: traitMaxLength,
+    edgeRadius: 30,
+    borderThickness: 5,
+    hidden: true,
+    onChange: handleTextFieldChange,
+  } )
+
+  textField3.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 555 } )
+
+  group.textFields = [ textField1, textField2, textField3 ]
 
   group.showPos = { x, y }
   group.hidePos1 = { x, y: game.world.height + panel.height / 2 }
@@ -659,7 +680,7 @@ function makeTraits ( opt ) {
 
 
 function makeTextWarning ( opt ) {
-  const { parent, x, y, textStyle } = _.defaults( opt || {}, {
+  const { parent, defaultText, x, y, textStyle } = _.defaults( opt || {}, {
     x: 0,
     y: 0,
     textStyle: {
@@ -673,6 +694,7 @@ function makeTextWarning ( opt ) {
   } )
 
   const warning = game.add.text( x, y, '', textStyle, parent )
+  warning.defaultText = defaultText
   warning.setTextBounds( 0, 0, 0, 0 )
   warning.alpha = 0
   warning.scale.set( 0 )
@@ -701,8 +723,8 @@ function makeTextWarning ( opt ) {
 
 
 function handleTextFieldChange( textField ) {
-  if ( textField.text.length > traitMaxLength - 1 ) {
-    textField.warning.show( { text: `max ${ traitMaxLength } characters` } )
+  if ( textField.text.length > textField.maxLength - 1 ) {
+    textField.warning.show( { text: textField.warning.defaultText || `max ${ textField.maxLength } characters` } )
   } else {
     textField.warning.hide()
   }
@@ -714,7 +736,7 @@ function validateTextFields () {
 
   for ( const textField of ui.traits.textFields ) {
     if ( textField.text.length === 0 || !textField.text.match( /\S/gm ) ) {
-      textField.warning.show( { text: `enter text please` } )
+      textField.warning.show( { text: `enter text` } )
       valid = false
     }
   }
@@ -734,6 +756,7 @@ function showTraits () {
   ui.okButton.inputEnabled = false
   ui.traits.textFields[ 0 ].show().setFadeOutText()
   ui.traits.textFields[ 1 ].show().setFadeOutText()
+  ui.traits.textFields[ 2 ].show().setFadeOutText()
 
   new TimelineMax()
     .set( ui.traits, { visible: true } )
@@ -741,6 +764,7 @@ function showTraits () {
     .to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
     .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
     .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.traits.textFields[ 2 ].setFadeInText(), null, 0.75 )
     // .call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 ) // maybe it's better to disable this auto textfield focus so that users have more chance to notice the submit buttons which will be overlaid by a soft keyboard
     .call( () => ui.cancelButton.inputEnabled = true )
     .call( () => ui.okButton.inputEnabled = true )
@@ -850,8 +874,9 @@ function showResult () {
   currentScreen = 'result'
 
   // trait max length is already set for the text field, but just in case
-  alien.dna.trait1 = ui.traits.textFields[ 0 ].text.substr( 0, traitMaxLength )
-  alien.dna.trait2 = ui.traits.textFields[ 1 ].text.substr( 0, traitMaxLength )
+  alien.dna.name = ui.traits.textFields[ 0 ].text.substr( 0, traitMaxLength )
+  alien.dna.trait1 = ui.traits.textFields[ 1 ].text.substr( 0, traitMaxLength )
+  alien.dna.trait2 = ui.traits.textFields[ 2 ].text.substr( 0, traitMaxLength )
 
   if ( useLocalStorage ) dnaToLocalStorage()
 
@@ -960,6 +985,7 @@ function hideResult () {
     .to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0 )
     .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
     .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
+    .call( () => ui.traits.textFields[ 2 ].setFadeInText(), null, 0.75 )
     .call( () => ui.cancelButton.inputEnabled = true )
     .call( () => ui.okButton.inputEnabled = true )
 }
@@ -1034,6 +1060,7 @@ function save ( { images } ) {
     body: alien.dna.bodyID,
     head: alien.dna.headID,
     color: alien.dna.color,
+    name: alien.dna.name,
     trait1: alien.dna.trait1,
     trait2: alien.dna.trait2,
     eyes: JSON.stringify( _.map( alien.dna.eyes, ( eye ) => _.pick( eye, [ 'index', 'x', 'y' ] ) ) ),

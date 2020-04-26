@@ -58,14 +58,21 @@ img.logo {
 
 .info h1, p {
   margin: 0px;
+  white-space: nowrap;
 }
 
 .info h1 {
   font-size: 3em;
+  font-size: 6vw;
 }
 
 .info p {
-  font-size: 1.25em;
+  font-size: 1.5em;
+  font-size: 3vw;
+}
+
+.fadein {
+  opacity: 0;
 }
 
 #viewer {

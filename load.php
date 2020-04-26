@@ -36,6 +36,7 @@ if ( $statement -> rowCount() ) {
     'headID' => $alien[ 'head' ],
     'eyes' => $eyes,
     'color' => $alien[ 'color' ],
+    'name' => $alien[ 'name' ],
     'trait1' => $alien[ 'trait1' ],
     'trait2' => $alien[ 'trait2' ],
   ];

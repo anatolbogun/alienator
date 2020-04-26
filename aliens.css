@@ -120,6 +120,6 @@ img.logo {
   display: none;
 }
 
-.alien .info {
+.fadein {
   opacity: 0;
 }
