@@ -64,11 +64,13 @@ img.logo {
 .info h1 {
   font-size: 3em;
   font-size: 6vw;
+  font-size: min(6vw, 3em)
 }
 
 .info p {
   font-size: 1.5em;
   font-size: 3vw;
+  font-size: min(3vw, 1.5em)
 }
 
 .fadein {
