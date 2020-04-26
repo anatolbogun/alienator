@@ -1,4 +1,4 @@
-{include file="header.tpl" title="Alien {$alien.id}" cssFile="alien.css" showViewer=true}
+{include file="header.tpl" title="Alien {$alien.name}" cssFile="alien.css" showViewer=true}
 
 <header>
   <a href="aliens/"><img class="logo" src="assets/logo.png" /></a>
