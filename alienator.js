@@ -5,6 +5,7 @@ import TextField from './text-field.js'
 // TO DO:
 // - maybe also display aliens moving across the screen
 // - One more page for the beginning (I will send you the design)
+// - add analytics
 
 // NICE TO HAVE:
 // - Instagram API to automatically upload new aliens? (probably not possible, the API
@@ -12,17 +13,6 @@ import TextField from './text-field.js'
 // - save a unique ID (SHA?) with each alien so that it can be edited; that's not really
 //   hard, just load the alien dna from that id and run an update query instead of creating
 //   a new entry
-// - for the random generator it'd be nice to have a way to automatically place eyes,
-//   ideally with a random placement on the shape with validation as user drag and drop;
-//   maybe a while loop that picks random positions within the body part bounds and places
-//   the eye as long as it does not collide with other eyes; but limit the number of loops
-//   because it's possible that there's just no space left, and I don't think there's a
-//   simple way to check that; this is really low priority though, it's probably better to
-//   leave some creativity to the user, so it really would be more of a coding challenge.
-// - could try Phaser.Physics collisions for eyes instead of the hit test, but that's
-//   probably not easy and could take some time, however, it could be better for performance
-//   as the hit test is quite expensive, especially noticeable on lower spec devices;
-//   this is also really low priority, it seems to work pretty ok right now.
 
 
 const game = new Phaser.Game( {
@@ -1040,12 +1030,12 @@ function showComplete () {
 }
 
 
-function goToAliens () {
+function goToAlien ( { id } ) {
   const tl = new TimelineMax( { paused: true } )
   .to( planet.text, { duration: 0.5, alpha: 0 } )
   .to( planet, { duration: 0.5, alpha: 0 }, 0.5 )
   .to( planet.scale, { duration: 0.5, x: 0, y: 0 }, 0.5 )
-  .call( () => window.location.href = aliensURL )
+  .call( () => window.location.href = `${ aliensURL }${ id }/` )
 
   if ( completeTimeline.progress() === 1 ) {
     tl.play()
@@ -1081,8 +1071,7 @@ function save ( { images } ) {
     console.log( 'SAVING COMPLETE, SERVER RESPONSE:', responseObj )
 
     if ( responseObj.success ) {
-      // alien.logDNA()
-      goToAliens()
+      goToAlien( { id: responseObj.alienID } )
     } else {
       notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be saved.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
     }
