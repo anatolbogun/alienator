@@ -53,8 +53,7 @@ header p {
 }
 
 img.logo {
-  width: 10%;
-  min-width: 8em;
+  width: 8.75em;
   height: auto;
   margin-bottom: 1em;
 }

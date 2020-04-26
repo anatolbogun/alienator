@@ -39,10 +39,8 @@ header a {
 }
 
 img.logo {
-  min-width: 4em;
-  max-width: 6em;
-  min-height: 4em;
-  max-height: 6em;
+  width: 6em;
+  height: auto;
 }
 
 #alien {
@@ -51,10 +49,6 @@ img.logo {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-h1.name {
-
 }
 
 .info {
@@ -67,5 +61,6 @@ h1.name {
 }
 
 #viewer {
-  width: 78vh;
+  max-width: 75vh;
+  width: 100%;
 }
