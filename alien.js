@@ -100,7 +100,6 @@ export default class Alien extends Phaser.Group {
       y: 0,
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
-      dna: {},
       groundY: 0.6,
       logDNAChange: false,
       textStyle: _.defaults( opt.textStyle || {}, {
@@ -144,7 +143,6 @@ export default class Alien extends Phaser.Group {
     this.logDNAChange = logDNAChange
     this.traitProperties = traitProperties
     this.traitsVisible = false
-    this.dna = { trait1: dna.trait1 || '', trait2: dna.trait2 || '' }
     this.onDNAChange = onDNAChange
     this.enabled = false
 
@@ -159,12 +157,17 @@ export default class Alien extends Phaser.Group {
       eye: this.eyes,
     }
 
+    this.dna = _.defaults( dna || {}, {
+      trait1: '',
+      trait2: '',
+    } )
+
     this.fixDNAPropertyTypes( { dna } )
 
     if ( dna === undefined ) {
-    this.randomize()
+      this.randomize()
     } else {
-    this.make( dna )
+      this.make( dna )
     }
 
     this.makeTraits( this.traitProperties )
@@ -177,6 +180,8 @@ export default class Alien extends Phaser.Group {
     const { dna, numberTypes } = _.defaults( opt || {}, {
       numberTypes: [ 'headID', 'bodyID', 'color', 'index', 'x', 'y' ]
     } )
+
+    if ( dna === undefined ) return
 
     const toNumber = ( value, key, obj ) => {
       if ( _.includes( numberTypes, key ) ) obj[ key ] = Number( value )
@@ -234,8 +239,6 @@ export default class Alien extends Phaser.Group {
     const bodyID = this.sampleArrayIndex( this.bodies )
     const headID = this.sampleArrayIndex( this.heads )
     const color = this.getRandomColor()
-
-    // this.makeRandomEyes()
 
     this.make( { bodyID, headID, color } )
   }
