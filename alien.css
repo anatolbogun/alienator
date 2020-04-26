@@ -60,7 +60,15 @@ img.logo {
   margin: 0px;
 }
 
+.info h1 {
+  font-size: 3em;
+}
+
+.info p {
+  font-size: 1.25em;
+}
+
 #viewer {
-  max-width: 75vh;
+  max-width: 70vh;
   width: 100%;
 }
