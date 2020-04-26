@@ -107,6 +107,17 @@ function create () {
   notice = makeNotice( { parent: game.world, x: alien.x, y: alien.y, width: game.world.width * 0.8, height: game.world.height * 0.2 } )
 
   game.scale.onResize = handleResize
+
+  game.input.keyboard.addKey( Phaser.KeyCode.ENTER ).onDown.add( handleKeyDownEnter )
+}
+
+
+function handleKeyDownEnter () {
+  if ( currentScreen !== 'traits' ) return
+
+  for ( const textField of ui.traits.textFields ) {
+    textField.blur()
+  }
 }
 
 
@@ -730,7 +741,7 @@ function showTraits () {
     .to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
     .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
     .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
-    .call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 )
+    // .call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 ) // maybe it's better to disable this auto textfield focus so that users have more chance to notice the submit buttons which will be overlaid by a soft keyboard
     .call( () => ui.cancelButton.inputEnabled = true )
     .call( () => ui.okButton.inputEnabled = true )
 }

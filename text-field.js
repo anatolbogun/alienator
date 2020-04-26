@@ -1,8 +1,11 @@
 export default class TextField extends Phaser.Group {
 
+  // htmlAttributeType: can be any HTML input type such as 'submit', 'search', password, etc. which may change the soft keyboard layout if supported
+  // htmlAttributeInputMode: smilar to type but often used in combination with type, e.g. type 'text', inputmode 'decimal' to show the numeric keyboard
+
   constructor ( opt ) {
     const {
-      game, id, parent, text, x, y, width, height, padding, multiLine, maxLength,
+      game, id, htmlAttributeType, htmlAttributeInputMode, parent, text, x, y, width, height, padding, multiLine, maxLength,
       borderThickness, borderColor, borderColorFocus, borderAlpha, borderAlphaFocus, fillColor, fillColorFocus, fillAlpha, fillAlphaFocus, edgeRadius,
       fontFamily, fontSize, fontColor, textAlign,
       parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, hidden, onChange
@@ -61,7 +64,7 @@ export default class TextField extends Phaser.Group {
     this.fontSize = fontSize
     this.previousText = text
 
-    this.htmlText = this.makeHtmlText( { parentDom, cssStyle, cssStyleFocus, cssId, cssClass, fontFamily, fontColor, textAlign, multiLine } )
+    this.htmlText = this.makeHtmlText( { parentDom, cssStyle, cssStyleFocus, cssId, cssClass, fontFamily, fontColor, textAlign, multiLine, htmlAttributeType, htmlAttributeInputMode } )
     this.text = text
     this.cssBorder = this.htmlText.style.border
 
@@ -75,14 +78,16 @@ export default class TextField extends Phaser.Group {
 
 
   makeHtmlText ( opt ) {
-    const { parentDom, cssStyle, cssClass, fontFamily, fontColor, textAlign, multiLine } = opt
+    const { parentDom, cssStyle, cssClass, fontFamily, fontColor, textAlign, multiLine, htmlAttributeType, htmlAttributeInputMode } = opt
 
     const cssClassParam = cssClass === undefined ? '' : ` class="${ cssClass }"`
     const cssStyleParam = cssStyle === undefined ? '' : ` style="${ cssStyle }"`
     const tag = multiLine ? 'textarea' : 'input'
     if ( this.id === undefined ) this.id = `textField${ $( tag ).length }`
+    const type = htmlAttributeType === undefined ? '' : ` type="${ htmlAttributeType }"`
+    const inputMode = htmlAttributeInputMode === undefined ? '' : ` inputmode="${ htmlAttributeInputMode }"`
     const maxLength = this.maxLength === undefined ? '' : ` maxLength="${ this.maxLength }" `
-    const htmlText = $( `<${ tag } id="${ this.id }"${ cssClassParam }${ cssStyleParam }${ maxLength }>` ).get( 0 )
+    const htmlText = $( `<${ tag } id="${ this.id }"${ type }${ inputMode }${ cssClassParam }${ cssStyleParam }${ maxLength }>` ).get( 0 )
     if ( parentDom !== undefined ) $( parentDom ).append( htmlText )
     htmlText.style.fontFamily = fontFamily
     htmlText.style.color = fontColor
