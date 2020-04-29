@@ -1102,7 +1102,7 @@ function takeScreenshot ( opt ) {
     tempCanvas.height = outputHeight
     context.drawImage( screenshot, x, y, width, height, 0, 0, outputWidth, outputHeight )
     // for some reason the .replace() on the next line has to happen right after .toDataURL() or it won't take any effect; maybe because it's not instant to create the dataURL?
-    const dataURL = mimeType == undefined ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace( 'image/png', mimeType )
+    const dataURL = mimeType === undefined ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace( 'image/png', mimeType )
     if ( onComplete !== undefined ) onComplete( dataURL )
   }
 
