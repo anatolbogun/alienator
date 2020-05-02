@@ -24,7 +24,7 @@
 <footer>
   <a href="aliens/"><img class="logo" src="assets/logo.png" /></a>
   <div class="social">
-    <a class="twitter" href="https://twitter.com/intent/tweet?text=Alien%20{$alien.name|escape:'url'}%20%23weareallaliens%20{$url|escape:'url'}%20{$baseUrl|escape:'url'}user-images%2F{$alien.id}.png" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
+    <a class="twitter" href="https://twitter.com/intent/tweet?text=Alien%20{$alien.name|escape:'url'}%20%23weareallaliens%20{$url|escape:'url'}%20{$baseUrl|escape:'url'}aliens%2F{$alien.id}.png" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
     <a class="facebook" href="https://www.facebook.com/share.php?u={$url|escape:'url'}"><span>share on Facebook</span></a>
   </div>
 </footer>

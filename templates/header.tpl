@@ -16,7 +16,7 @@
     <script type="text/javascript" src="tiny-segmenter.js" charset="UTF-8"></script>
     <script type="module" src="alien-viewer.js"></script>
     <meta property="og:image:type" content="image/png">
-		<meta property="og:image" content="/user-images/{$alien.id}avatar.png" />
+		<meta property="og:image" content="/aliens/{$alien.id}avatar.png" />
   {/if}
 
   <link rel="stylesheet" href="{$cssFile}">

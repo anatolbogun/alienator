@@ -1,16 +1,12 @@
 {include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="aliens.css"}
 
 <header>
-  <a href="/"><img class="logo" src="assets/logo-white.png" /></a>
+  <a href="aliens/"><img class="logo" src="assets/logo-white.png" /></a>
 </header>
 
 <main>
   <div id="aliens">
-
-  {foreach $aliens as $alien}
-  {include file="alien-section.tpl" alien=$alien}
-  {/foreach}
-
+    This page is coming soooooon.
   </div>
 </main>
 

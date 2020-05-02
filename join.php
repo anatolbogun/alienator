@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>Alienator</title>
+    <title>Alienator</title>
+    <base href="/" />
     <script type="text/javascript" src="phaser.min.js"></script>
     <script type="text/javascript" src="phaser-extensions.js"></script>
     <script type="text/javascript" src="lodash.min.js"></script>

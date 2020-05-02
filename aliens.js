@@ -95,7 +95,7 @@ function lazyLoadImages ( opt ) {
     scrollDirection: 'vertical',
     effect: 'fadeIn',
     effectTime: 0, // the timing of this isn't good, so we use our own fade in on elements load below
-    imageBase: 'user-images/',
+    imageBase: '/aliens/',
     onError: ( elements ) => console.log( 'Error loading', elements[ 0 ].src ),
     afterLoad: ( elements ) => {
       if ( logLoaded ) console.log( 'Loaded', elements[ 0 ].src )

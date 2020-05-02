@@ -5,7 +5,7 @@
 
 RewriteEngine On
 
-RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^aliens/([0-9]+)/?$ alien.php?id=$1 [NC,L]
 RewriteRule ^(.*)/$ /$1.php [NC,L]
 RewriteRule ^([^.]+)$ $1.php [NC,L]
-RewriteRule ^aliens/([^/d]+)/?$ alien.php?id=$1 [QSA]
