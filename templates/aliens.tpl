@@ -17,7 +17,7 @@
 
 <footer>
   <div class="navi">
-    <a class="home tooltip" href="/"><span>home<span></a>
+    <a class="home tooltip" href="/"><span>home</span></a>
   </div>
   <div class="social">
     <a class="twitter tooltip" href="https://twitter.com/intent/tweet?text={$url|escape:'url'}" data-text="" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
