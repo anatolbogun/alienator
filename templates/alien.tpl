@@ -15,7 +15,6 @@
     <div class="info">
       <p class="hidden">{$alien.trait1}</p>
       <p class="hidden">{$alien.trait2}</p>
-      <img class="hidden" src="user-images/{$alien.id}avatar.png" />
       <p class="fadein"><span class="localized">Joined</span> <time class="utc">{$alien.utcTimeStamp}</time></p>
     </div>
   </main>
