@@ -2,7 +2,6 @@
 
 <header>
   <img class="logo" src="assets/logo-white.png" />
-  <h1>We Are All Aliens</h1>
 </header>
 
 <main>
@@ -14,5 +13,12 @@
 
   </div>
 </main>
+
+<footer>
+  <div class="social">
+    <a class="twitter" href="https://twitter.com/intent/tweet?text={$url|escape:'url'}" data-text="" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
+    <a class="facebook" href="https://www.facebook.com/share.php?u={$url|escape:'url'}"><span>share on Facebook</span></a>
+  </div>
+</footer>
 
 {include file="footer.tpl"}

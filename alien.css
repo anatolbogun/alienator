@@ -24,14 +24,16 @@ a {
   color: #ffffff;
 }
 
-header {
+footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0.5em;
   padding-top: 0.5em;
 }
 
-header a {
+footer a {
   display: flex;
-  justify-content: flex-end;
-  padding: 1em 1em 0px 0px;
+  justify-content: center;
 }
 
 .hidden {
@@ -39,8 +41,8 @@ header a {
 }
 
 img.logo {
-  width: 6em;
-  height: 6em;
+  width: 4em;
+  height: 4em;
 }
 
 #alien {
@@ -51,20 +53,22 @@ img.logo {
   align-items: center;
 }
 
+#alien .name {
+  font-size: 3em;
+  font-size: 8vw;
+  font-size: min(8vw, 3em);
+  margin: 0.5em 0px 0px 0px;
+  text-align: center;
+}
+
 .info {
   text-align: center;
   padding-top: 1em;
 }
 
-.info h1, p {
+.info p {
   margin: 0px;
   white-space: nowrap;
-}
-
-.info h1 {
-  font-size: 3em;
-  font-size: 6vw;
-  font-size: min(6vw, 3em)
 }
 
 .info p {
@@ -80,4 +84,50 @@ img.logo {
 #viewer {
   max-width: 70vh;
   width: 100%;
+}
+
+.social {
+  position: fixed;
+  bottom: 0.5em;
+  right: 0.5em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.social a {
+  width: 2em;
+  height: 2em;
+  background-size: cover;
+  opacity: 0.5;
+  margin: 0px 0.125em;
+}
+
+.social a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.social a span {
+  display: none;
+}
+
+.social a:hover span {
+  display: inline-block;
+  position: absolute;
+  top: -2.5em;
+  right: 0%;
+  white-space: nowrap;
+  background-color: #7f7f7f;
+  padding: 0.5em;
+  border-radius: 0.5em;
+}
+
+.social .twitter {
+  background-image: url('/assets/twitter.png');
+}
+
+.social .facebook {
+  background-image: url('/assets/facebook.png');
 }
