@@ -27,6 +27,7 @@ if ( isset( $_SERVER[ 'HTTPS' ] ) && $_SERVER[ 'HTTPS' ] == 'on' ) {
 } else {
     $protocol = 'http';
 }
+
 $port = ( $_SERVER[ 'SERVER_PORT' ] == '80' ) ? '' : ( ':'.$_SERVER[ 'SERVER_PORT' ] );
 $baseUrl = $protocol.'://'.$_SERVER[ 'SERVER_NAME' ].$port;
 $url =  $baseUrl.$_SERVER[ 'REQUEST_URI' ];
