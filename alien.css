@@ -31,13 +31,19 @@ footer {
   padding-top: 0.5em;
 }
 
-footer a {
+footer {
   display: flex;
   justify-content: center;
 }
 
 .hidden {
   display: none;
+}
+
+a.logo:hover {
+  border-radius: 2em;
+  background-color: rgba(255, 255, 255, .25);
+  box-shadow: 0em 0em 1em 1em rgba(255, 255, 255, .25);
 }
 
 img.logo {
@@ -86,17 +92,28 @@ img.logo {
   width: 100%;
 }
 
-.social {
+.social, .navi {
   position: fixed;
   bottom: 0.5em;
-  right: 0.5em;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
 }
 
-.social a {
+.navi {
+  left: 0.5em;
+}
+
+.social {
+  right: 0.5em;
+}
+
+.navi .profiles {
+  background-image: url('/assets/profiles.png');
+}
+
+.social a, .navi a {
   width: 2em;
   height: 2em;
   background-size: cover;
@@ -104,24 +121,31 @@ img.logo {
   margin: 0px 0.125em;
 }
 
-.social a:hover {
+.social a:hover, .navi a:hover {
   opacity: 1;
   text-decoration: none;
 }
 
-.social a span {
+.tooltip span {
   display: none;
 }
 
-.social a:hover span {
+.tooltip:hover span {
   display: inline-block;
   position: absolute;
   top: -2.5em;
-  right: 0%;
   white-space: nowrap;
   background-color: #7f7f7f;
   padding: 0.5em;
   border-radius: 0.5em;
+}
+
+.navi .tooltip:hover span {
+  left: 0px;
+}
+
+.social .tooltip:hover span {
+  right: 0px;
 }
 
 .social .twitter {

@@ -28,9 +28,10 @@ a {
 header {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1.5em 0px 0px 0px;
+  padding: 1.5em 0px 1.5em 0px;
 }
 
 .hidden {
@@ -40,7 +41,25 @@ header {
 img.logo {
   width: 6em;
   height: auto;
-  margin-bottom: 1em;
+}
+
+.join {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1em;
+  white-space: nowrap;
+  color: #000000;
+  background-color: #ffffff;
+  width: 8em;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+
+.join:hover {
+  box-shadow: 0em 0em 2em 2em rgba(255, 255, 255, .25);
 }
 
 .info {
@@ -109,17 +128,32 @@ img.logo {
   opacity: 0;
 }
 
-.social {
+.social, .navi {
   position: fixed;
   bottom: 0.5em;
-  right: 0.5em;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
 }
 
-.social a {
+.navi {
+  left: 0.5em;
+}
+
+.social {
+  right: 0.5em;
+}
+
+.navi .home {
+  background-image: url('/assets/home.png');
+}
+
+.navi .profiles {
+  background-image: url('/assets/profiles.png');
+}
+
+.social a, .navi a {
   width: 2em;
   height: 2em;
   background-size: cover;
@@ -127,24 +161,31 @@ img.logo {
   margin: 0px 0.125em;
 }
 
-.social a:hover {
+.social a:hover, .navi a:hover {
   opacity: 1;
   text-decoration: none;
 }
 
-.social a span {
+.tooltip span {
   display: none;
 }
 
-.social a:hover span {
+.tooltip:hover span {
   display: inline-block;
   position: absolute;
   top: -2.5em;
-  right: 0%;
   white-space: nowrap;
   background-color: #7f7f7f;
   padding: 0.5em;
   border-radius: 0.5em;
+}
+
+.navi .tooltip:hover span {
+  left: 0px;
+}
+
+.social .tooltip:hover span {
+  right: 0px;
 }
 
 .social .twitter {

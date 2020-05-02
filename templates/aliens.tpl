@@ -1,7 +1,8 @@
 {include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="aliens.css"}
 
 <header>
-  <a href="/"><img class="logo" src="assets/logo-white.png" /></a>
+  <img class="logo" src="assets/logo-white.png" />
+  <a class="join" href="join/">Join</a>
 </header>
 
 <main>
@@ -15,9 +16,12 @@
 </main>
 
 <footer>
+  <div class="navi">
+    <a class="home tooltip" href="/"><span>home<span></a>
+  </div>
   <div class="social">
-    <a class="twitter" href="https://twitter.com/intent/tweet?text={$url|escape:'url'}" data-text="" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
-    <a class="facebook" href="https://www.facebook.com/share.php?u={$url|escape:'url'}"><span>share on Facebook</span></a>
+    <a class="twitter tooltip" href="https://twitter.com/intent/tweet?text={$url|escape:'url'}" data-text="" data-hashtags="weareallaliens" data-via="soba_ba" data-related="soba_ba"><span>share on Twitter</span></a>
+    <a class="facebook tooltip" href="https://www.facebook.com/share.php?u={$url|escape:'url'}"><span>share on Facebook</span></a>
   </div>
 </footer>
 
