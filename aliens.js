@@ -3,7 +3,7 @@ const userLocale = getUserLocale()
 const dictionary = {
   'ja-JP': {
     Joined: '入星',
-    Alien: '異星人',
+    Alien: 'エイリアン',
   },
   'de-DE': {
     Joined: 'Gelandet am',
