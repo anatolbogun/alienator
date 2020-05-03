@@ -15,8 +15,21 @@
     <script type="text/javascript" src="phaser-extensions.js"></script>
     <script type="text/javascript" src="tiny-segmenter.js" charset="UTF-8"></script>
     <script type="module" src="alien-viewer.js"></script>
-    <meta property="og:image:type" content="image/png">
-		<meta property="og:image" content="/aliens/{$alien.id}avatar.png" />
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@soba_ba">
+    <meta name="twitter:title" content="Alien {$alien.name}">
+    <meta name="twitter:description" content="{$alien.trait1} {$alien.trait2}">
+    <meta name="twitter:image" content="{$baseUrl}/aliens/{$alien.id}.png">
+
+    <meta property="og:url" content="{$url}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Alien {$alien.name}">
+    <meta property="og:description" content="{$alien.trait1} {$alien.trait2}">
+		<meta property="og:image" content="{$baseUrl}/aliens/{$alien.id}facebook.png" />
+    <meta property="og:image:type" content="{$imageProperties['mime']}">
+    <meta property="og:image:width" content="{$imageProperties[0]}" />
+    <meta property="og:image:height" content="{$imageProperties[1]}" />
   {/if}
 
   <link rel="stylesheet" href="{$cssFile}">
