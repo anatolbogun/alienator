@@ -98,6 +98,7 @@ img.logo {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -109,6 +110,10 @@ img.logo {
   right: 0.5em;
 }
 
+.navi .home {
+  background-image: url('/assets/home.png');
+}
+
 .navi .profiles {
   background-image: url('/assets/profiles.png');
 }
@@ -118,7 +123,7 @@ img.logo {
   height: 2em;
   background-size: cover;
   opacity: 0.5;
-  margin: 0px 0.125em;
+  margin: 0.125em;
 }
 
 .social a:hover, .navi a:hover {
