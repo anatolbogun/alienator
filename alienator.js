@@ -563,6 +563,16 @@ function goHome () {
 function hideOath () {
   currentScreen = undefined
   ui.disableButtons()
+
+  const brightness = { value: 1 }
+  gsap.to( brightness, {
+    duration: 0.75, value: 0, onUpdate: ( () => {
+      const rgbValue = Math.round( brightness.value * 255 )
+      const color = `rgb(${ rgbValue },${ rgbValue },${ rgbValue })`
+      $( 'body' ).css( 'backgroundColor', color )
+    } )
+  } )
+
   ui.oath.timeline.reverse().then( goHome )
 }
 

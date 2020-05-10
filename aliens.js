@@ -15,6 +15,7 @@ $( document ).ready( () => {
   translate()
   utcToUserTime()
   lazyLoadImages()
+  setupJoinClick()
 } )
 
 
@@ -148,4 +149,23 @@ function toggleTraits ( id ) {
   } else {
     hideTraits( id )
   }
+}
+
+function setupJoinClick () {
+  $( 'a.join' ).click( () => {
+    const brightness = { value: 0 }
+
+    gsap.timeline()
+      .to( brightness, {
+        duration: 0.75, value: 1, onUpdate: ( () => {
+          const rgbValue = Math.round( brightness.value * 255 )
+          const color = `rgb(${ rgbValue },${ rgbValue },${ rgbValue })`
+          $( 'body' ).css( 'backgroundColor', color )
+        } )
+      } )
+      .to( $( 'header' ), { duration: 0.25, opacity: 0 }, 0.5 )
+      .call( () => window.location.href = $( 'a.join' ).attr( 'href' ) )
+
+    return false
+  } )
 }
