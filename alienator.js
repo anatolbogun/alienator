@@ -94,13 +94,18 @@ function create () {
   ui.traits.textFields[ 1 ].text = alien.dna.trait1
   ui.traits.textFields[ 2 ].text = alien.dna.trait2
 
+  ui.disableButtons()
+  ui.colorSelector.inputEnabled = false
+
+  for ( const item of _.flatten( [ alien, ui.colorSelector.sprite, ui.eyes, ui.randomButton, ui.previousHeadButton, ui.previousBodyButton, ui.nextHeadButton, ui.nextBodyButton ] ) ) {
+    item.visible = false
+  }
+
   game.world.addChild( alien )
 
   notice = makeNotice( { parent: game.world, x: alien.x, y: alien.y, width: game.world.width * 0.8, height: game.world.height * 0.2 } )
 
-  game.scale.onResize = handleResize
-
-  game.input.keyboard.addKey( Phaser.KeyCode.ENTER ).onDown.add( handleKeyDownEnter )
+  showOath()
 }
 
 
@@ -282,11 +287,15 @@ function makeUI ( opt ) {
   const randomButton = makeButton( { group, key: 'random', onClick: () => alien.randomize() } )
   randomButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, colorSelector.sprite.y )
 
-  const cancelButton = makeButton( { group, key: 'cancel', alpha: 0, inputEnabled: false, onClick: () => handleClick( { type: 'cancel' } ) } )
-  cancelButton.position.set( bounds.right - cancelButton.width / 2 - edgeMargin, colorSelector.sprite.y )
+  const cancelButton = makeButton( { group, key: 'cancel', inputEnabled: false, onClick: () => handleClick( { type: 'cancel' } ) } )
+  cancelButton.position.set( game.world.centerX - 100, colorSelector.sprite.y )
 
   const okButton = makeButton( { group, key: 'ok', onClick: () => handleClick( { type: 'ok' } ) } )
-  okButton.position.set( bounds.right - okButton.width / 2 - edgeMargin, colorSelector.sprite.y )
+  okButton.position.set( game.world.centerX + 100, colorSelector.sprite.y )
+  okButton.positions = {
+    editor: { x: bounds.right - okButton.width / 2 - edgeMargin, y: colorSelector.sprite.y },
+    default: { x: game.world.centerX + 100, y: colorSelector.sprite.y },
+  }
 
   const previousHeadButton = makeButton( { group, key: 'previousHead', frameKey: 'previous', onClick: () => alien.showPreviousItem( { type: 'head' } ) } )
   previousHeadButton.position.set( bounds.left + randomButton.width / 2 + edgeMargin, bounds.height * headYPosFactor + previousNextButtonOffsetY )
@@ -524,7 +533,7 @@ that you will be open-minded to face the unknown; and that you will be proud of 
   textObj.setTextBounds( 0, 0, textWidth, textHeight )
 
   group.showPos = { x, y }
-  group.hidePos = { x, y: -panel.height / 2 }
+  group.hidePos = { x, y: game.world.height + panel.height / 2 }
 
   group.position.set( group.hidePos.x, group.hidePos.y )
 
@@ -534,35 +543,64 @@ that you will be open-minded to face the unknown; and that you will be proud of 
 
 function showOath () {
   currentScreen = 'oath'
-  ui.disableButtons()
-  ui.colorSelector.inputEnabled = false
   ui.oath.enabled = true
 
   ui.oath.timeline = new TimelineMax()
     .set( ui.oath, { visible: true } )
-    .staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
-    .staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
-    .staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
-    .staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
-    .to( ui.oath, 0.35, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0.45 )
-    .to( ui.randomButton, 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
-    .to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
-    .to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
-    .to( ui.cancelButton, 0.5, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
-    .to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
-    .to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
+    .to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0 )
+    .from( ui.okButton, 0.5, { y: game.world.bounds.bottom + ui.okButton.height / 2, ease: Back.easeOut }, 0.15 )
+    .from( ui.cancelButton, 0.5, { y: game.world.bounds.bottom + ui.cancelButton.height / 2, ease: Back.easeOut }, 0.25 )
     .call( () => ui.cancelButton.inputEnabled = true )
     .call( () => ui.okButton.inputEnabled = true )
 }
 
 
+function goHome () {
+  window.location.assign( '/' )
+}
+
+
 function hideOath () {
+  currentScreen = undefined
+  ui.disableButtons()
+  ui.oath.timeline.reverse().then( goHome )
+}
+
+
+function showEditor () {
   currentScreen = 'editor'
-  ui.oath.timeline.reverse()
   ui.enableButtons()
   ui.colorSelector.inputEnabled = true
   ui.cancelButton.inputEnabled = false
   ui.oath.enabled = false
+
+  for ( const item of _.flatten( [ alien, ui.colorSelector.sprite, ui.randomButton, ui.previousHeadButton, ui.previousBodyButton, ui.nextHeadButton, ui.nextBodyButton ] ) ) {
+    item.visible = true
+  }
+
+  ui.cancelButton.inputEnabled = false
+
+  // enable draggable ui eyes just in case, very occasionally there's a bug and they are not draggable without this
+  for ( const eye of ui.eyes ) {
+    eye.inputEnabled = true
+  }
+
+  const tl = new TimelineMax()
+    .call( () => alien.stopAllBlinking() )
+    .to( ui.oath, { duration: 0.75,  y: -ui.oath.height / 2, ease: Back.easeIn }, 0 )
+    .set( ui.oath, { visible: false }, 0.75 )
+    .from( alien.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeOut }, 0.75 )
+    .to( ui.okButton, { duration: 0.5, x: ui.okButton.positions.editor.x, angle: 360, ease: 'back.out' }, 0.65 )
+    .to( ui.cancelButton, { duration: 0.5, x: ui.randomButton.x, angle: -360, ease: 'back.out' }, 0.65 )
+    .from( [ ui.nextBodyButton, ui.nextHeadButton ], { duration: 0.5, x: game.world.centerX + ui.nextHeadButton.width / 2, stagger: 0.1, ease: 'back.out' }, 0.65 )
+    .from( [ ui.previousBodyButton, ui.previousHeadButton ], { duration: 0.5, x: game.world.centerX - ui.previousHeadButton.width / 2, stagger: 0.1, ease: 'back.out' }, 0.65 )
+    .from( ui.randomButton, { duration: 0.5, angle: 360, x: game.world.centerX - 100, ease: 'back.out' }, 0.65 )
+    .from( ui.colorSelector.sprite.scale, { duration: 0.5, x: 0, y: 0, ease: 'back.out' }, 0.75 )
+    .set( ui.cancelButton, { visible: false }, 0.85 )
+    .set( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], { visible: true, stagger: 0.1 }, 0.75 )
+    .set( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], { visible: true, stagger: 0.1 }, 0.75 )
+    .from( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], { duration: 0.5, x: game.world.centerX + ui.eyes[ 3 ].eyeball.width / 2, stagger: 0.1, ease: 'back.out(4)' }, 0.75 )
+    .from( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], { duration: 0.5, x: game.world.centerX - ui.eyes[ 2 ].eyeball.width / 2, stagger: 0.1, ease: 'back.out(4)' }, 0.75 )
 }
 
 
@@ -748,34 +786,45 @@ function showTraits () {
   ui.traits.textFields[ 1 ].show().setFadeOutText()
   ui.traits.textFields[ 2 ].show().setFadeOutText()
 
-  new TimelineMax()
+  const handleComplete = () => {
+    ui.traits.textFields[ 0 ].setFadeInText()
+    ui.traits.textFields[ 1 ].setFadeInText()
+    ui.traits.textFields[ 2 ].setFadeInText()
+    ui.cancelButton.inputEnabled = true
+    ui.okButton.inputEnabled = true
+  }
+
+  const handleReverseComplete = () => {
+    ui.okButton.inputEnabled = true
+  }
+
+  ui.traits.timeline = new TimelineMax( { onComplete: handleComplete, onReverseComplete: handleReverseComplete } )
     .set( ui.traits, { visible: true } )
-    .to( ui.oath, 0.75, _.extend( ui.oath.hidePos, { ease: Back.easeInOut } ), 0 )
-    .to( ui.traits, 0.75, _.extend( ui.traits.showPos, { ease: Back.easeInOut } ), 0 )
-    .call( () => ui.traits.textFields[ 0 ].setFadeInText(), null, 0.75 )
-    .call( () => ui.traits.textFields[ 1 ].setFadeInText(), null, 0.75 )
-    .call( () => ui.traits.textFields[ 2 ].setFadeInText(), null, 0.75 )
-    // .call( () => ui.traits.textFields[ 0 ].focus(), null, 0.75 ) // maybe it's better to disable this auto textfield focus so that users have more chance to notice the submit buttons which will be overlaid by a soft keyboard
-    .call( () => ui.cancelButton.inputEnabled = true )
-    .call( () => ui.okButton.inputEnabled = true )
+    .staggerTo( [ ui.previousHeadButton, ui.previousBodyButton ], 0.5, { x: -100, ease: Back.easeIn }, 0.1 )
+    .staggerTo( [ ui.nextHeadButton, ui.nextBodyButton ], 0.5, { x: game.world.width + 100, ease: Back.easeIn }, 0.1, 0 )
+    .staggerTo( [ ui.eyes[ 0 ], ui.eyes[ 1 ], ui.eyes[ 2 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
+    .staggerTo( [ ui.eyes[ 5 ], ui.eyes[ 4 ], ui.eyes[ 3 ] ], 0.25, { y: -110, ease: Back.easeIn }, 0.05, 0 )
+    .to( ui.traits, 0.35, _.merge( ui.traits.showPos, { ease: Back.easeOut } ), 0.45 )
+    .to( ui.randomButton, 0.5, { x: `-=${ game.world.width }`, angle: -720, ease: Power1.easeIn }, 0.2 )
+    .to( ui.colorSelector.sprite, 0.5, { x: `-=${ game.world.width }`, angle: -180, ease: Power1.easeIn }, 0.2 )
+    .to( ui.okButton, 0.5, { x: game.world.centerX + 100, angle: -360, ease: Power1.easeInOut }, 0.2 )
+    .set( ui.cancelButton, { visible: true }, 0.2 )
+    .fromTo( ui.cancelButton, 0.5, { x: ui.okButton.positions.editor.x, angle: 0 }, { x: game.world.centerX - 100, angle: -360, alpha: 1, ease: Power1.easeInOut }, 0.2 )
+    .to( alien, 0.5, { y: 120, ease: Back.easeOut }, 0.3 )
+    .to( alien.scale, 0.5, { x: 0.3, y: 0.3, ease: Power1.easeOut }, 0.3 )
 }
 
 
 function hideTraits () {
-  currentScreen = 'oath'
+  currentScreen = 'editor'
 
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
-  new TimelineMax()
-    .to( ui.traits, 0.75, _.extend( ui.traits.hidePos1, { ease: Back.easeInOut } ), 0 )
-    .to( ui.oath, 0.75, _.extend( ui.oath.showPos, { ease: Back.easeInOut } ), 0 )
-    .set( ui.traits, { visible: false }, 0.75 )
-    .set( game.scale, { scaleMode: Phaser.ScaleManager.SHOW_ALL }, 0.75 )
-    .call( () => ui.cancelButton.inputEnabled = true )
-    .call( () => ui.okButton.inputEnabled = true )
+  ui.traits.timeline.reverse()
 
   for ( const textField of ui.traits.textFields ) {
+    console.log( 'TF', textField )
     textField.blur()
     textField.hideHtmlText()
   }
@@ -1150,16 +1199,16 @@ function handleClick ( { type } ) {
   switch ( type ) {
     case 'ok': {
       switch ( currentScreen ) {
+        case 'oath': {
+          showEditor()
+          break
+        }
         case 'editor': {
           if ( !alien.hasEyes() ) {
             notice.show( { text: 'This alien needs some eyes.\nDrag them onto the body.' } )
           } else {
-            showOath()
-          }
-          break
+            showTraits()
         }
-        case 'oath': {
-          showTraits()
           break
         }
         case 'traits': {
