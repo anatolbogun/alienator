@@ -163,7 +163,7 @@ function setupJoinClick () {
           $( 'body' ).css( 'backgroundColor', color )
         } )
       } )
-      .to( $( 'header' ), { duration: 0.25, opacity: 0 }, 0.5 )
+      .to( $( 'body' ).children(), { duration: 0.25, opacity: 0 }, 0.5 )
       .call( () => window.location.href = $( 'a.join' ).attr( 'href' ) )
 
     return false

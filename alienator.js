@@ -315,6 +315,10 @@ function makeUI ( opt ) {
   const traits = makeTraits( { x: bounds.centerX, y: bounds.height * 0.43 } )
   group.traits = traits
 
+  const logo = game.add.image( game.world.centerX, 107, 'assets', 'logo', group )
+  logo.anchor.set( 0.5 )
+  group.logo = logo
+
   return group
 }
 
@@ -546,12 +550,13 @@ function showOath () {
   ui.oath.enabled = true
 
   ui.oath.timeline = new TimelineMax()
-    .set( ui.oath, { visible: true } )
-    .to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0 )
-    .from( ui.okButton, 0.5, { y: game.world.bounds.bottom + ui.okButton.height / 2, ease: Back.easeOut }, 0.15 )
-    .from( ui.cancelButton, 0.5, { y: game.world.bounds.bottom + ui.cancelButton.height / 2, ease: Back.easeOut }, 0.25 )
-    .call( () => ui.cancelButton.inputEnabled = true )
-    .call( () => ui.okButton.inputEnabled = true )
+  .set( ui.oath, { visible: true } )
+  .to( ui.oath, 0.5, _.merge( ui.oath.showPos, { ease: Back.easeOut } ), 0 )
+  .from( ui.okButton, 0.5, { y: game.world.bounds.bottom + ui.okButton.height / 2, ease: Back.easeOut }, 0.15 )
+  .from( ui.cancelButton, 0.5, { y: game.world.bounds.bottom + ui.cancelButton.height / 2, ease: Back.easeOut }, 0.25 )
+  .call( () => ui.cancelButton.inputEnabled = true )
+  .call( () => ui.okButton.inputEnabled = true )
+  .from( ui.logo, 0.5, { alpha: 0 }, 0.5 )
 }
 
 
@@ -597,6 +602,7 @@ function showEditor () {
 
   const tl = new TimelineMax()
     .call( () => alien.stopAllBlinking() )
+    .to( ui.logo, { duration: 0.5, alpha: 0 }, 0 )
     .to( ui.oath, { duration: 0.75,  y: -ui.oath.height / 2, ease: Back.easeIn }, 0 )
     .set( ui.oath, { visible: false }, 0.75 )
     .from( alien.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeOut }, 0.75 )
