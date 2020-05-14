@@ -117,11 +117,17 @@ function handleLoaded ( dnas ) {
       },
     } )
 
+    setAlienPivotToBottom( alien )
     alien.scale.set( 0.5 )
     positionAlien( alien )
     moveAlien( alien )
     aliens.push( alien )
   }
+}
+
+
+function setAlienPivotToBottom ( alien ) {
+  alien.pivot.set( 0, alien.body.height * ( 1 - alien.body.anchor.y ) )
 }
 
 
@@ -203,43 +209,63 @@ function moveAlien ( alien ) {
 
     const maxX = game.world.width - margin
     const maxY = ( game.world.height - margin ) * 1.5
+    const duration = 40
 
-    alien.tween = gsap.to( alien, {
-      duration: 40, // _.random( minDuration, maxDuration, true ),
-      delay,
-      motionPath: {
-        path: [
-          {
-            x: _.random( minX, maxX ),
-            y: Power1.easeOut( 1 / 3 ) * maxY,
-          },
-          {
-            x: _.random( minX, maxX ),
-            y: Power1.easeOut( 2 / 3 ) * maxY,
-          },
-          {
-            x: _.random( minX, maxX ),
-            y: maxY,
-          },
-        ],
-      },
-      ease: 'power1.inOut',
-      onComplete: () => {
+    // alien.tween = gsap.to( alien, {
+    //   duration: 40, // _.random( minDuration, maxDuration, true ),
+    //   delay,
+    //   motionPath: {
+    //     path: [
+    //       {
+    //         x: _.random( minX, maxX ),
+    //         y: Power1.easeOut( 1 / 3 ) * maxY,
+    //       },
+    //       {
+    //         x: _.random( minX, maxX ),
+    //         y: Power1.easeOut( 2 / 3 ) * maxY,
+    //       },
+    //       {
+    //         x: _.random( minX, maxX ),
+    //         y: maxY,
+    //       },
+    //     ],
+    //   },
+    //   ease: 'power1.inOut',
+    //   onComplete: () => {
+    //     const dna = _.cloneDeep( getAvailableDNA() )
+
+    //     if ( dna !== undefined ) {
+    //       alien.make( dna )
+    //       alien.trait1.setText( dna.trait1 )
+    //       alien.trait2.setText( dna.trait2 )
+    //       setAlienPivotToBottom( alien )
+    //       console.log( 'MAKING NEW ALIEN', dna )
+    //     }
+
+    //     alien.y = 0
+    //     animation( { alien } )
+    //   },
+    // } )
+
+    alien.tween = gsap.timeline( { delay } )
+      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
+      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
+      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
+      .to( alien, { duration, y: maxY, ease: 'power1.in' }, 0 )
+      .call( () => {
         const dna = _.cloneDeep( getAvailableDNA() )
 
         if ( dna !== undefined ) {
-          // alien.killAllBlinking()
-          // alien.destroyEyes()
           alien.make( dna )
           alien.trait1.setText( dna.trait1 )
           alien.trait2.setText( dna.trait2 )
+          setAlienPivotToBottom( alien )
           console.log( 'MAKING NEW ALIEN', dna )
         }
 
         alien.y = 0
         animation( { alien } )
-      },
-    } )
+      } )
   }
 
   animation( { alien, delay: _.random( 40, true ) } )

@@ -315,7 +315,7 @@ export default class Alien extends Phaser.Group {
     this.destroyEyes()
 
     for ( const eyeProps of eyes ) {
-      const eye = this.makeEye( eyeProps )
+      this.makeEye( eyeProps )
     }
 
     this.tint( { color } )
