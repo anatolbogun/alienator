@@ -1,4 +1,4 @@
-{include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="aliens.css"}
+{include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="home.css" jsModuleFile="home.js"}
 
 <header>
   <img class="logo" src="assets/logo-white.png" />
@@ -6,9 +6,7 @@
 </header>
 
 <main>
-  <div id="aliens">
-    This page is coming soooooon.
-  </div>
+  <div id="viewer"></div>
 </main>
 
 <footer>

@@ -88,12 +88,6 @@ function makeAlien ( { dna } ) {
   } )
 
   gsap.delayedCall( 1, () => alien.toggleTraits() )
-
-  // // if the alien needs scaling do this in a requestAnimationFrame callback
-  // requestAnimationFrame( () => {
-  //   const scale = Math.min( game.world.width / alien.width, game.world.height / alien.height )
-  //   alien.scale.set( scale )
-  // } )
 }
 
 

@@ -83,7 +83,7 @@ function create () {
 
   const x = game.world.centerX
   const y = game.world.centerY + alienOffsetY
-  alien = new Alien( { game, x, y, dna, onDNAChange: handleDNAChange } )
+  alien = new Alien( { game, x, y, dna, withBMD: true, onDNAChange: handleDNAChange } )
   alien.origin = { x, y }
   console.log( 'ALIEN', alien )
 

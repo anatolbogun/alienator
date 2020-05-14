@@ -6,16 +6,19 @@
   <base href="/" />
   <script type="text/javascript" src="lodash.min.js"></script>
   <script type="text/javascript" src="gsap.min.js"></script>
+  <script type="text/javascript" src="MotionPathPlugin.min.js"></script>
   <script type="text/javascript" src="jquery.min.js"></script>
   <script type="text/javascript" src="jquery.lazy.min.js"></script>
   <script type="text/javascript" src="aliens.js"></script>
 
-  {if $showViewer && $alien.id}
+  {if $jsModuleFile}
     <script type="text/javascript" src="phaser.min.js"></script>
     <script type="text/javascript" src="phaser-extensions.js"></script>
     <script type="text/javascript" src="tiny-segmenter.js" charset="UTF-8"></script>
-    <script type="module" src="alien-viewer.js"></script>
+    <script type="module" src="{$jsModuleFile}"></script>
+  {/if}
 
+  {if $alien.id}
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@soba_ba">
     <meta name="twitter:title" content="Alien {$alien.name}">

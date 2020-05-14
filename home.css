@@ -1,0 +1,153 @@
+@font-face {
+  font-family: "BC Alphapipe";
+  font-style: normal;
+  font-weight: 400;
+  src: url("assets/bc-alphapipe.ttf");
+}
+
+* {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  outline: 0;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  font-family: "BC Alphapipe";
+  color: #ffffff;
+}
+
+
+a {
+  cursor: pointer;
+  color: #ffffff;
+}
+
+header {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5em 0px 1.5em 0px;
+}
+
+.hidden {
+  display: none;
+}
+
+img.logo {
+  width: 6em;
+  height: auto;
+}
+
+.join {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1em;
+  white-space: nowrap;
+  color: #000000;
+  background-color: #ffffff;
+  width: 8em;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+
+.join:hover {
+  box-shadow: 0em 0em 2em 2em rgba(255, 255, 255, .25);
+}
+
+.info {
+  text-align: center;
+  font-size: 1em;
+}
+
+/* main {
+  width: 200%;
+  height: 200%;
+} */
+
+#viewer {
+  width: 100%;
+  height: 100%;
+}
+
+.fadein {
+  opacity: 0;
+}
+
+.social, .navi {
+  position: fixed;
+  bottom: 0.5em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navi {
+  left: 0.5em;
+}
+
+.social {
+  right: 0.5em;
+}
+
+.navi .home {
+  background-image: url('/assets/home.png');
+}
+
+.navi .profiles {
+  background-image: url('/assets/profiles.png');
+}
+
+.social a, .navi a {
+  width: 2em;
+  height: 2em;
+  background-size: cover;
+  opacity: 0.5;
+  margin: 0.125em;
+}
+
+.social a:hover, .navi a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.tooltip span {
+  display: none;
+}
+
+.tooltip:hover span {
+  display: inline-block;
+  position: absolute;
+  top: -2.5em;
+  white-space: nowrap;
+  background-color: #7f7f7f;
+  padding: 0.5em;
+  border-radius: 0.5em;
+}
+
+.navi .tooltip:hover span {
+  left: 0px;
+}
+
+.social .tooltip:hover span {
+  right: 0px;
+}
+
+.social .twitter {
+  background-image: url('/assets/twitter.png');
+}
+
+.social .facebook {
+  background-image: url('/assets/facebook.png');
+}

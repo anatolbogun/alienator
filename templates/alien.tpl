@@ -1,4 +1,4 @@
-{include file="header.tpl" title="Alien {$alien.name}" cssFile="alien.css" showViewer=true}
+{include file="header.tpl" title="Alien {$alien.name}" cssFile="alien.css" jsModuleFile="alien-viewer.js"}
 
 {if !$alien.id}
 

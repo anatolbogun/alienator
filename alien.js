@@ -93,7 +93,7 @@ export default class Alien extends Phaser.Group {
 
   constructor( opt ) {
     const {
-      game, parent, x, y, atlasKey, atlasKeyCombinations, validColors, dna, groundY, logDNAChange, textStyle, traitProperties, onDNAChange,
+      game, parent, x, y, atlasKey, atlasKeyCombinations, validColors, dna, groundY, withBMD, eyeCheck, logDNAChange, textStyle, traitProperties, onDNAChange,
       enabled, pixelPerfectAlpha, pixelPerfectClick, pixelPerfectOver, useHandCursor, onClick,
     } = _.defaults( opt, {
       x: 0,
@@ -101,6 +101,8 @@ export default class Alien extends Phaser.Group {
       atlasKey: 'alien',
       atlasKeyCombinations: [ 'alien-combinations-1', 'alien-combinations-2' ],
       groundY: 0.6,
+      withBMD: false,
+      eyeCheck: _.isNil( opt.withBMD ) ? false : opt.withBMD,
       logDNAChange: false,
       textStyle: _.defaults( opt.textStyle || {}, {
         font: 'BC Alphapipe, sans-serif',
@@ -140,15 +142,17 @@ export default class Alien extends Phaser.Group {
     this.atlasKeyCombinations = atlasKeyCombinations
     this.validColors = validColors
     this.groundY = groundY
+    this.withBMD = withBMD
+    this.eyeCheck = eyeCheck
     this.logDNAChange = logDNAChange
     this.traitProperties = traitProperties
     this.traitsVisible = false
     this.onDNAChange = onDNAChange
     this.enabled = false
 
-    this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD: true } )
-    this.bodies = this.makeItems( { parent: this, type: BODY, props: bodyPartProps.bodies, withBMD: true } )
-    this.heads = this.makeItems( { parent: this, type: HEAD, props: bodyPartProps.heads, withBMD: true } )
+    this.combinations = this.makeCombinations( { atlasKeys: atlasKeyCombinations, withBMD } )
+    this.bodies = this.makeItems( { parent: this, type: BODY, props: bodyPartProps.bodies, withBMD } )
+    this.heads = this.makeItems( { parent: this, type: HEAD, props: bodyPartProps.heads, withBMD } )
     this.eyes = []
 
     this.mapping = {
@@ -162,8 +166,6 @@ export default class Alien extends Phaser.Group {
       trait1: '',
       trait2: '',
     } )
-
-    this.fixDNAPropertyTypes( { dna } )
 
     if ( dna === undefined ) {
       this.randomize()
@@ -179,7 +181,7 @@ export default class Alien extends Phaser.Group {
 
   fixDNAPropertyTypes ( opt ) {
     const { dna, numberTypes } = _.defaults( opt || {}, {
-      numberTypes: [ 'headID', 'bodyID', 'color', 'index', 'x', 'y' ]
+      numberTypes: [ 'id', 'headID', 'bodyID', 'color', 'index', 'x', 'y' ]
     } )
 
     if ( dna === undefined ) return
@@ -254,7 +256,7 @@ export default class Alien extends Phaser.Group {
 
   destroyEyes () {
     for ( const eye of this.eyes ) {
-      eye.stopBlinking()
+      eye.killBlinking()
       eye.destroy()
     }
 
@@ -269,6 +271,8 @@ export default class Alien extends Phaser.Group {
 
 
   make ( dna = {} ) {
+    this.fixDNAPropertyTypes( { dna } )
+
     const { bodyID, headID, color, eyes, positionOnGround, logDNA } = _.defaults( dna, {
       bodyID: this.dna.bodyID,
       headID: this.dna.headID,
@@ -320,7 +324,8 @@ export default class Alien extends Phaser.Group {
 
     if ( logDNA ) this.logDNA()
 
-    requestAnimationFrame( () => this.hideAndDestroyOutOfBodyEyes() )
+    // anything with bitmapdata is expensive performance-wise, so only use this if necessary (i.e. only for the editor)
+    if ( this.eyeCheck && this.withBMD ) requestAnimationFrame( () => this.hideAndDestroyOutOfBodyEyes() )
 
     if ( this.enabled ) this.enable()
   }
@@ -531,7 +536,7 @@ export default class Alien extends Phaser.Group {
     if ( this.head !== undefined ) this.head.tint = color
     if ( this.combination !== undefined ) this.combination.tint = color
 
-    const irisColor = this.getIrisColor()
+    const irisColor = this.getIrisColor( { color } )
 
     for ( const eye of this.eyes ) {
       eye.iris.tint = irisColor
@@ -559,13 +564,14 @@ export default class Alien extends Phaser.Group {
 
 
   getIrisColor ( opt ) {
-    const { luminosityThreshold } = _.defaults( opt, {
+    const { luminosityThreshold, color } = _.defaults( opt, {
       luminosityThreshold: 0.95,
+      color: this.dna.color,
     } )
 
     // when luminosity is very high, tint the iris black
-    const hsl = this.colorToHSL( { color: this.dna.color } )
-    return ( hsl.l > luminosityThreshold ) ? 0x000000 : this.dna.color
+    const hsl = this.colorToHSL( { color } )
+    return ( hsl.l > luminosityThreshold ) ? 0x000000 : color
   }
 
 
@@ -674,7 +680,7 @@ export default class Alien extends Phaser.Group {
     const eye = this.game.add.sprite()
     if ( parent !== undefined ) parent.addChild( eye )
     eye.index = index
-    eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ], withBMD: true } )
+    eye.eyeball = this.makeItem( { parent: eye, type: EYEBALL, index, prop: bodyPartProps.eyeballs[ index ], withBMD: this.withBMD } )
 
     eye.iris = this.makeItem( { parent: eye, type: IRIS, index, prop: bodyPartProps.irises[ index ] } )
     eye.closed = this.makeItem( { parent: eye, type: EYE_CLOSED, index, prop: bodyPartProps.eyesClosed[ index ] } )
@@ -688,10 +694,11 @@ export default class Alien extends Phaser.Group {
     eye.position.set( x, y )
 
     eye.attach = () => this.attachEye( { eye } )
-    eye.detach = () => this.deachEye( { eye } )
+    eye.detach = () => this.detachEye( { eye } )
     eye.startBlinking = () => this.startBlinking( { eye } )
     eye.stopBlinking = () => this.stopBlinking( { eye } )
     eye.resumeBlinking = () => this.resumeBlinking( { eye } )
+    eye.killBlinking = () => this.killBlinking( { eye } )
     eye.open = () => this.openEye( { eye } )
     eye.close = () => this.closeEye( { eye } )
     eye.reset = () => this.resetEye( { eye } )
@@ -918,10 +925,40 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  killBlinking ( { eye } ) {
+    this.stopBlinking( { eye } )
+
+    if ( eye.blinkTL !== undefined ) {
+      eye.blinkTL.kill()
+      eye.blinkTL = undefined
+    }
+
+    eye.reset()
+  }
+
+
+  killAllBlinking () {
+    for ( const eye of this.eyes ) {
+      eye.killBlinking()
+    }
+  }
+
+
   stopBlinking ( { eye } ) {
     if ( eye.blinkTL !== undefined ) {
       eye.blinkTL.pause().progress( 0 )
     }
+
+    if ( eye.closeDelayedCall !== undefined ) {
+      eye.closeDelayedCall.kill()
+      eye.closeDelayedCall = undefined
+    }
+
+    if ( eye.openDelayedCall !== undefined ) {
+      eye.openDelayedCall.kill()
+      eye.openDelayedCall = undefined
+    }
+
     eye.reset()
   }
 
@@ -951,7 +988,9 @@ export default class Alien extends Phaser.Group {
     eye.eyeball.visible = false
     eye.iris.visible = false
 
-    delayedCall( 0.03, () => eye.closed.frameName = eye.closedFrame )
+    eye.closeDelayedCall = delayedCall( 0.03, () => {
+      if ( eye !== undefined && eye.closed !== undefined && eye.closedFrame !== undefined ) eye.closed.frameName = eye.closedFrame
+    } )
   }
 
 
@@ -961,10 +1000,12 @@ export default class Alien extends Phaser.Group {
     eye.eyeball.visible = false
     eye.iris.visible = false
 
-    delayedCall( 0.03, () => {
-      eye.closed.visible = false
-      eye.eyeball.visible = true
-      eye.iris.visible = true
+    eye.openDelayedCall = delayedCall( 0.03, () => {
+      if ( eye !== undefined && eye.closed !== undefined ) {
+        eye.closed.visible = false
+        eye.eyeball.visible = true
+        eye.iris.visible = true
+      }
     } )
   }
 
@@ -992,6 +1033,7 @@ export default class Alien extends Phaser.Group {
 
 
   hideAndDestroyOutOfBodyEyes () {
+    console.log( 'hideAndDestroyOutOfBodyEyes' )
     for ( const eye of this.eyes ) {
       if ( !this.eyeToBodyHitTest( { eye } ) ) {
         eye.hideAndDestroy()
