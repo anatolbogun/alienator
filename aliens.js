@@ -1,4 +1,4 @@
-const userLocale = 'ja-JP' // getUserLocale()
+const userLocale = getUserLocale()
 
 const dictionary = {
   'ja-JP': {
