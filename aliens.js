@@ -1,12 +1,20 @@
-const userLocale = getUserLocale()
+const userLocale = 'ja-JP' // getUserLocale()
 
 const dictionary = {
   'ja-JP': {
     Joined: '入星',
     Alien: 'エイリアン',
+    'view all aliens': 'すべてのエイリアンを見て',
+    'share on Twitter': 'ツイッターでシェア',
+    'share on Facebook': 'Facebookでシェア',
+    'home': 'ホームページ',
   },
   'de-DE': {
     Joined: 'Gelandet am',
+    'view all aliens': 'alle Aliens ansehen',
+    'share on Twitter': 'auf Twitter teilen',
+    'share on Facebook': 'Fauf Facebook teilen',
+    'home': 'zur Startseite',
   }
 }
 
@@ -120,7 +128,7 @@ function lazyLoadImages ( opt ) {
 function translate () {
   for ( const translateElement of $( `span.localized` ) ) {
     // remove the entire span tag so that when this function is called in the future this can be skipped
-    translateElement.outerHTML = localize( translateElement.innerHTML )
+    translateElement.outerHTML = `<span>${ localize( translateElement.innerHTML ) }</span>`
   }
 }
 
