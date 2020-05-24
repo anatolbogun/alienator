@@ -27,13 +27,19 @@ a {
 
 header {
   position: absolute;
-  width: 100%;
+  left: 50%;
+  margin-left: -4.5em;
+  top: 50%;
+  margin-top: -6em;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1.5em 0px 1.5em 0px;
+}
+
+footer {
+  opacity: 0;
 }
 
 .hidden {
@@ -43,6 +49,14 @@ header {
 img.logo {
   width: 6em;
   height: auto;
+  opacity: 0;
+}
+
+img.uco {
+  width: 4.5em;
+  height: auto;
+  margin-top: 0.6em;
+  opacity: 0;
 }
 
 .join {
@@ -55,9 +69,10 @@ img.logo {
   color: #000000;
   background-color: #ffffff;
   width: 8em;
-  margin: 1em;
+  margin-top: 1em;
   padding: 0.5em;
   border-radius: 1em;
+  opacity: 0;
 }
 
 .join:hover {
@@ -68,11 +83,6 @@ img.logo {
   text-align: center;
   font-size: 1em;
 }
-
-/* main {
-  width: 200%;
-  height: 200%;
-} */
 
 #viewer {
   width: 100%;

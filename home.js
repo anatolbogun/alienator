@@ -1,11 +1,8 @@
 import Alien from './alien.js'
 
-gsap.registerPlugin( MotionPathPlugin )
-
-
 const aliens = []
 let dnaPool
-const margin = -175 // the margin from the edge where aliens are spawned
+const margin = 0 // the margin from the edge where aliens are spawned
 
 const body = $( 'body' )[ 0 ]
 const sizeFactor = 2 // this creates game dimensions sizeFactor the size of the dom body; keeping this at 1 creates quite a pixelated result, not very nice
@@ -36,8 +33,7 @@ function preload () {
 
 
 function create () {
-  console.log( 'GAME', game )
-  console.log( 'GSAP', gsap )
+  showLogo()
 
   game.onBlur.add( handleBlur )
   game.onFocus.add( handleFocus )
@@ -46,6 +42,32 @@ function create () {
   game.scale.onSizeChange.add( handleResize )
 
   loadDNAs( { num: 100, onLoaded: handleLoaded } )
+}
+
+
+function showLogo () {
+  gsap.timeline( { delay: 0.5 } )
+    .set( [ $( '.logo' ) ], { scale: 1, y: '+=10em' } )
+    .set( [ $( '.uco' ) ], { scale: 2, y: '+=4em' } )
+    .to( $( '.logo' ), { duration: 1, opacity: 1, scale: 2 }, 0 )
+    .to( $( '.logo' ), { duration: 1, y: '-=10em', ease: 'back.out' }, 0 )
+    .to( $( '.uco' ), { duration: 1, opacity: 1 }, 1 )
+
+    .to( $( '.logo' ), { duration: 0.5, scale: 2.25, ease: 'power1.inOut' }, 2.5 )
+    .to( $( '.uco' ), { duration: 0.5, scale: 2.25, y: '+=1em', ease: 'power1.inOut' }, 2.5 )
+
+    .to( $( '.logo' ), { duration: 1, scale: 1, ease: 'power1.inOut' }, 3 )
+    .to( $( '.uco' ), { duration: 1, scale: 1, y: '-=5em', ease: 'power1.inOut' }, 3 )
+
+    .to( $( '.join' ), { duration: 1, opacity: 1 }, 4.5 )
+
+    .call( () => {
+      if ( aliens.length ) {
+        gsap.to( gsap.globalTimeline, { duration: 8, timeScale: 12, repeat: 1, yoyo: true, ease: 'back.out' } )
+      }
+    } )
+
+    .to( $( 'footer' ), { duration: 1, opacity: 1 }, 5.5 )
 }
 
 
@@ -71,7 +93,7 @@ function loadDNAs ( { num, onLoaded } ) {
         // notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be loaded.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
       }
     } catch ( e ) {
-      console.warn( `Aliens don't exist.`, e )
+      console.warn( `Aliens don't exist :'(`, e )
     }
   } )
 }
@@ -142,115 +164,36 @@ function getAvailableDNA () {
 
 
 function positionAlien ( alien ) {
-  // const { x, y } = ( () => {
-  //   const random = Math.random()
-  //   switch ( true ) {
-  //     case random < 0.25: return { x: _.random( margin, game.world.width - margin ), y: margin }
-  //     case random < 0.5: return { x: _.random( margin, game.world.width - margin ), y: game.world.height - margin }
-  //     case random < 0.75: return { x: margin, y: _.random( margin, game.world.height - margin ) }
-  //     default: return { x: game.world.width - margin, y: _.random( margin, game.world.height - margin ) }
-  //   }
-  // } )()
-
-  // alien.position.set( x, y )
-
-  alien.position.set( _.random( margin, game.world.width - margin ) , 0 )
+  alien.position.set( _.random( margin, game.world.width - margin ) , margin )
 }
 
 
-// function moveAlien ( alien ) {
-//   const minDuration = 30
-//   const maxDuration = 50
-//   const minX = margin
-//   const minY = margin
-
-//   const animation = ( opt ) => {
-//     const { item, delay } = opt
-
-//     const maxX = game.world.width - margin
-//     const maxY = game.world.height - margin
-
-//     item.tween = gsap.to( item, {
-//       duration: _.random( minDuration, maxDuration, true ),
-//       delay,
-//       motionPath: {
-//         path: [
-//           {
-//             x: _.random( minX, maxX ),
-//             y: _.random( minY, maxY ),
-//           },
-//           {
-//             x: _.random( minX, maxX ),
-//             y: _.random( minY, maxY ),
-//           },
-//           {
-//             x: _.random( minX, maxX ),
-//             y: _.random( minY, maxY ),
-//           },
-//         ],
-//       },
-//       ease: 'power1.inOut',
-//       onComplete: () => animation( { item: alien } ),
-//     } )
-//   }
-
-//   animation( { item: alien, delay: _.random( 10, true ) } )
-// }
-
-
 function moveAlien ( alien ) {
-  const minDuration = 40
-  const maxDuration = 40
+  const duration = 30
   const minX = margin
-  const minY = margin
 
   const animation = ( opt ) => {
     const { alien, delay } = opt
 
+    // on resize game.world.width can change, so we keep this inside the animation function
     const maxX = game.world.width - margin
     const maxY = ( game.world.height - margin ) * 1.5
-    const duration = 40
 
-    // alien.tween = gsap.to( alien, {
-    //   duration: 40, // _.random( minDuration, maxDuration, true ),
-    //   delay,
-    //   motionPath: {
-    //     path: [
-    //       {
-    //         x: _.random( minX, maxX ),
-    //         y: Power1.easeOut( 1 / 3 ) * maxY,
-    //       },
-    //       {
-    //         x: _.random( minX, maxX ),
-    //         y: Power1.easeOut( 2 / 3 ) * maxY,
-    //       },
-    //       {
-    //         x: _.random( minX, maxX ),
-    //         y: maxY,
-    //       },
-    //     ],
-    //   },
-    //   ease: 'power1.inOut',
-    //   onComplete: () => {
-    //     const dna = _.cloneDeep( getAvailableDNA() )
+    // keep the area around the logo free of aliens
+    const maxXLeft = ( game.world.centerX - 200 )
+    const maxXRight = ( game.world.centerX + 200 )
 
-    //     if ( dna !== undefined ) {
-    //       alien.make( dna )
-    //       alien.trait1.setText( dna.trait1 )
-    //       alien.trait2.setText( dna.trait2 )
-    //       setAlienPivotToBottom( alien )
-    //       console.log( 'MAKING NEW ALIEN', dna )
-    //     }
+    const x1 = _.random( minX, maxX )
+    const x2 = x1 < game.world.centerX ? _.random( minX, maxXLeft ) : _.random( maxXRight, maxX )
+    const x3 = x1 < game.world.centerX ? _.random( minX, maxXLeft ) : _.random( maxXRight, maxX )
+    const x4 = x1 < game.world.centerX ? _.random( minX, maxXRight ) : _.random( maxXLeft, maxX )
 
-    //     alien.y = 0
-    //     animation( { alien } )
-    //   },
-    // } )
-
-    alien.tween = gsap.timeline( { delay } )
-      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
-      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
-      .to( alien, { duration: duration / 3, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
+    alien.tl = gsap.timeline( { delay } )
+      .to( alien, { duration: duration * 0.5, x: x1, ease: 'power1.inOut' } )
+      .to( alien, { duration: duration * 0.05, x: x2, ease: 'power1.inOut' } )
+      .to( alien, { duration: duration * 0.1, x: x3, ease: 'power1.inOut' } )
+      .to( alien, { duration: duration * 0.15, x: x4, ease: 'power1.inOut' } )
+      .to( alien, { duration: duration * 0.2, x: _.random( minX, maxX ), ease: 'power1.inOut' } )
       .to( alien, { duration, y: maxY, ease: 'power1.in' }, 0 )
       .call( () => {
         const dna = _.cloneDeep( getAvailableDNA() )
@@ -260,7 +203,6 @@ function moveAlien ( alien ) {
           alien.trait1.setText( dna.trait1 )
           alien.trait2.setText( dna.trait2 )
           setAlienPivotToBottom( alien )
-          console.log( 'MAKING NEW ALIEN', dna )
         }
 
         alien.y = 0
@@ -268,7 +210,7 @@ function moveAlien ( alien ) {
       } )
   }
 
-  animation( { alien, delay: _.random( 40, true ) } )
+  animation( { alien, delay: _.random( duration, true ) } )
 }
 
 
@@ -279,12 +221,13 @@ function handleClick ( alien ) {
 
 
 function update () {
+  const scaleFactor = 0.5
   _.sortBy( aliens, 'y' ).forEach( ( alien, i ) => {
     alien.parent.setChildIndex( alien, i )
 
-    const positionYFactor = Power1.easeOut( _.clamp( alien.y / game.world.height, 0, 1 ) ) // change this to gsap eases
+    const positionYFactor = gsap.parseEase( 'power1.out' )( _.clamp( alien.y / game.world.height, 0, 1 ) ) // change this to gsap eases
 
-    alien.scale.set( positionYFactor )
+    alien.scale.set( positionYFactor * scaleFactor )
 
     const rgb = Phaser.Color.getRGB( alien.dna.color )
     const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )

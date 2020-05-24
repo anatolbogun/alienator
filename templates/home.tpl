@@ -1,7 +1,8 @@
 {include file="header.tpl" title="We Are All Aliens ({$numAliens} aliens)" cssFile="home.css" jsModuleFile="home.js"}
 
 <header>
-  <img class="logo" src="assets/logo-white.png" />
+  <img class="logo" src="assets/logo.png" />
+  <img class="uco" src="assets/uco.png" />
   <a class="join" href="join/">Join</a>
 </header>
 

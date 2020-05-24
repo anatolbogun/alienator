@@ -1027,8 +1027,11 @@ export default class Alien extends Phaser.Group {
 
     const tl = new TimelineMax()
     tl.to( eye.scale, 0.5, { x: 0, y: 0, ease: Back.easeOut } )
-    tl.call( () => this.detachEye( { eye } ) )
-    tl.call( () => eye.destroy() )
+    tl.call( () => {
+      this.detachEye( { eye } )
+      eye.destroy()
+      eye = undefined
+    } )
   }
 
 
