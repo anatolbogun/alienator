@@ -3,8 +3,7 @@ import Planet from './planet.js'
 import TextField from './text-field.js'
 
 // TO DO:
-// - move oath to the start
-// - display aliens moving across the screen
+// - translate a few things in the editor
 // - add analytics
 
 // NICE TO HAVE:
