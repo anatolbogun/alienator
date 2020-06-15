@@ -484,6 +484,11 @@ export default class Alien extends Phaser.Group {
   }
 
 
+  get isShowingTraits () {
+    return this.trait1.alpha > 0 || this.trait2.alpha > 0
+  }
+
+
   fitTextToBounds ( opt ) {
     const { textObj, minFontSize } = _.defaults( opt, {
       minFontSize: 24,

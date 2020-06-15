@@ -2,7 +2,9 @@ import Alien from './alien.js'
 
 const aliens = []
 let dnaPool
+let autoTraits
 const margin = 0 // the margin from the edge where aliens are spawned
+const aliensURL = './aliens/'
 
 const body = $( 'body' )[ 0 ]
 const sizeFactor = 2 // this creates game dimensions sizeFactor the size of the dom body; keeping this at 1 creates quite a pixelated result, not very nice
@@ -63,7 +65,27 @@ function showLogo () {
 
     .call( () => {
       if ( aliens.length ) {
-        gsap.to( gsap.globalTimeline, { duration: 8, timeScale: 12, repeat: 1, yoyo: true, ease: 'back.out' } )
+        for ( const alien of aliens ) {
+          alien.tl.play()
+        }
+      //   gsap.to( gsap.globalTimeline, { duration: 8, timeScale: 12, repeat: 1, yoyo: true, ease: 'back.out' } )
+        gsap.to( aliens, { duration: 0.5, alpha: 1, stagger: 10 / aliens.length } )
+
+        autoTraits = gsap.timeline( { repeat: -1 } )
+        autoTraits.call( () => {
+          const visibleAliens = _.filter( aliens, ( alien ) => alien.alpha === 1 && alien.y > 300 && alien.y < game.world.height - 500 && !alien.isShowingTraits )
+          const alien = _.sample( visibleAliens )
+          showAndHideTraits( alien )
+        }, null, 5 )
+
+        // const tl = gsap.timeline()
+
+        // aliens.forEach( ( alien, i ) => {
+        //   const delay = 1 / aliens.length * i
+        //   tl.fromTo( alien, { alpha: 0 }, { duration: 0.25, alpha: 0.5, delay, ease: 'power4.in' } )
+        //   tl.to( alien, { duration: 0.25, alpha: 0.1, delay, ease: 'power4.out' } )
+        //   tl.to( alien, { duration: 0.5, alpha: 1, delay, ease: 'bounce.out' } )
+        // } )
       }
     } )
 
@@ -74,6 +96,12 @@ function showLogo () {
 function handleResize ( scaleManager, width, height ) {
   // the game.world dimensions change with a window resize
   game.scale.setGameSize( width * sizeFactor, height * sizeFactor )
+
+  const scale = getAlienScale()
+
+  for ( const alien of aliens ) {
+    alien.scale.set( scale )
+  }
 }
 
 
@@ -114,10 +142,23 @@ function getNumAliens ( squarePixelsPerAlien = 275 ) {
 }
 
 
+function getAlienScale ( opt ) {
+  const { min, max, squarePixelsPerAlien } = _.defaults( opt || {}, {
+    min: 0.3,
+    max: 0.5,
+    squarePixelsPerAlien: 275,
+  } )
+
+  return _.clamp( Math.round( game.world.width * game.world.height / squarePixelsPerAlien ** 2 ) / 100, min, max )
+}
+
+
 function handleLoaded ( dnas ) {
   dnaPool = _.cloneDeep( dnas )
   const numAliens = Math.min( dnas.length, getNumAliens() )
-  console.log( 'MAX ALIENS', numAliens, ', NUM ALIENS', dnas.length )
+
+  // console.log( 'MAX ALIENS', numAliens, ', NUM ALIENS', dnas.length )
+  // console.log( 'SCALE', getAlienScale() )
 
   for ( const i of _.range( numAliens ) ) {
     const alien = new Alien( {
@@ -130,19 +171,30 @@ function handleLoaded ( dnas ) {
         fill: 0xffffff,
       },
       traitProperties: {
-        width: game.world.width * 0.8,
-        height: game.world.height * 0.15,
-        yMargin1: game.world.height * -0.25,
-        yMargin2: game.world.height * -0.09,
-        fromYOffset: game.world.height * 0.19,
+        width: 800,
+        height: 200,
+        padding: 10,
+        edgeRadius: 25,
+        x1: -50,
+        x2: 50,
+        yMargin1: -370,
+        yMargin2: -150,
         color: 0xffffff,
+        fromYOffset: 250,
+        fromScale: 0.5,
+        toYOffset: 0,
+        toScale: 0.5,
+        horizontalSway: 30,
+        verticalSway: 30,
       },
     } )
 
     setAlienPivotToBottom( alien )
-    alien.scale.set( 0.5 )
     positionAlien( alien )
     moveAlien( alien )
+    alien.alpha = 0
+    alien.tl.progress( Math.random() )
+    alien.tl.pause()
     aliens.push( alien )
   }
 }
@@ -169,11 +221,14 @@ function positionAlien ( alien ) {
 
 
 function moveAlien ( alien ) {
-  const duration = 30
+  const duration = 40
   const minX = margin
 
   const animation = ( opt ) => {
     const { alien, delay } = opt
+
+    const scale = getAlienScale()
+    alien.scale.set( scale )
 
     // on resize game.world.width can change, so we keep this inside the animation function
     const maxX = game.world.width - margin
@@ -215,6 +270,15 @@ function moveAlien ( alien ) {
 
 
 function handleClick ( alien ) {
+  if ( alien.isShowingTraits ) {
+    window.location.href = `${ aliensURL }${ alien.dna.id }/`
+  } else {
+    showAndHideTraits( alien )
+  }
+}
+
+
+function showAndHideTraits ( alien ) {
   alien.showTraits()
   gsap.delayedCall( 4, () => alien.hideTraits() )
 }
@@ -225,13 +289,13 @@ function update () {
   _.sortBy( aliens, 'y' ).forEach( ( alien, i ) => {
     alien.parent.setChildIndex( alien, i )
 
-    const positionYFactor = gsap.parseEase( 'power1.out' )( _.clamp( alien.y / game.world.height, 0, 1 ) ) // change this to gsap eases
+    // const positionYFactor = gsap.parseEase( 'power1.out' )( _.clamp( alien.y / game.world.height, 0, 1 ) ) // change this to gsap eases
 
-    alien.scale.set( positionYFactor * scaleFactor )
+    // alien.scale.set( positionYFactor * scaleFactor )
 
-    const rgb = Phaser.Color.getRGB( alien.dna.color )
-    const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
-    const tint = Phaser.Color.HSLtoRGB( hsl.h, hsl.s, hsl.l * positionYFactor ).color
-    alien.tint( { color: tint, setDNA: false } )
+    // const rgb = Phaser.Color.getRGB( alien.dna.color )
+    // const hsl = Phaser.Color.RGBtoHSL( rgb.r, rgb.g, rgb.b )
+    // const tint = Phaser.Color.HSLtoRGB( hsl.h, hsl.s, hsl.l * positionYFactor ).color
+    // alien.tint( { color: tint, setDNA: false } )
   } )
 }

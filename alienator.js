@@ -13,6 +13,86 @@ import TextField from './text-field.js'
 //   hard, just load the alien dna from that id and run an update query instead of creating
 //   a new entry
 
+const userLocale = getUserLocale()
+
+const dictionary = {
+  'en-US': {
+    oath: `To join this planet and become a proud Alien, you must take the following oath:
+
+Do you solemnly swear that you will support and defend the differences of all aliens of this planet, foreign and domestic;
+
+that you will bear true faith and allegiance to the same;
+
+that you will be open-minded to face the unknown; and that you will be proud of the alienness you and others have.`,
+  },
+  'ja-JP': {
+    oath: segmentJapaneseText( {
+      string: `エイリアンになるためには以下を宣誓してください
+
+自分と他の人々のエイリアンらしさを誇りに思います
+
+人種や地域、性的指向に関係なく地球上の全てのエイリアン達の個性を尊重し、守る努力をします
+
+自分の知らないものにも偏見なく対峙するよう努めます`
+    } ),
+    // 'This alien needs some eyes.\nDrag them onto the body.': 'JP translation pending',
+    // 'What is your alien name?': JP translation pending',
+    // 'Please tell us two things that alienate you.': 'JP translation pending',
+    // 'too long': 'JP translation pending',
+    // 'enter text': 'JP translation pending',
+    // 'Integrating alien into community.\nPlease be patient.': 'JP translation pending',
+  },
+  'de-DE': {
+    oath: `Um sich diesem Planeten anzuschließen und ein stolzes Alien zu werden, musst Du den folgenden Eid ablegen:
+
+Schwöre feierlich, dass Du die Unterschiedlichkeiten aller Aliens, in und ausländisch, unterstützt und verteidigst;
+
+dass Du dies mit wahrem Glauben betrachtest;
+
+dass Du allem Unbekannten gegenüber aufgeschlossen bist; und dass Du stolz bist auf die Fremdartigkeiten, die Du und andere haben.`,
+    'This alien needs some eyes.\nDrag them onto the body.': 'Diesem Alien fehlen Augen.\nZiehe sie auf den Körper.',
+    'What is your alien name?': 'Wie heißt Dein Alien?',
+    'Please tell us two things that alienate you.': 'Bitte nenne zwei Sachen, die Dich von\n      anderen unterscheiden.',
+    'too long': 'zu lang',
+    'enter text': 'Text eingeben',
+    'Integrating alien into community.\nPlease be patient.': 'Das Alien wird in die Gemeinschaft integriert.\nBitte habe etwas Geduld.',
+  }
+}
+
+
+function getUserLocale () {
+  if ( navigator.languages != undefined ) {
+    return navigator.languages[ 0 ]
+  } else if ( navigator !== undefined ) {
+    return navigator.language.split( ',' )[ 0 ]
+  } else {
+    return 'en-US'
+  }
+}
+
+
+function localize ( key, locale = userLocale ) {
+  if ( dictionary[ locale ] !== undefined ) return dictionary[ locale ][ key ] || key
+  return key
+}
+
+
+// segments Japanese words for potential line breaks with the TinySegmenter module.
+// We use a zero-width space unicode character \u200b to declare potential line breaks.
+// This zero-width unicode character is not supported by the Phaser word wrap functions, so
+// we need to overwrite Phaser.Text.prototype.basicWordWrap to also split words at /\u200B/.
+// In basicWordWrap we also run the text through advancedWordWrap to break long words that
+// would otherwise exceed the wordWrapWidth.
+// See phaser-extensions.js
+function segmentJapaneseText( opt ) {
+  const { string, separator } = _.defaults( opt || {}, {
+    separator: '\u200b', // zero-width space unicode character
+  } )
+  const segmenter = new TinySegmenter()
+  const segments = segmenter.segment( string )
+  return segments.join( separator )
+}
+
 
 const game = new Phaser.Game( {
   width: 1200,
@@ -506,13 +586,7 @@ function makeOath ( opt ) {
       boundsAlignH: 'left',
       boundsAlignV: 'top',
     },
-    text: `To join this planet and become a proud Alien, you must take the following oath:
-
-Do you solemnly swear that you will support and defend the differences of all aliens of this planet, foreign and domestic;
-
-that you will bear true faith and allegiance to the same;
-
-that you will be open-minded to face the unknown; and that you will be proud of the alienness you and others have.`,
+    text: localize( 'oath' ),
   } )
 
   const group = game.add.group()
@@ -651,7 +725,7 @@ function makeTraits ( opt ) {
     boundsAlignV: 'top',
   }
 
-  game.add.text( textMargin, textMargin, 'What is your alien name?', textStyle, group )
+  game.add.text( textMargin, textMargin, localize( 'What is your alien name?' ), textStyle, group )
 
   const textField1 = new TextField( {
     game,
@@ -668,9 +742,9 @@ function makeTraits ( opt ) {
     onChange: handleTextFieldChange,
   } )
 
-  textField1.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin, defaultText: 'too long' } )
+  textField1.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin, defaultText: localize( 'too long' ) } )
 
-  game.add.text( textMargin, textMargin + 210, 'Please tell us two things that alienate you.', textStyle, group )
+  game.add.text( textMargin, textMargin + 210, localize( 'Please tell us two things that alienate you.' ), textStyle, group )
   game.add.text( textMargin, textMargin + 290, '1.', textStyle, group )
 
   const textField2 = new TextField( {
@@ -688,7 +762,7 @@ function makeTraits ( opt ) {
     onChange: handleTextFieldChange,
   } )
 
-  textField2.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 290 } )
+  textField2.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 290, defaultText: localize( 'too long' ) } )
 
   game.add.text( textMargin, textMargin + 555, '2.', textStyle, group )
 
@@ -707,7 +781,7 @@ function makeTraits ( opt ) {
     onChange: handleTextFieldChange,
   } )
 
-  textField3.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 555 } )
+  textField3.warning = makeTextWarning( { parent: group, x: textMargin + textWidth, y: textMargin + 555, defaultText: localize( 'too long' ) } )
 
   group.textFields = [ textField1, textField2, textField3 ]
 
@@ -767,7 +841,7 @@ function makeTextWarning ( opt ) {
 
 function handleTextFieldChange( textField ) {
   if ( textField.text.length > textField.maxLength - 1 ) {
-    textField.warning.show( { text: textField.warning.defaultText || `max ${ textField.maxLength } characters` } )
+    textField.warning.show( { text: textField.warning.defaultText } )
   } else {
     textField.warning.hide()
   }
@@ -779,7 +853,7 @@ function validateTextFields () {
 
   for ( const textField of ui.traits.textFields ) {
     if ( textField.text.length === 0 || !textField.text.match( /\S/gm ) ) {
-      textField.warning.show( { text: `enter text` } )
+      textField.warning.show( { text: localize( 'enter text' ) } )
       valid = false
     }
   }
@@ -1064,7 +1138,7 @@ function showComplete () {
   ui.cancelButton.inputEnabled = false
   ui.okButton.inputEnabled = false
 
-  const text = 'Integrating alien into community.\nPlease be patient.'
+  const text = localize( 'Integrating alien into community.\nPlease be patient.' )
   planet.text = game.add.text( 0, 400, text, textStyle, planet )
   planet.text.setTextBounds( 0, 0, 0, 0 )
   planet.text.alpha = 0
@@ -1220,7 +1294,7 @@ function handleClick ( { type } ) {
         }
         case 'editor': {
           if ( !alien.hasEyes() ) {
-            notice.show( { text: 'This alien needs some eyes.\nDrag them onto the body.' } )
+            notice.show( { text: localize( 'This alien needs some eyes.\nDrag them onto the body.' ) } )
           } else {
             showTraits()
         }
