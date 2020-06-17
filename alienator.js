@@ -35,12 +35,12 @@ that you will be open-minded to face the unknown; and that you will be proud of 
 
 自分の知らないものにも偏見なく対峙するよう努めます`
     } ),
-    // 'This alien needs some eyes.\nDrag them onto the body.': 'JP translation pending',
-    // 'What is your alien name?': JP translation pending',
-    // 'Please tell us two things that alienate you.': 'JP translation pending',
-    // 'too long': 'JP translation pending',
-    // 'enter text': 'JP translation pending',
-    // 'Integrating alien into community.\nPlease be patient.': 'JP translation pending',
+    'This alien needs some eyes.\nDrag them onto the body.': segmentJapaneseText( { string: 'このエイリアンには目が\n必要です！エイリアンの体の上にドラッグして下さい。' } ),
+    'What is your alien name?': 'エイリアンの名前は？',
+    'Please tell us two things that alienate you.': 'あなたを孤立させたりエイリアンにする\n    二つの要素を教えてください。',
+    'too long': '長すぎます',
+    'enter text': '文字を入れて下さい',
+    'Integrating alien into community.\nPlease be patient.': 'エイリアンを惑星に追加しています。\nもう少しお待ちください。',
   },
   'de-DE': {
     oath: `Um sich diesem Planeten anzuschließen und ein stolzes Alien zu werden, musst Du den folgenden Eid ablegen:
