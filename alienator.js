@@ -5,6 +5,7 @@ import TextField from './text-field.js'
 // TO DO:
 // - translate a few things in the editor
 // - add analytics
+// - Babel!
 
 // NICE TO HAVE:
 // - Instagram API to automatically upload new aliens? (probably not possible, the API
@@ -12,28 +13,27 @@ import TextField from './text-field.js'
 // - save a unique ID (SHA?) with each alien so that it can be edited; that's not really
 //   hard, just load the alien dna from that id and run an update query instead of creating
 //   a new entry
+// - Only show logo once per session
+// - add some sort of pagination to cater for many entries
+// - try to generate gallery images via Phaser, not via loaded images (one time larger download but should then be much faster)
 
-const userLocale = getUserLocale()
+const userLocale = 'de-DE' // getUserLocale()
 
 const dictionary = {
   'en-US': {
-    oath: `To join this planet and become a proud Alien, you must take the following oath:
+    oath: `Please repeat the following sentence in your heart and click continue if you agree with the oath.
 
-Do you solemnly swear that you will support and defend the differences of all aliens of this planet, foreign and domestic;
+I do solemnly swear that I will truthfully participate in the United Cosmic Organization as a proud alien, and will to the best of my ability, celebrate, protect and defend our differences.
 
-that you will bear true faith and allegiance to the same;
-
-that you will be open-minded to face the unknown; and that you will be proud of the alienness you and others have.`,
+I will have an open mind, to things unknown, things unfamiliar, and aim to unite on our differences.`,
   },
   'ja-JP': {
     oath: segmentJapaneseText( {
-      string: `エイリアンになるためには以下を宣誓してください
+      string: `以下の文章を心の中で復唱し、この誓いに同意する場合のみ次に進んでください。
 
-自分と他の人々のエイリアンらしさを誇りに思います
+私は誇り高きエイリアンとして全宇宙連合（UCO）の一員となり、全ての個性と相違を全力で祝福し、庇い、防御していくことをここに誓います。
 
-人種や地域、性的指向に関係なく地球上の全てのエイリアン達の個性を尊重し、守る努力をします
-
-自分の知らないものにも偏見なく対峙するよう努めます`
+私は未知の物事や見慣れない物事に対しても柔軟に心を広く保ち、一人一人が違うということを忘れることなく結束していこうと努めます。`
     } ),
     'This alien needs some eyes.\nDrag them onto the body.': segmentJapaneseText( { string: 'このエイリアンには目が\n必要です！エイリアンの体の上にドラッグして下さい。' } ),
     'What is your alien name?': 'エイリアンの名前は？',
@@ -43,13 +43,10 @@ that you will be open-minded to face the unknown; and that you will be proud of 
     'Integrating alien into community.\nPlease be patient.': 'エイリアンを惑星に追加しています。\nもう少しお待ちください。',
   },
   'de-DE': {
-    oath: `Um sich diesem Planeten anzuschließen und ein stolzes Alien zu werden, musst Du den folgenden Eid ablegen:
+    oath: `Bitte wiederhole den folgenden Satz in Deinem Herzen und clicke um fortzufahren, wenn Du diesem Schwur zustimmst:
 
-Schwöre feierlich, dass Du die Unterschiedlichkeiten aller Aliens, in und ausländisch, unterstützt und verteidigst;
-
-dass Du dies mit wahrem Glauben betrachtest;
-
-dass Du allem Unbekannten gegenüber aufgeschlossen bist; und dass Du stolz bist auf die Fremdartigkeiten, die Du und andere haben.`,
+Ich schwöre feierlich, dass ich in der Vereinten Kosmischen Organisation als stolzes Alien aufrichtig teilnehme und dass ich unsere Unterschiede nach meinen besten Kräften feiern, schützen und verteidigen werde.
+Ich werde allem Unbekannten gegenüber aufgeschlossen sein, und darauf zielen unsere Unterschiede zu vereinen.`,
     'This alien needs some eyes.\nDrag them onto the body.': 'Diesem Alien fehlen Augen.\nZiehe sie auf den Körper.',
     'What is your alien name?': 'Wie heißt Dein Alien?',
     'Please tell us two things that alienate you.': 'Bitte nenne zwei Sachen, die Dich von\n      anderen unterscheiden.',
