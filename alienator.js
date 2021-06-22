@@ -17,7 +17,7 @@ import TextField from './text-field.js'
 // - add some sort of pagination to cater for many entries
 // - try to generate gallery images via Phaser, not via loaded images (one time larger download but should then be much faster)
 
-const userLocale = 'de-DE' // getUserLocale()
+const userLocale = getUserLocale()
 
 const dictionary = {
   'en-US': {
