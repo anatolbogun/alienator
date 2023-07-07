@@ -1,3 +1,4 @@
 aliens/
 templates_c/
 config.ini.production
+.DS_Store
