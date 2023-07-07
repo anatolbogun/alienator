@@ -213,7 +213,11 @@ function setAlienPivotToBottom(alien) {
 }
 
 function getAvailableDNAs() {
-  return _.differenceBy(dnaPool, _.map(aliens, 'dna'), 'id')
+  return _.differenceBy(
+    dnaPool,
+    aliens.map((alien) => alien.dna),
+    'id',
+  )
 }
 
 function getAvailableDNA() {

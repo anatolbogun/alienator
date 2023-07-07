@@ -1,4 +1,5 @@
 import Alien from './alien.js'
+import { assignValue } from './common.js'
 import Planet from './planet.js'
 import TextField from './text-field.js'
 
@@ -91,10 +92,12 @@ function localize(key, locale = userLocale) {
 // In basicWordWrap we also run the text through advancedWordWrap to break long words that
 // would otherwise exceed the wordWrapWidth.
 // See phaser-extensions.js
-function segmentJapaneseText(opt) {
-  const { string, separator } = _.defaults(opt || {}, {
-    separator: '\u200b', // zero-width space unicode character
-  })
+function segmentJapaneseText(opt = {}) {
+  const {
+    string,
+    separator = '\u200b', // zero-width space unicode character
+  } = opt
+
   const segmenter = new TinySegmenter()
   const segments = segmenter.segment(string)
   return segments.join(separator)
@@ -169,7 +172,7 @@ function create() {
   const dna = (() => {
     switch (true) {
       case useUrlHash:
-        return hashToDNA() // note: the URL hash does not include raits
+        return hashToDNA() // note: the URL hash does not include traits
       case useLocalStorage:
         return localStorageToDNA()
       default:
@@ -192,8 +195,7 @@ function create() {
 
   ui.disableButtons()
   ui.colorSelector.inputEnabled = false
-
-  for (const item of _.flatten([
+  ;[
     alien,
     ui.colorSelector.sprite,
     ui.eyes,
@@ -202,9 +204,11 @@ function create() {
     ui.previousBodyButton,
     ui.nextHeadButton,
     ui.nextBodyButton,
-  ])) {
-    item.visible = false
-  }
+  ]
+    .flat()
+    .forEach((item) => {
+      item.visible = false
+    })
 
   game.world.addChild(alien)
 
@@ -222,15 +226,11 @@ function create() {
 function handleKeyDownEnter() {
   if (currentScreen !== 'traits') return
 
-  for (const textField of ui.traits.textFields) {
-    textField.blur()
-  }
+  ui.traits.textFields.forEach((textField) => textField.blur())
 }
 
-function makeBackGround(opt) {
-  const { color } = _.defaults(opt || {}, {
-    color: 0xffffff,
-  })
+function makeBackGround(opt = {}) {
+  const { color = 0xffffff } = opt
 
   const graphics = game.add.graphics(0, 0)
   graphics.beginFill(color)
@@ -239,21 +239,17 @@ function makeBackGround(opt) {
 }
 
 function handleResize() {
-  for (const textField of ui.traits.textFields) {
-    textField.updateHtmlText()
-  }
+  ui.traits.textFields.forEach((textField) => textField.updateHtmlText())
 }
 
 function handleDNAChange(opt) {
   const { dna } = opt || {}
 
-  if (ui !== undefined) {
-    const uiEyes = _.filter(ui.buttons, (button) => button.eyeball !== undefined)
+  if (ui != null) {
+    const uiEyes = ui.buttons.filter((button) => button.eyeball != null)
 
     // detach existing eyes from the UI because they will be re-created on a DNA change
-    for (const eye of uiEyes) {
-      ui.detachButton(eye)
-    }
+    uiEyes.forEach((eye) => ui.detachButton(eye))
   }
 
   if (useUrlHash) dnaToHash({ dna })
@@ -262,30 +258,35 @@ function handleDNAChange(opt) {
 }
 
 function dnaToLocalStorage() {
-  if (alien === undefined || alien.dna === undefined) return
+  if (alien == null || alien.dna == null) return
 
-  const exportDNA = _.pick(alien.dna, ['bodyID', 'headID', 'color', 'name', 'trait1', 'trait2'])
-  exportDNA.eyes = _.map(alien.dna.eyes, (eye) => _.pick(eye, ['index', 'x', 'y']))
-  localStorage.setItem('dna', JSON.stringify(exportDNA))
+  const { bodyID, headID, color, name, trait1, trait2 } = alien.dna
+
+  const eyes = alien.dna.eyes.map((eye) => {
+    const { index, x, y } = eye
+    return { index, x, y }
+  })
+
+  localStorage.setItem('dna', JSON.stringify({ bodyID, headID, color, name, trait1, trait2, eyes }))
 }
 
 function localStorageToDNA() {
-  return JSON.parse(localStorage.getItem('dna')) || undefined
+  return JSON.parse(localStorage.getItem('dna')) || null
 }
 
-function hashToDNA(opt) {
-  const { separator1, separator2, eyeSeparator1, eyeSeparator2, mapping } = _.defaults(opt || {}, {
-    separator1: ',',
-    separator2: '=',
-    eyeSeparator1: ';',
-    eyeSeparator2: '!',
-    mapping: {
+function hashToDNA(opt = {}) {
+  const {
+    separator1 = ',',
+    separator2 = '=',
+    eyeSeparator1 = ';',
+    eyeSeparator2 = '!',
+    mapping = {
       body: 'bodyID',
       head: 'headID',
       eyes: 'eyes',
       color: 'color',
     },
-  })
+  } = opt
 
   const hash = window.location.hash.replace(/^\#/, '')
 
@@ -298,11 +299,11 @@ function hashToDNA(opt) {
           if (!isNaN(_.toNumber(pair[1]))) pair[1] = _.toNumber(pair[1])
         },
       ),
-      (pair) => pair[0] !== undefined,
+      (pair) => pair[0] != null,
     ),
   )
 
-  if (dna.eyes !== undefined) {
+  if (dna.eyes != null) {
     dna.eyes = _.map(
       _.map(dna.eyes.split(eyeSeparator2), (eyePropsString) => eyePropsString.split(eyeSeparator1)),
       (values) => {
@@ -319,17 +320,18 @@ function hashToDNA(opt) {
 }
 
 function dnaToHash(opt) {
-  const { dna, separator1, separator2, eyeSeparator1, eyeSeparator2, mapping } = _.defaults(opt || {}, {
-    separator1: ',',
-    separator2: '=',
-    eyeSeparator1: ';',
-    eyeSeparator2: '!',
-    mapping: {
+  const {
+    separator1 = ',',
+    separator2 = '=',
+    eyeSeparator1 = ';',
+    eyeSeparator2 = '!',
+    mapping = {
       body: 'bodyID',
       head: 'headID',
+      eyes: 'eyes',
       color: 'color',
     },
-  })
+  } = opt
 
   // with ..._.values( mapping ) we just remove the eyes property from DNA because this is an array and will be handled differently below
   let hash = _.join(
@@ -348,10 +350,10 @@ function dnaToHash(opt) {
   if (dna.eyes.length > 0) {
     hash += `${separator1}eyes${separator2}`
 
-    for (const eye of dna.eyes) {
+    dna.eyes.forEach((eye) => {
       hash += separator + eye.index + eyeSeparator1 + eye.x + eyeSeparator1 + eye.y
       separator = eyeSeparator2
-    }
+    })
   }
 
   window.location.hash = hash
@@ -359,28 +361,23 @@ function dnaToHash(opt) {
   return hash
 }
 
-function makeUI(opt) {
-  const { parent, edgeMargin, headYPosFactor, bodyYPosFactor, previousNextButtonOffsetY } = _.defaults(opt || {}, {
-    edgeMargin: 30,
-    headYPosFactor: 0.4,
-    bodyYPosFactor: 0.6,
-    previousNextButtonOffsetY: 0,
-  })
+function makeUI(opt = {}) {
+  const { parent, edgeMargin = 30, headYPosFactor = 0.4, bodyYPosFactor = 0.6, previousNextButtonOffsetY = 0 } = opt
 
   const group = game.make.group()
-  if (parent !== undefined) parent.addChild(group)
+  if (parent != null) parent.addChild(group)
   group.buttons = []
 
   group.disableButtons = () => {
-    for (const button of group.buttons) {
+    group.buttons.forEach((button) => {
       button.inputEnabled = false
-    }
+    })
   }
 
   group.enableButtons = () => {
-    for (const button of group.buttons) {
+    group.buttons.forEach((button) => {
       button.inputEnabled = true
-    }
+    })
   }
 
   group.detachButton = (button) => {
@@ -399,7 +396,7 @@ function makeUI(opt) {
 
   const eyes = makeEyes({ parent: group })
   group.eyes = eyes
-  group.buttons = _.concat(group.buttons, eyes)
+  group.buttons = [...group.buttons, ...eyes]
 
   const randomButton = makeButton({ group, key: 'random', onClick: () => alien.randomize() })
   randomButton.position.set(bounds.left + randomButton.width / 2 + edgeMargin, colorSelector.sprite.y)
@@ -477,14 +474,15 @@ function makeUI(opt) {
 }
 
 // creates UI eyes
-function makeEyes(opt) {
-  const { parent, x, y, margin, eyeIndices } = _.defaults(opt || {}, {
-    x: game.world.centerX,
-    y: 50,
-    margin: 20,
-    eyeIndices: [0, 1, 2, 3, 4, 5],
-    // eyeIndices: [ 2, 1, 0, 5, 4, 3 ], // alternative eye order
-  })
+function makeEyes(opt = {}) {
+  const {
+    parent,
+    x = game.world.centerX,
+    y = 50,
+    margin = 20,
+    eyeIndices = [0, 1, 2, 3, 4, 5],
+    // eyeIndices = [ 2, 1, 0, 5, 4, 3 ], // alternative eye order
+  } = opt
 
   const eyes = []
   let width = 0
@@ -503,24 +501,27 @@ function makeEyes(opt) {
   const posY = y + height / 2
   let posX = x - width / 2
 
-  for (const eye of eyes) {
+  eyes.forEach((eye) => {
     posX += eye.eyeball.width / 2
     eye.position.set(posX, posY)
     eye.origin = { x: posX, y: posY }
     posX += eye.eyeball.width / 2 + margin
-  }
+  })
 
   return eyes
 }
 
-function makeEye(opt) {
-  const { parent, index, order, x, y, origin, color, alpha } = _.defaults(opt || {}, {
-    x: 0,
-    y: 0,
-    origin: { x: opt.x || 0, y: opt.y || 0 },
-    alpha: 1,
-    color: 0x808080,
-  })
+function makeEye(opt = {}) {
+  const {
+    parent,
+    index,
+    order,
+    x = 0,
+    y = 0,
+    origin = { x: opt.x || 0, y: opt.y || 0 },
+    color = 0x808080,
+    alpha = 1,
+  } = opt
 
   const eye = alien.makeEye({ parent, x, y, index, blink: false, attach: false })
   eye.alpha = alpha
@@ -535,11 +536,9 @@ function makeEye(opt) {
 }
 
 function makeEyesDraggable() {
-  if (alien === undefined) return
+  if (alien == null) return
 
-  for (const eye of alien.eyes) {
-    makeEyeDraggable({ eye })
-  }
+  alien.eyes?.forEach((eye) => makeEyeDraggable({ eye }))
 }
 
 function makeEyeDraggable({ eye }) {
@@ -601,21 +600,21 @@ function makeNewUiEye({ eye }) {
   ui.attachButton(uiEye)
 }
 
-function makeButton(opt) {
-  const { key, atlasKey, frameKey, x, y, anchorX, anchorY, alpha, visible, inputEnabled, group, onClick } = _.defaults(
-    opt || {},
-    {
-      atlasKey: 'assets',
-      frameKey: opt.key,
-      x: 0,
-      y: 0,
-      anchorX: 0.5,
-      anchorY: 0.5,
-      alpha: 1,
-      visible: true,
-      inputEnabled: true,
-    },
-  )
+function makeButton(opt = {}) {
+  const {
+    key,
+    atlasKey = 'assets',
+    frameKey = opt.key,
+    x = 0,
+    y = 0,
+    anchorX = 0.5,
+    anchorY = 0.5,
+    alpha = 1,
+    visible = true,
+    inputEnabled = true,
+    group,
+    onClick,
+  } = opt
 
   const capitalizedFrameKey = capitalize(frameKey)
   const button = game.add.button(
@@ -631,12 +630,12 @@ function makeButton(opt) {
     group,
   )
   button.anchor.set(anchorX, anchorY)
-  button.origin = _.clone(button.position)
+  button.origin = { ...button.position }
   button.alpha = alpha
   button.visible = visible
   button.inputEnabled = inputEnabled
 
-  if (group !== undefined) {
+  if (group != null) {
     group[`${key}Button`] = button
     group.buttons.push(button)
   }
@@ -648,25 +647,29 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-function makeOath(opt) {
-  const { x, y, widthFactor, heightFactor, panelRadius, textOffsetY, panelColor, textMargin, textStyle, text } =
-    _.defaults(opt, {
-      widthFactor: 0.95,
-      heightFactor: 0.62,
-      panelRadius: 50,
-      textOffsetY: -8,
-      panelColor: 0x000000,
-      textMargin: 50,
-      textStyle: {
-        font: 'BC Alphapipe, sans-serif',
-        fontSize: '56px',
-        fill: '#ffffff',
-        align: 'left',
-        boundsAlignH: 'left',
-        boundsAlignV: 'top',
-      },
-      text: localize('oath'),
-    })
+function makeOath(opt = {}) {
+  const {
+    x,
+    y,
+    widthFactor = 0.95,
+    heightFactor = 0.62,
+    panelRadius = 50,
+    panelColor = 0x000000,
+    textMargin = 50,
+    text = localize('oath'),
+  } = opt
+
+  const textStyle = assignValue(
+    {
+      font: 'BC Alphapipe, sans-serif',
+      fontSize: '56px',
+      fill: '#ffffff',
+      align: 'left',
+      boundsAlignH: 'left',
+      boundsAlignV: 'top',
+    },
+    opt.textStyle,
+  )
 
   const group = game.add.group()
   group.visible = false
@@ -715,10 +718,11 @@ function goHome() {
 }
 
 function hideOath() {
-  currentScreen = undefined
+  currentScreen = null
   ui.disableButtons()
 
   const brightness = { value: 1 }
+
   gsap.to(brightness, {
     duration: 0.75,
     value: 0,
@@ -738,8 +742,7 @@ function showEditor() {
   ui.colorSelector.inputEnabled = true
   ui.cancelButton.inputEnabled = false
   ui.oath.enabled = false
-
-  for (const item of _.flatten([
+  ;[
     alien,
     ui.colorSelector.sprite,
     ui.randomButton,
@@ -747,18 +750,20 @@ function showEditor() {
     ui.previousBodyButton,
     ui.nextHeadButton,
     ui.nextBodyButton,
-  ])) {
-    item.visible = true
-  }
+  ]
+    .flat()
+    .forEach((item) => {
+      item.visible = true
+    })
 
   ui.cancelButton.inputEnabled = false
 
   // enable draggable ui eyes just in case, very occasionally there's a bug and they are not draggable without this
-  for (const eye of ui.eyes) {
+  ui.eyes.forEach((eye) => {
     eye.inputEnabled = true
-  }
+  })
 
-  const tl = new TimelineMax()
+  new TimelineMax()
     .call(() => alien.stopAllBlinking())
     .to(ui.logo, { duration: 0.5, alpha: 0 }, 0)
     .to(ui.oath, { duration: 0.75, y: -ui.oath.height / 2, ease: Back.easeIn }, 0)
@@ -793,16 +798,16 @@ function showEditor() {
     )
 }
 
-function makeTraits(opt) {
-  const { x, y, widthFactor, heightFactor, panelRadius, panelColor, textMargin } = _.defaults(opt || {}, {
-    x: 0,
-    y: 0,
-    widthFactor: 0.95,
-    heightFactor: 0.62,
-    panelRadius: 50,
-    panelColor: 0x000000,
-    textMargin: 50,
-  })
+function makeTraits(opt = {}) {
+  const {
+    x = 0,
+    y = 0,
+    widthFactor = 0.95,
+    heightFactor = 0.62,
+    panelRadius = 50,
+    panelColor = 0x000000,
+    textMargin = 50,
+  } = opt
 
   const group = game.add.group()
 
@@ -916,11 +921,11 @@ function makeTraits(opt) {
   return group
 }
 
-function makeTextWarning(opt) {
-  const { parent, defaultText, x, y, textStyle } = _.defaults(opt || {}, {
-    x: 0,
-    y: 0,
-    textStyle: {
+function makeTextWarning(opt = {}) {
+  const { parent, defaultText = '', x = 0, y = 0 } = opt
+
+  const textStyle = assignValue(
+    {
       font: 'BC Alphapipe, sans-serif',
       fontSize: '56px',
       fill: '#f57e20',
@@ -928,7 +933,8 @@ function makeTextWarning(opt) {
       boundsAlignH: 'right',
       boundsAlignV: 'top',
     },
-  })
+    opt.textStyle,
+  )
 
   const warning = game.add.text(x, y, '', textStyle, parent)
   warning.defaultText = defaultText
@@ -939,9 +945,9 @@ function makeTextWarning(opt) {
   warning.show = (opt) => {
     const { text } = opt
 
-    if (text !== undefined) warning.text = text
+    if (text != null) warning.text = text
 
-    if (warning.showTl !== undefined && warning.showTl.progress() < 1) return
+    if (warning.showTl != null && warning.showTl.progress() < 1) return
 
     warning.showTl = new TimelineMax()
       .to(warning, { duration: 0.5, alpha: 1 }, 0)
@@ -949,7 +955,7 @@ function makeTextWarning(opt) {
   }
 
   warning.hide = () => {
-    if (warning.hideTl !== undefined && warning.hideTl.progress() < 1) return
+    if (warning.hideTl != null && warning.hideTl.progress() < 1) return
     warning.hideTl = new TimelineMax()
       .to(warning, { duration: 0.5, alpha: 0 }, 0)
       .to(warning.scale, { duration: 0.5, x: 0, y: 0, ease: Back.easeIn }, 0)
@@ -969,12 +975,12 @@ function handleTextFieldChange(textField) {
 function validateTextFields() {
   let valid = true
 
-  for (const textField of ui.traits.textFields) {
+  ui.traits.textFields.forEach((textField) => {
     if (textField.text.length === 0 || !textField.text.match(/\S/gm)) {
       textField.warning.show({ text: localize('enter text') })
       valid = false
     }
-  }
+  })
 
   return valid
 }
@@ -1034,35 +1040,36 @@ function hideTraits() {
 
   ui.traits.timeline.reverse()
 
-  for (const textField of ui.traits.textFields) {
-    console.log('TF', textField)
+  ui.traits.textFields.forEach((textField) => {
     textField.blur()
     textField.hideHtmlText()
-  }
+  })
 }
 
-function makeNotice(opt) {
-  const { parent, x, y, width, height, color, alpha, edgeRadius, padding, persistent, textStyle } = _.defaults(
-    opt || {},
+function makeNotice(opt = {}) {
+  const {
+    parent,
+    x = 0,
+    y = 0,
+    width = 100,
+    height = 100,
+    color = 0x000000,
+    alpha = 1,
+    edgeRadius = 50,
+    padding = 40,
+    persistent = false,
+  } = opt
+
+  const textStyle = assignValue(
     {
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
-      color: 0x000000,
-      alpha: 1,
-      edgeRadius: 50,
-      padding: 40,
-      persistent: false,
-      textStyle: {
-        font: 'BC Alphapipe, sans-serif',
-        fontSize: '56px',
-        fill: '#ffffff',
-        align: 'center',
-        boundsAlignH: 'center',
-        boundsAlignV: 'middle',
-      },
+      font: 'BC Alphapipe, sans-serif',
+      fontSize: '56px',
+      fill: '#ffffff',
+      align: 'center',
+      boundsAlignH: 'center',
+      boundsAlignV: 'middle',
     },
+    opt.textStyle,
   )
 
   const group = game.add.group(parent)
@@ -1087,16 +1094,12 @@ function makeNotice(opt) {
   const textObj = game.add.text(0, 0, '', textStyle, group)
   textObj.setTextBounds(-textWidth / 2, -textHeight / 2, textWidth, textHeight)
 
-  group.show = (opt) => {
-    const { text, x, y, persistent } = _.defaults(opt || {}, {
-      x: group.origin.x,
-      y: group.origin.y,
-      persistent: false,
-    })
+  group.show = (opt = {}) => {
+    const { text, x = group.origin.x, y = group.origin.y, persistent = false } = opt
 
     group.persistent = persistent
 
-    if (text !== undefined) textObj.text = text
+    if (text !== null) textObj.text = text
 
     group.position.set(x, y)
 
@@ -1210,10 +1213,10 @@ function showResult() {
     }),
   )
 
-  for (const textField of ui.traits.textFields) {
+  ui.traits.textFields.forEach((textField) => {
     textField.blur()
     textField.hideHtmlText()
-  }
+  })
 }
 
 function hideResult() {
@@ -1317,7 +1320,7 @@ function save({ images }) {
     name: alien.dna.name,
     trait1: alien.dna.trait1,
     trait2: alien.dna.trait2,
-    eyes: JSON.stringify(_.map(alien.dna.eyes, (eye) => _.pick(eye, ['index', 'x', 'y']))),
+    eyes: JSON.stringify(alien.dna.eyes.map((eye) => _.pick(eye, ['index', 'x', 'y']))),
     imageAvatar: images.avatar,
     image: images.alien,
     imageTraits: images.traits,
@@ -1348,16 +1351,17 @@ function save({ images }) {
 
 // x, y, width and height are the crop area
 // if defined outputWidth and outputHeight are the resulting output size (this scales the image)
-function takeScreenshot(opt) {
-  const { x, y, width, height, outputWidth, outputHeight, mimeType, onComplete } = _.defaults(opt || {}, {
-    x: 0,
-    y: 0,
-    width: game.world.width,
-    height: game.world.height,
-    outputWidth: opt.width || game.world.width,
-    outputHeight: opt.height || game.world.height,
-    // mimeType: 'image/octet-stream', // if downloading the image we need image/octet-stream , but that's not good for saving it
-  })
+function takeScreenshot(opt = {}) {
+  const {
+    x = 0,
+    y = 0,
+    width = game.world.width,
+    height = game.world.height,
+    outputWidth = opt.width || game.world.width,
+    outputHeight = opt.height || game.world.height,
+    mimeType, // 'image/octet-stream', // if downloading the image we need image/octet-stream , but that's not good for saving it
+    onComplete,
+  } = opt
 
   const screenshot = new Image()
 
@@ -1369,19 +1373,15 @@ function takeScreenshot(opt) {
     tempCanvas.height = outputHeight
     context.drawImage(screenshot, x, y, width, height, 0, 0, outputWidth, outputHeight)
     // for some reason the .replace() on the next line has to happen right after .toDataURL() or it won't take any effect; maybe because it's not instant to create the dataURL?
-    const dataURL =
-      mimeType === undefined ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace('image/png', mimeType)
-    if (onComplete !== undefined) onComplete(dataURL)
+    const dataURL = mimeType == null ? tempCanvas.toDataURL() : tempCanvas.toDataURL().replace('image/png', mimeType)
+    if (onComplete != null) onComplete(dataURL)
   }
 
   screenshot.src = game.canvas.toDataURL('image/png')
 }
 
-function makeColorSelector(opt) {
-  const { parent, x, y } = _.defaults(opt || {}, {
-    x: 0,
-    y: 0,
-  })
+function makeColorSelector(opt = {}) {
+  const { parent, x = 0, y = 0 } = opt
 
   const image = game.make.image(0, 0, 'assets', 'colorPicker')
   const bmd = game.make.bitmapData(image.width, image.height)

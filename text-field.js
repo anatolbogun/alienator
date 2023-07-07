@@ -2,74 +2,45 @@ export default class TextField extends Phaser.Group {
   // htmlAttributeType: can be any HTML input type such as 'submit', 'search', password, etc. which may change the soft keyboard layout if supported
   // htmlAttributeInputMode: smilar to type but often used in combination with type, e.g. type 'text', inputmode 'decimal' to show the numeric keyboard
 
-  constructor(opt) {
+  constructor(opt = {}) {
     const {
       game,
       id,
       htmlAttributeType,
       htmlAttributeInputMode,
       parent,
-      text,
-      x,
-      y,
-      width,
-      height,
-      padding,
-      multiLine,
-      maxLength,
-      borderThickness,
-      borderColor,
-      borderColorFocus,
-      borderAlpha,
-      borderAlphaFocus,
-      fillColor,
-      fillColorFocus,
-      fillAlpha,
-      fillAlphaFocus,
-      edgeRadius,
-      fontFamily,
-      fontSize,
-      fontColor,
-      textAlign,
-      parentDom,
-      cssStyle,
+      text = '',
+      x = 0,
+      y = 0,
+      width = 100,
+      height = 10,
+      padding = 20,
+      multiLine = false,
+      maxLength = 100,
+      borderThickness = 1,
+      borderColor = 0x000000,
+      borderColorFocus = 0xf57e20,
+      borderAlpha = 1,
+      borderAlphaFocus = 1,
+      fillColor = 0xffffff,
+      fillColorFocus = 0xffffff,
+      fillAlpha = 1,
+      fillAlphaFocus = 1,
+      edgeRadius = 5,
+      fontFamily = 'BC Alphapipe, sans-serif',
+      fontSize = 56,
+      fontColor = '#000000',
+      textAlign = 'left',
+      parentDom = 'body',
+      cssStyle = 'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
       cssStyleFocus,
       cssId,
       cssClass,
-      focus,
-      fadedOut,
-      hidden,
+      focus = false,
+      fadedOut = false,
+      hidden = false,
       onChange,
-    } = _.defaults(opt || {}, {
-      text: '',
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 10,
-      padding: 20,
-      multiLine: false,
-      maxLength: 100,
-      borderThickness: 1,
-      borderColor: 0x000000,
-      borderColorFocus: 0xf57e20,
-      borderAlpha: 1,
-      borderAlphaFocus: 1,
-      fillColor: 0xffffff,
-      fillColorFocus: 0xffffff,
-      fillAlpha: 1,
-      fillAlphaFocus: 1,
-      edgeRadius: 5,
-      fontFamily: 'BC Alphapipe, sans-serif',
-      fontSize: 56,
-      fontColor: '#000000',
-      textAlign: 'left',
-      parentDom: 'body',
-      cssStyle:
-        'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
-      focus: false,
-      fadedOut: false,
-      hidden: false,
-    })
+    } = opt
 
     super(game, parent)
 
@@ -120,7 +91,7 @@ export default class TextField extends Phaser.Group {
     if (hidden) this.hide()
   }
 
-  makeHtmlText(opt) {
+  makeHtmlText(opt = {}) {
     const {
       parentDom,
       cssStyle,
@@ -133,15 +104,15 @@ export default class TextField extends Phaser.Group {
       htmlAttributeInputMode,
     } = opt
 
-    const cssClassParam = cssClass === undefined ? '' : ` class="${cssClass}"`
-    const cssStyleParam = cssStyle === undefined ? '' : ` style="${cssStyle}"`
+    const cssClassParam = cssClass == null ? '' : ` class="${cssClass}"`
+    const cssStyleParam = cssStyle == null ? '' : ` style="${cssStyle}"`
     const tag = multiLine ? 'textarea' : 'input'
-    if (this.id === undefined) this.id = `textField${$(tag).length}`
-    const type = htmlAttributeType === undefined ? '' : ` type="${htmlAttributeType}"`
-    const inputMode = htmlAttributeInputMode === undefined ? '' : ` inputmode="${htmlAttributeInputMode}"`
-    const maxLength = this.maxLength === undefined ? '' : ` maxLength="${this.maxLength}" `
+    if (this.id == null) this.id = `textField${$(tag).length}`
+    const type = htmlAttributeType == null ? '' : ` type="${htmlAttributeType}"`
+    const inputMode = htmlAttributeInputMode == null ? '' : ` inputmode="${htmlAttributeInputMode}"`
+    const maxLength = this.maxLength == null ? '' : ` maxLength="${this.maxLength}" `
     const htmlText = $(`<${tag} id="${this.id}"${type}${inputMode}${cssClassParam}${cssStyleParam}${maxLength}>`).get(0)
-    if (parentDom !== undefined) $(parentDom).append(htmlText)
+    if (parentDom != null) $(parentDom).append(htmlText)
     htmlText.style.fontFamily = fontFamily
     htmlText.style.color = fontColor
     htmlText.style.textAlign = textAlign
@@ -174,7 +145,7 @@ export default class TextField extends Phaser.Group {
   }
 
   handleKeyDown() {
-    if (this.onChange !== undefined) {
+    if (this.onChange != null) {
       // requestAnimationFrame to give the htmlText a chance to get the latest user input, otherwise this may lag one character behind
       window.requestAnimationFrame(() => {
         this.text = this.text.replace(/[\n\s]+/gm, ' ')
@@ -261,10 +232,8 @@ export default class TextField extends Phaser.Group {
     return this
   }
 
-  fadeIn(opt) {
-    const { duration, onComplete } = _.defaults(opt || {}, {
-      duration: 0.5,
-    })
+  fadeIn(opt = {}) {
+    const { duration = 0.5, onComplete } = opt
 
     this.show()
 
@@ -276,10 +245,8 @@ export default class TextField extends Phaser.Group {
     return this
   }
 
-  fadeOut(opt) {
-    const { duration, onComplete } = _.defaults(opt || {}, {
-      duration: 0.5,
-    })
+  fadeOut(opt = {}) {
+    const { duration = 0.5, onComplete } = opt
 
     const tl = new TimelineMax()
     tl.to(this, duration, { alpha: 0 })
@@ -289,10 +256,8 @@ export default class TextField extends Phaser.Group {
     return this
   }
 
-  fadeInText(opt) {
-    const { duration, onComplete } = _.defaults(opt || {}, {
-      duration: 0.5,
-    })
+  fadeInText(opt = {}) {
+    const { duration = 0.5, onComplete } = opt
 
     this.show()
 
@@ -303,10 +268,8 @@ export default class TextField extends Phaser.Group {
     return this
   }
 
-  fadeOutText(opt) {
-    const { duration, onComplete } = _.defaults(opt || {}, {
-      duration: 0.5,
-    })
+  fadeOutText(opt = {}) {
+    const { duration = 0.5, onComplete } = opt
 
     const tl = new TimelineMax()
     tl.to(this.htmlText.style, duration, { opacity: 0 }, 0)

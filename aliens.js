@@ -26,9 +26,9 @@ $(document).ready(() => {
 })
 
 function getUserLocale() {
-  if (navigator.languages != undefined) {
+  if (navigator.languages != null) {
     return navigator.languages[0]
-  } else if (navigator !== undefined) {
+  } else if (navigator.language != null) {
     return navigator.language.split(',')[0]
   } else {
     return 'en-US'
@@ -91,11 +91,8 @@ function utcToUserTimeStamp(utcTimeStamp, locale = userLocale, showTime = false)
   return output
 }
 
-function lazyLoadImages(opt) {
-  const { logLoaded, maxDelay } = _.defaults(opt || {}, {
-    logLoaded: false,
-    maxDelay: 0.5,
-  })
+function lazyLoadImages(opt = {}) {
+  const { logLoaded = false, maxDelay = 0.5 } = opt
 
   $('.lazy').Lazy({
     scrollDirection: 'vertical',
@@ -122,14 +119,14 @@ function lazyLoadImages(opt) {
 }
 
 function translate() {
-  for (const translateElement of $(`span.localized`)) {
+  $(`span.localized`)?.forEach?.((translateElement) => {
     // remove the entire span tag so that when this function is called in the future this can be skipped
     translateElement.outerHTML = `<span>${localize(translateElement.innerHTML)}</span>`
-  }
+  })
 }
 
 function localize(key, locale = userLocale) {
-  if (dictionary[locale] !== undefined) return dictionary[locale][key] || key
+  if (dictionary[locale] != null) return dictionary[locale][key] || key
   return key
 }
 

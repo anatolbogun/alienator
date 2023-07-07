@@ -35,9 +35,6 @@ function preload() {
 function create() {
   game.input.maxPointers = 1
   // game.scale.parentIsWindow = true
-  console.log(game.scale.boundingParent)
-
-  console.log('GAME', game)
 
   // to do: not the best way to read the id from the URL, I'd prefer to call a load( id ) function from outside this module, but Safari causes issues
   const id = Number(window.location.pathname.match(/aliens\/(\d+)/)[1])
@@ -46,8 +43,6 @@ function create() {
 }
 
 function loadDNA({ id, onLoaded }) {
-  // if ( id === undefined ) return
-
   $.ajax({
     type: 'POST',
     url: 'load',
@@ -58,7 +53,7 @@ function loadDNA({ id, onLoaded }) {
       console.log('LOADING COMPLETE, SERVER RESPONSE:', responseObj)
 
       if (responseObj.success) {
-        if (onLoaded !== undefined) onLoaded(responseObj.dna)
+        if (onLoaded != null) onLoaded(responseObj.dna)
       } else {
         // notice.show( { text: 'Oops. We encountered an error.\nThe alien could not be loaded.\nPlease reload the page\nto try again.', y: alien.y + 150, persistent: true } )
       }
@@ -69,7 +64,7 @@ function loadDNA({ id, onLoaded }) {
 }
 
 function makeAlien({ dna }) {
-  if (dna === undefined) return
+  if (dna == null) return
 
   const alien = new Alien({
     game,

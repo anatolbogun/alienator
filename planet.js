@@ -1,18 +1,17 @@
 export default class Planet extends Phaser.Group {
-  constructor(opt) {
-    const { game, parent, x, y, alpha, dayNightAlpha, atmosphereAlpha, atlasKey, duration, repeat } = _.defaults(
-      opt || {},
-      {
-        x: 0,
-        y: 0,
-        alpha: 1,
-        atmosphereAlpha: 0.5,
-        dayNightAlpha: 0.8,
-        atlasKey: 'assets',
-        duration: 10,
-        repeat: -1,
-      },
-    )
+  constructor(opt = {}) {
+    const {
+      game,
+      parent,
+      x = 0,
+      y = 0,
+      alpha = 1,
+      dayNightAlpha = 0.8,
+      atmosphereAlpha = 0.5,
+      atlasKey = 'assets',
+      duration = 10,
+      repeat = -1,
+    } = opt
 
     super(game, parent, 'planet')
 
