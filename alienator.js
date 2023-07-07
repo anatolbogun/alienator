@@ -18,6 +18,7 @@ import TextField from './text-field.js'
 // - try to generate gallery images via Phaser, not via loaded images (one time larger download but should then be much faster)
 
 const userLocale = getUserLocale()
+const defaultLocale = 'en-US' // fallback locale if there are no dictionary entries for the user's locale
 
 const dictionary = {
   'en-US': {
@@ -63,18 +64,24 @@ Ich werde allem Unbekannten gegenüber aufgeschlossen sein, und darauf zielen un
 }
 
 function getUserLocale() {
-  if (navigator.languages != undefined) {
+  if (navigator.languages != null) {
     return navigator.languages[0]
-  } else if (navigator !== undefined) {
+  } else if (navigator.language != null) {
     return navigator.language.split(',')[0]
   } else {
     return 'en-US'
   }
 }
 
+/**
+ * Returns the taranslated string for the given key and locale. Fallback to defaultLocale or if that doesn't exist to
+ * just the key.
+ * @param {string} key
+ * @param {string} locale
+ * @returns string translation from the dictionary
+ */
 function localize(key, locale = userLocale) {
-  if (dictionary[locale] !== undefined) return dictionary[locale][key] || key
-  return key
+  return (dictionary[locale] ?? dictionary[defaultLocale])?.[key] ?? key
 }
 
 // segments Japanese words for potential line breaks with the TinySegmenter module.
