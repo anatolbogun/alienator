@@ -1,15 +1,46 @@
 export default class TextField extends Phaser.Group {
-
   // htmlAttributeType: can be any HTML input type such as 'submit', 'search', password, etc. which may change the soft keyboard layout if supported
   // htmlAttributeInputMode: smilar to type but often used in combination with type, e.g. type 'text', inputmode 'decimal' to show the numeric keyboard
 
-  constructor ( opt ) {
+  constructor(opt) {
     const {
-      game, id, htmlAttributeType, htmlAttributeInputMode, parent, text, x, y, width, height, padding, multiLine, maxLength,
-      borderThickness, borderColor, borderColorFocus, borderAlpha, borderAlphaFocus, fillColor, fillColorFocus, fillAlpha, fillAlphaFocus, edgeRadius,
-      fontFamily, fontSize, fontColor, textAlign,
-      parentDom, cssStyle, cssStyleFocus, cssId, cssClass, focus, fadedOut, hidden, onChange
-    } = _.defaults( opt || {}, {
+      game,
+      id,
+      htmlAttributeType,
+      htmlAttributeInputMode,
+      parent,
+      text,
+      x,
+      y,
+      width,
+      height,
+      padding,
+      multiLine,
+      maxLength,
+      borderThickness,
+      borderColor,
+      borderColorFocus,
+      borderAlpha,
+      borderAlphaFocus,
+      fillColor,
+      fillColorFocus,
+      fillAlpha,
+      fillAlphaFocus,
+      edgeRadius,
+      fontFamily,
+      fontSize,
+      fontColor,
+      textAlign,
+      parentDom,
+      cssStyle,
+      cssStyleFocus,
+      cssId,
+      cssClass,
+      focus,
+      fadedOut,
+      hidden,
+      onChange,
+    } = _.defaults(opt || {}, {
       text: '',
       x: 0,
       y: 0,
@@ -33,27 +64,28 @@ export default class TextField extends Phaser.Group {
       fontColor: '#000000',
       textAlign: 'left',
       parentDom: 'body',
-      cssStyle: 'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
+      cssStyle:
+        'position: absolute; margin: 0px; background-color: transparent; border: none; resize: none; outline: none;',
       focus: false,
       fadedOut: false,
       hidden: false,
-    } )
+    })
 
-    super( game, parent )
+    super(game, parent)
 
-    this.position.set( x, y )
+    this.position.set(x, y)
 
     this.game = game
     this.id = id
-    this.box = game.add.graphics( 0, 0, this )
-    this.box.beginFill( fillColor, fillAlpha )
-    this.box.lineStyle( borderThickness, borderColor, borderAlpha )
-    this.box.drawRoundedRect( 0, 0, width, height, edgeRadius )
+    this.box = game.add.graphics(0, 0, this)
+    this.box.beginFill(fillColor, fillAlpha)
+    this.box.lineStyle(borderThickness, borderColor, borderAlpha)
+    this.box.drawRoundedRect(0, 0, width, height, edgeRadius)
 
-    this.boxFocus = game.add.graphics( 0, 0, this )
-    this.boxFocus.beginFill( fillColorFocus, fillAlphaFocus )
-    this.boxFocus.lineStyle( borderThickness, borderColorFocus, borderAlphaFocus )
-    this.boxFocus.drawRoundedRect( 0, 0, width, height, edgeRadius )
+    this.boxFocus = game.add.graphics(0, 0, this)
+    this.boxFocus.beginFill(fillColorFocus, fillAlphaFocus)
+    this.boxFocus.lineStyle(borderThickness, borderColorFocus, borderAlphaFocus)
+    this.boxFocus.drawRoundedRect(0, 0, width, height, edgeRadius)
     this.boxFocus.visible = false
 
     this.width = width
@@ -64,31 +96,52 @@ export default class TextField extends Phaser.Group {
     this.fontSize = fontSize
     this.previousText = text
 
-    this.htmlText = this.makeHtmlText( { parentDom, cssStyle, cssStyleFocus, cssId, cssClass, fontFamily, fontColor, textAlign, multiLine, htmlAttributeType, htmlAttributeInputMode } )
+    this.htmlText = this.makeHtmlText({
+      parentDom,
+      cssStyle,
+      cssStyleFocus,
+      cssId,
+      cssClass,
+      fontFamily,
+      fontColor,
+      textAlign,
+      multiLine,
+      htmlAttributeType,
+      htmlAttributeInputMode,
+    })
     this.text = text
     this.cssBorder = this.htmlText.style.border
 
-    if ( fadedOut ) this.setFadeOut()
-    if ( focus ) this.htmlText.focus()
+    if (fadedOut) this.setFadeOut()
+    if (focus) this.htmlText.focus()
 
-    window.requestAnimationFrame( () => this.updateHtmlText() )
+    window.requestAnimationFrame(() => this.updateHtmlText())
 
-    if ( hidden ) this.hide()
+    if (hidden) this.hide()
   }
 
+  makeHtmlText(opt) {
+    const {
+      parentDom,
+      cssStyle,
+      cssClass,
+      fontFamily,
+      fontColor,
+      textAlign,
+      multiLine,
+      htmlAttributeType,
+      htmlAttributeInputMode,
+    } = opt
 
-  makeHtmlText ( opt ) {
-    const { parentDom, cssStyle, cssClass, fontFamily, fontColor, textAlign, multiLine, htmlAttributeType, htmlAttributeInputMode } = opt
-
-    const cssClassParam = cssClass === undefined ? '' : ` class="${ cssClass }"`
-    const cssStyleParam = cssStyle === undefined ? '' : ` style="${ cssStyle }"`
+    const cssClassParam = cssClass === undefined ? '' : ` class="${cssClass}"`
+    const cssStyleParam = cssStyle === undefined ? '' : ` style="${cssStyle}"`
     const tag = multiLine ? 'textarea' : 'input'
-    if ( this.id === undefined ) this.id = `textField${ $( tag ).length }`
-    const type = htmlAttributeType === undefined ? '' : ` type="${ htmlAttributeType }"`
-    const inputMode = htmlAttributeInputMode === undefined ? '' : ` inputmode="${ htmlAttributeInputMode }"`
-    const maxLength = this.maxLength === undefined ? '' : ` maxLength="${ this.maxLength }" `
-    const htmlText = $( `<${ tag } id="${ this.id }"${ type }${ inputMode }${ cssClassParam }${ cssStyleParam }${ maxLength }>` ).get( 0 )
-    if ( parentDom !== undefined ) $( parentDom ).append( htmlText )
+    if (this.id === undefined) this.id = `textField${$(tag).length}`
+    const type = htmlAttributeType === undefined ? '' : ` type="${htmlAttributeType}"`
+    const inputMode = htmlAttributeInputMode === undefined ? '' : ` inputmode="${htmlAttributeInputMode}"`
+    const maxLength = this.maxLength === undefined ? '' : ` maxLength="${this.maxLength}" `
+    const htmlText = $(`<${tag} id="${this.id}"${type}${inputMode}${cssClassParam}${cssStyleParam}${maxLength}>`).get(0)
+    if (parentDom !== undefined) $(parentDom).append(htmlText)
     htmlText.style.fontFamily = fontFamily
     htmlText.style.color = fontColor
     htmlText.style.textAlign = textAlign
@@ -99,187 +152,166 @@ export default class TextField extends Phaser.Group {
     return htmlText
   }
 
-
-  focus () {
+  focus() {
     this.htmlText.focus()
     return this
   }
 
-
-  blur () {
+  blur() {
     this.htmlText.blur()
     return this
   }
 
-
-  handleFocus () {
+  handleFocus() {
     this.box.visible = false
     this.boxFocus.visible = true
     this.updateHtmlText()
   }
 
-
-  handleBlur () {
+  handleBlur() {
     this.boxFocus.visible = false
     this.box.visible = true
   }
 
-
-  handleKeyDown () {
-    if ( this.onChange !== undefined ) {
+  handleKeyDown() {
+    if (this.onChange !== undefined) {
       // requestAnimationFrame to give the htmlText a chance to get the latest user input, otherwise this may lag one character behind
-      window.requestAnimationFrame( () => {
-        this.text = this.text.replace( /[\n\s]+/gm, ' ' )
-        if ( this.previousText !== this.text ) this.onChange( this )
+      window.requestAnimationFrame(() => {
+        this.text = this.text.replace(/[\n\s]+/gm, ' ')
+        if (this.previousText !== this.text) this.onChange(this)
         this.previousText = this.text
-      } )
+      })
     }
   }
 
-
-  updateHtmlText () {
+  updateHtmlText() {
     const canvasScale = this.game.canvas.offsetWidth / this.game.canvas.width
-    const globalPosition = this.toGlobal( new Phaser.Point() )
-    const x = Math.round( this.game.canvas.offsetLeft + globalPosition.x * canvasScale )
-    const y = Math.round( this.game.canvas.offsetTop + globalPosition.y * canvasScale )
+    const globalPosition = this.toGlobal(new Phaser.Point())
+    const x = Math.round(this.game.canvas.offsetLeft + globalPosition.x * canvasScale)
+    const y = Math.round(this.game.canvas.offsetTop + globalPosition.y * canvasScale)
     const fontSize = this.fontSize * canvasScale
-    const width = ( this.width - this.padding * 2 ) * canvasScale
-    const height = ( this.height - this.padding * 2 ) * canvasScale
+    const width = (this.width - this.padding * 2) * canvasScale
+    const height = (this.height - this.padding * 2) * canvasScale
     const padding = this.padding * canvasScale
 
-    this.htmlText.style.left = `${ x }px`
-    this.htmlText.style.top = `${ y }px`
-    this.htmlText.style.fontSize = `${ fontSize }px`
-    this.htmlText.style.width = `${ width }px`
-    this.htmlText.style.height = `${ height }px`
-    this.htmlText.style.padding = `${ padding }px`
+    this.htmlText.style.left = `${x}px`
+    this.htmlText.style.top = `${y}px`
+    this.htmlText.style.fontSize = `${fontSize}px`
+    this.htmlText.style.width = `${width}px`
+    this.htmlText.style.height = `${height}px`
+    this.htmlText.style.padding = `${padding}px`
 
     this.handleKeyDown() //just in case the text changed
 
     return this
   }
 
-
-  set text ( text ) {
+  set text(text) {
     this.htmlText.value = text
   }
 
-
-  get text () {
+  get text() {
     return this.htmlText.value
   }
 
-
-  hide () {
+  hide() {
     this.visible = false
     this.hideHtmlText()
     return this
   }
 
-
-  show () {
+  show() {
     this.visible = true
     this.updateHtmlText()
     this.showHtmlText()
     return this
   }
 
-
-  hideHtmlText () {
+  hideHtmlText() {
     this.htmlText.style.display = 'none'
     return this
   }
 
-
-  showHtmlText () {
+  showHtmlText() {
     this.htmlText.style.display = 'initial'
     return this
   }
 
-
-  setFadeOut () {
+  setFadeOut() {
     this.alpha = 0
     this.htmlText.style.opacity = 0
     return this
   }
 
-
-  setFadeIn () {
+  setFadeIn() {
     this.show()
     this.alpha = 1
     this.htmlText.style.opacity = 1
     return this
   }
 
-
-  setFadeOutText () {
+  setFadeOutText() {
     this.htmlText.style.opacity = 0
     return this
   }
 
-
-  setFadeInText () {
+  setFadeInText() {
     this.show()
     this.htmlText.style.opacity = 1
     return this
   }
 
-
-  fadeIn ( opt ) {
-    const { duration, onComplete } = _.defaults( opt || {}, {
+  fadeIn(opt) {
+    const { duration, onComplete } = _.defaults(opt || {}, {
       duration: 0.5,
-    } )
+    })
 
     this.show()
 
     const tl = new TimelineMax()
-    tl.to( this, duration, { alpha: 1 } )
-    tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
-    if ( onComplete !== undefined ) onComplete()
+    tl.to(this, duration, { alpha: 1 })
+    tl.to(this.htmlText.style, duration, { opacity: 1 }, 0)
+    if (onComplete !== undefined) onComplete()
 
     return this
   }
 
-
-  fadeOut ( opt ) {
-    const { duration, onComplete } = _.defaults( opt || {}, {
+  fadeOut(opt) {
+    const { duration, onComplete } = _.defaults(opt || {}, {
       duration: 0.5,
-    } )
+    })
 
     const tl = new TimelineMax()
-    tl.to( this, duration, { alpha: 0 } )
-    tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
-    if ( onComplete !== undefined ) onComplete()
+    tl.to(this, duration, { alpha: 0 })
+    tl.to(this.htmlText.style, duration, { opacity: 0 }, 0)
+    if (onComplete !== undefined) onComplete()
 
     return this
   }
 
-
-  fadeInText ( opt ) {
-    const { duration, onComplete } = _.defaults( opt || {}, {
+  fadeInText(opt) {
+    const { duration, onComplete } = _.defaults(opt || {}, {
       duration: 0.5,
-    } )
+    })
 
     this.show()
 
     const tl = new TimelineMax()
-    tl.to( this.htmlText.style, duration, { opacity: 1 }, 0 )
-    if ( onComplete !== undefined ) onComplete()
+    tl.to(this.htmlText.style, duration, { opacity: 1 }, 0)
+    if (onComplete !== undefined) onComplete()
 
     return this
   }
 
-
-  fadeOutText ( opt ) {
-    const { duration, onComplete } = _.defaults( opt || {}, {
+  fadeOutText(opt) {
+    const { duration, onComplete } = _.defaults(opt || {}, {
       duration: 0.5,
-    } )
+    })
 
     const tl = new TimelineMax()
-    tl.to( this.htmlText.style, duration, { opacity: 0 }, 0 )
-    if ( onComplete !== undefined ) onComplete()
+    tl.to(this.htmlText.style, duration, { opacity: 0 }, 0)
+    if (onComplete !== undefined) onComplete()
 
     return this
   }
-
 }
