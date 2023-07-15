@@ -17,7 +17,9 @@ const game = new Phaser.Game({
 })
 
 function preload() {
-  game.load.atlas('alien', 'assets/alien.png', 'assets/alien.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH)
+  game.load.atlas('alien-1', 'assets/alien-1.png', 'assets/alien-1.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH)
+  game.load.atlas('alien-2', 'assets/alien-2.png', 'assets/alien-2.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH)
+  game.load.atlas('alien-3', 'assets/alien-3.png', 'assets/alien-3.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH)
   game.load.atlas(
     'alien-combinations-1',
     'assets/alien-combinations-1.png',

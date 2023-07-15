@@ -31,11 +31,18 @@ function getPointOnCircle(opt = {}) {
   return { x, y }
 }
 
+const bodyPartDefaults = {
+  head: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.1 },
+  body: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0, neckWidth: 0.5, neckHeight: 0.25 },
+  eyeball: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
+  iris: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.5 },
+  eyeClosed: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.5 },
+}
+
 const bodyPartProps = {
   heads: [
     // 0
     {
-      anchorX: 0.5,
       anchorY: 0.9,
       neckWidth: 0.3,
       neckHeight: 0.11,
@@ -51,7 +58,6 @@ const bodyPartProps = {
     },
     // 1
     {
-      anchorX: 0.5,
       anchorY: 0.84,
       neckWidth: 0.4,
       neckHeight: 0.05,
@@ -59,7 +65,6 @@ const bodyPartProps = {
     },
     // 2
     {
-      anchorX: 0.5,
       anchorY: 0.9,
       neckWidth: 0.5,
       neckHeight: 0.05,
@@ -67,7 +72,6 @@ const bodyPartProps = {
     },
     // 3
     {
-      anchorX: 0.5,
       anchorY: 0.85,
       neckWidth: 0.3,
       neckHeight: 0.05,
@@ -90,91 +94,130 @@ const bodyPartProps = {
       },
     },
     // 5
-    { anchorX: 0.5, anchorY: 0.8, neckWidth: 0.5, neckHeight: 0.15 },
+    { anchorY: 0.8, neckWidth: 0.5, neckHeight: 0.15 },
     // 6
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.05 },
+    { anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.05 },
     // 7
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.07 },
+    { anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.07 },
     // 8
     {
-      anchorX: 0.5,
       anchorY: 0.7,
       neckWidth: 0,
       neckHeight: 0,
       combinations: { body3: { anchorX: 0.48, anchorY: 0.63 } },
     },
     // 9
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 1, neckHeight: 0.05 },
+    { anchorY: 0.9, neckWidth: 1, neckHeight: 0.05 },
     // 10
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 },
+    { anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 },
     // 11
     { anchorX: 0.49, anchorY: 0.88, neckWidth: 0.4, neckHeight: 0.05 },
     // 12
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.1 },
+    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.1 },
     // 13
-    { anchorX: 0.5, anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
     // 14
     { anchorX: 0.48, anchorY: 0.9, neckWidth: 0.4, neckHeight: 0.05 },
+    // -----------> new heads from here, check properties <-----------------
+    // 15
+    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    // 16
+    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    // 17
+    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    // 18
+    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    // 19
+    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
   ],
   bodies: [
     // 0
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.4 },
+    { anchorY: 0, neckWidth: 0.4 },
     // 1
-    { anchorX: 0.5, anchorY: 0.25, neckWidth: 0.6 },
+    { anchorY: 0.25, neckWidth: 0.6 },
     // 2
-    { anchorX: 0.5, anchorY: 0.3, neckWidth: 0.6 },
+    { anchorY: 0.3, neckWidth: 0.6 },
     // 3
     { anchorX: 0.52, anchorY: 0, neckWidth: 0.8 },
     // 4
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.5 },
+    { anchorY: 0, neckWidth: 0.5 },
     // 5
-    { anchorX: 0.5, anchorY: 0, neckWidth: 0.6 },
+    { anchorY: 0, neckWidth: 0.6 },
     // 6
     { anchorX: 0.64, anchorY: 0, neckWidth: 0.3 },
     // 7
-    { anchorX: 0.5, anchorY: 0.2, neckWidth: 0.8 },
+    { anchorY: 0.2, neckWidth: 0.8 },
+    // 8
+    { anchorY: 0, neckWidth: 0.8 },
+    // -----------> new bodies from here, check properties <-----------------
+    // 9
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 10
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 11
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 12
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 13
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 14
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 15
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 16
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 17
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 18
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 19
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 20
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
+    // 21
+    { atlasKey: 'alien-3', anchorY: 0, neckWidth: 0.8 },
   ],
   eyeballs: [
     // 0
-    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
+    { anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
     // 1
-    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
+    { anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
     // 2
-    { anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
+    { anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
     // 3
-    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
+    { anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
     // 4
-    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
+    { anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
     // 5
-    { anchorX: 0.5, anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
+    { anchorY: 0, hitTestPoints: eyeballHitTestPoints.half },
   ],
   irises: [
     // 0
-    { anchorX: 0.5, anchorY: 0.5 },
+    { anchorY: 0.5 },
     // 1
-    { anchorX: 0.5, anchorY: 0.5 },
+    { anchorY: 0.5 },
     // 2
-    { anchorX: 0.5, anchorY: 0.5 },
+    { anchorY: 0.5 },
     // 3
-    { anchorX: 0.5, anchorY: -0.2 },
+    { anchorY: -0.2 },
     // 4
-    { anchorX: 0.5, anchorY: -0.33 },
+    { anchorY: -0.33 },
     // 5
-    { anchorX: 0.5, anchorY: -0.6 },
+    { anchorY: -0.6 },
   ],
   eyesClosed: [
     // 0
-    { anchorX: 0.5, anchorY: 0.15 },
+    { anchorY: 0.15 },
     // 1
-    { anchorX: 0.5, anchorY: 0.075 },
+    { anchorY: 0.075 },
     // 2
-    { anchorX: 0.5, anchorY: 0.06 },
+    { anchorY: 0.06 },
     // 3
-    { anchorX: 0.5, anchorY: 0 },
+    { anchorY: 0 },
     // 4
-    { anchorX: 0.5, anchorY: 0 },
+    { anchorY: 0 },
     // 5
-    { anchorX: 0.5, anchorY: 0 },
+    { anchorY: 0 },
   ],
 }
 
@@ -257,18 +300,27 @@ export default class Alien extends Phaser.Group {
       atlasKeys: atlasKeyCombinations,
       withBMD,
     })
-    this.bodies = this.makeItems({
-      parent: this,
-      type: BODY,
-      props: bodyPartProps.bodies,
-      withBMD,
-    })
-    this.heads = this.makeItems({
-      parent: this,
-      type: HEAD,
-      props: bodyPartProps.heads,
-      withBMD,
-    })
+    this.bodies = bodyPartProps.bodies.map((props, index) =>
+      this.makeItem({
+        ...bodyPartDefaults.body,
+        ...props,
+        parent: this,
+        type: BODY,
+        index,
+        withBMD,
+      }),
+    )
+    this.heads = bodyPartProps.heads.map((props, index) =>
+      this.makeItem({
+        ...bodyPartDefaults.head,
+        ...props,
+        parent: this,
+        type: HEAD,
+        index,
+        withBMD,
+      }),
+    )
+
     this.eyes = []
 
     this.mapping = {
@@ -826,21 +878,24 @@ export default class Alien extends Phaser.Group {
     item.neckHeight = neckHeight
   }
 
-  makeItems({ parent, type, props, withBMD }) {
-    const items = []
+  makeItem(opt = {}) {
+    const {
+      parent,
+      type,
+      index,
+      withBMD,
+      atlasKey,
+      anchorX,
+      anchorY,
+      neckWidth,
+      neckHeight,
+      combinations,
+      hitTestPoints,
+    } = opt
 
-    props.forEach((prop, index) => {
-      const item = this.makeItem({ parent, type, index, prop, withBMD })
-      items.push(item)
-    })
-
-    return items
-  }
-
-  makeItem({ parent, type, index, prop, withBMD }) {
-    const item = this.game.add.sprite(0, 0, this.atlasKey, `${type}${index}`)
+    const item = this.game.add.sprite(0, 0, atlasKey, `${type}${index}`)
     parent?.addChild(item)
-    item.defaultProps = prop
+    item.defaultProps = { anchorX, anchorY, neckWidth, neckHeight, combinations, hitTestPoints }
     this.setItemProps({ item })
     if (withBMD) {
       item.bmd = this.makeBitmapData({ sourceImage: item })
@@ -856,20 +911,22 @@ export default class Alien extends Phaser.Group {
     parent?.addChild(eye)
     eye.index = index
     eye.eyeball = this.makeItem({
+      ...bodyPartDefaults.eyeball,
       parent: eye,
       type: EYEBALL,
       index,
       prop: bodyPartProps.eyeballs[index],
       withBMD: this.withBMD,
     })
-
     eye.iris = this.makeItem({
+      ...bodyPartDefaults.iris,
       parent: eye,
       type: IRIS,
       index,
       prop: bodyPartProps.irises[index],
     })
     eye.closed = this.makeItem({
+      ...bodyPartDefaults.eyeClosed,
       parent: eye,
       type: EYE_CLOSED,
       index,

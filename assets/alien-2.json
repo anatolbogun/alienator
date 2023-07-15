@@ -1,0 +1,140 @@
+{"frames": {
+
+"body9":
+{
+	"frame": {"x":1014,"y":1408,"w":495,"h":355},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":495,"h":355},
+	"sourceSize": {"w":495,"h":355}
+},
+"body10":
+{
+	"frame": {"x":1467,"y":367,"w":553,"h":407},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":553,"h":407},
+	"sourceSize": {"w":553,"h":407}
+},
+"body11":
+{
+	"frame": {"x":923,"y":294,"w":542,"h":432},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":542,"h":432},
+	"sourceSize": {"w":542,"h":432}
+},
+"body12":
+{
+	"frame": {"x":950,"y":728,"w":336,"h":633},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":336,"h":633},
+	"sourceSize": {"w":336,"h":633}
+},
+"body13":
+{
+	"frame": {"x":552,"y":385,"w":369,"h":500},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":369,"h":500},
+	"sourceSize": {"w":369,"h":500}
+},
+"body14":
+{
+	"frame": {"x":1288,"y":776,"w":599,"h":316},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":599,"h":316},
+	"sourceSize": {"w":599,"h":316}
+},
+"body15":
+{
+	"frame": {"x":813,"y":1,"w":771,"h":291},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":771,"h":291},
+	"sourceSize": {"w":771,"h":291}
+},
+"body16":
+{
+	"frame": {"x":1,"y":1419,"w":637,"h":377},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":637,"h":377},
+	"sourceSize": {"w":637,"h":377}
+},
+"body17":
+{
+	"frame": {"x":1,"y":986,"w":574,"h":431},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":574,"h":431},
+	"sourceSize": {"w":574,"h":431}
+},
+"body18":
+{
+	"frame": {"x":1,"y":1,"w":810,"h":382},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":810,"h":382},
+	"sourceSize": {"w":810,"h":382}
+},
+"body19":
+{
+	"frame": {"x":1,"y":385,"w":549,"h":599},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":549,"h":599},
+	"sourceSize": {"w":549,"h":599}
+},
+"body20":
+{
+	"frame": {"x":577,"y":887,"w":371,"h":487},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":487},
+	"sourceSize": {"w":371,"h":487}
+},
+"head16":
+{
+	"frame": {"x":1288,"y":1094,"w":503,"h":312},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":503,"h":312},
+	"sourceSize": {"w":503,"h":312}
+},
+"head17":
+{
+	"frame": {"x":640,"y":1376,"w":372,"h":394},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":372,"h":394},
+	"sourceSize": {"w":372,"h":394}
+},
+"head18":
+{
+	"frame": {"x":1511,"y":1408,"w":449,"h":355},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":449,"h":355},
+	"sourceSize": {"w":449,"h":355}
+},
+"head19":
+{
+	"frame": {"x":1586,"y":1,"w":416,"h":364},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":416,"h":364},
+	"sourceSize": {"w":416,"h":364}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "alien-2.png",
+	"format": "RGBA8888",
+	"size": {"w":2021,"h":1797},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:1b4277f93320a9b1ee49ab36745da738:53966fe6ff68d9a86a434a6de3a07162:46a8698eab81c2a0efe537f1eda392a2$"
+}
+}
