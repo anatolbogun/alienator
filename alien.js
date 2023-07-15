@@ -32,7 +32,15 @@ function getPointOnCircle(opt = {}) {
 }
 
 const bodyPartDefaults = {
-  head: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.1 },
+  head: {
+    atlasKey: 'alien-1',
+    anchorX: 0.5,
+    anchorY: 0.9,
+    neckWidth: 0.3,
+    neckHeight: 0.1,
+    neckOffsetX: 0,
+    neckOffsetY: 0,
+  },
   body: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0, neckWidth: 0.5, neckHeight: 0.25 },
   eyeball: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.5, hitTestPoints: eyeballHitTestPoints.full },
   iris: { atlasKey: 'alien-1', anchorX: 0.5, anchorY: 0.5 },
@@ -45,39 +53,82 @@ const bodyPartProps = {
     {
       anchorY: 0.9,
       neckWidth: 0.3,
-      neckHeight: 0.11,
+      neckHeight: 0.22,
+      neckOffsetY: -0.11,
       combinations: {
-        body1: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 },
+        body1: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25, neckOffsetY: -0.125 },
         body2: { anchorY: 0.7, neckWidth: 0.5, neckHeight: 0.25 },
         body3: { anchorX: 0.48, anchorY: 0.79 },
         body4: { anchorY: 0.8 },
         body5: { anchorY: 0.8 },
         body6: { anchorY: 0.82, neckWidth: 0.2 },
         body7: { anchorY: 0.7 },
+        body8: { anchorY: 0.5 },
+        body9: { anchorY: 0.7 },
+        body10: { anchorX: 0.51, anchorY: 0.6 },
+        body11: { anchorY: 0.75 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.62, anchorY: 0.7, neckWidth: 0.25 },
+        body14: { anchorY: 0.55 },
+        body15: { anchorY: 0.8 },
+        body16: { anchorY: 0.7 },
+        body17: { anchorY: 0.6 },
+        body18: { anchorX: 0.85, anchorY: 0.1 },
+        body19: { anchorY: 0.7 },
+        body20: { anchorY: 0.7 },
+        body21: { anchorY: 0.7 },
       },
     },
     // 1
     {
       anchorY: 0.84,
       neckWidth: 0.4,
-      neckHeight: 0.05,
-      combinations: { body1: { neckWidth: 0.7, neckHeight: 0.15 } },
+      neckHeight: 0.1,
+      neckOffsetY: -0.05,
+      combinations: {
+        body1: { neckWidth: 0.7, neckHeight: 0.15, neckOffsetY: -0.075 },
+        body8: { anchorX: 0.6, anchorY: 0.65 },
+        body10: { anchorX: 0.52, anchorY: 0.7 },
+        body13: { anchorX: 0.65, neckWidth: 0.3 },
+        body14: { anchorY: 0.7 },
+        body18: { anchorX: 0.82, anchorY: 0.4 },
+      },
     },
     // 2
     {
       anchorY: 0.9,
       neckWidth: 0.5,
-      neckHeight: 0.05,
-      combinations: { body6: { anchorX: 0.55 } },
+      neckHeight: 0.1,
+      neckOffsetY: -0.05,
+      combinations: {
+        body6: { anchorX: 0.55, neckOffsetX: 0.05 },
+        body8: { anchorX: 0.55, anchorY: 0.7 },
+        body10: { anchorX: 0.51, anchorY: 0.7, neckWidth: 0.42 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.67, neckWidth: 0.3 },
+        body14: { anchorY: 0.75 },
+        body17: { anchorY: 0.8 },
+        body18: { anchorX: 0.85, anchorY: 0.4 },
+        body19: { anchorY: 0.67 },
+        body21: { anchorY: 0.7 },
+      },
     },
     // 3
     {
       anchorY: 0.85,
       neckWidth: 0.3,
-      neckHeight: 0.05,
+      neckHeight: 0.1,
+      neckOffsetY: -0.025,
       combinations: {
         body1: { neckWidth: 0.5, neckHeight: 0.07 },
         body7: { neckWidth: 0.5 },
+        body8: { anchorX: 0.55, anchorY: 0.6 },
+        body10: { anchorX: 0.515, anchorY: 0.7 },
+        body13: { anchorX: 0.63, anchorY: 0.7, neckWidth: 0.2 },
+        body14: { anchorY: 0.65 },
+        body18: { anchorX: 0.8, anchorY: 0.35 },
+        body19: { anchorY: 0.4 },
+        body21: { anchorY: 0.5 },
       },
     },
     // 4
@@ -85,50 +136,299 @@ const bodyPartProps = {
       anchorX: 0.49,
       anchorY: 0.73,
       neckWidth: 0.3,
-      neckHeight: 0.1,
+      neckHeight: 0.2,
+      neckOffsetY: -0.1,
       combinations: {
-        body1: { neckWidth: 0.65, neckHeight: 0.25 },
+        body1: { neckWidth: 0.65, neckHeight: 0.25, neckOffsetY: -0.125 },
         body3: { anchorY: 0.8 },
         body6: { neckWidth: 0.2 },
         body7: { anchorY: 0.9 },
+        body8: { anchorX: 0.55, anchorY: 0.45 },
+        body10: { anchorX: 0.51, anchorY: 0.6 },
+        body13: { anchorX: 0.63, anchorY: 0.7, neckWidth: 0.2 },
+        body14: { anchorY: 0.5 },
+        body18: { anchorX: 0.8, anchorY: 0.2 },
+        body19: { anchorY: 0.5 },
+        body21: { anchorY: 0.5 },
       },
     },
     // 5
-    { anchorY: 0.8, neckWidth: 0.5, neckHeight: 0.15 },
+    {
+      anchorY: 0.8,
+      neckWidth: 0.5,
+      neckHeight: 0.15,
+      neckOffsetY: -0.075,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.6 },
+        body10: { anchorX: 0.52, anchorY: 0.7, neckWidth: 0.3 },
+        body13: { anchorX: 0.65, neckWidth: 0.3 },
+        body14: { anchorY: 0.65 },
+        body17: { anchorY: 0.5 },
+        body18: { anchorX: 0.85, anchorY: 0 },
+        body19: { anchorY: 0.5 },
+        body21: { anchorY: 0.6 },
+      },
+    },
     // 6
-    { anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.05 },
+    {
+      anchorY: 0.9,
+      neckWidth: 0.6,
+      neckHeight: 0.1,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.7, neckWidth: 0.3 },
+        body11: { neckWidth: 0.4 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.68, neckWidth: 0.3 },
+        body14: { anchorY: 0.7 },
+        body17: { anchorY: 0.8 },
+        body18: { anchorX: 0.85, anchorY: 0.3 },
+        body19: { anchorY: 0.7 },
+        body21: { anchorY: 0.8 },
+      },
+    },
     // 7
-    { anchorY: 0.9, neckWidth: 0.6, neckHeight: 0.07 },
+    {
+      anchorY: 0.9,
+      neckWidth: 0.6,
+      neckHeight: 0.14,
+      neckOffsetY: -0.07,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.6 },
+        body9: { anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.7, neckWidth: 0.3 },
+        body11: { anchorY: 0.8, neckWidth: 0.4 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.66, neckWidth: 0.3 },
+        body14: { anchorY: 0.7 },
+        body15: { anchorY: 0.7 },
+        body16: { anchorY: 0.8 },
+        body17: { anchorY: 0.7 },
+        body18: { anchorX: 0.85, anchorY: 0.1 },
+        body19: { anchorY: 0.7 },
+        body20: { anchorY: 0.8 },
+        body21: { anchorY: 0.7 },
+      },
+    },
     // 8
     {
       anchorY: 0.7,
       neckWidth: 0,
       neckHeight: 0,
-      combinations: { body3: { anchorX: 0.48, anchorY: 0.63 } },
+      combinations: {
+        body3: { anchorX: 0.48, anchorY: 0.63 },
+        body8: { anchorY: 0.45 },
+        body9: { anchorY: 0.6 },
+        body13: { anchorX: 0.65 },
+        body14: { anchorY: 0.3 },
+        body16: { anchorY: 0.5 },
+        body17: { anchorY: 0.4 },
+        body18: { anchorX: 0.9, anchorY: 0.1 },
+        body19: { anchorY: 0.4 },
+        body21: { anchorY: 0.4 },
+      },
     },
     // 9
-    { anchorY: 0.9, neckWidth: 1, neckHeight: 0.05 },
+    {
+      anchorY: 0.9,
+      neckWidth: 1,
+      neckHeight: 0.05,
+      neckOffsetY: -0.025,
+      combinations: {
+        body8: { anchorX: 0.55, anchorY: 0.65 },
+        body9: { anchorY: 0.7 }, // delete this after special combination is done
+        body11: { anchorX: 0.55, anchorY: 0.65 }, // delete this after special combination is done
+        body14: { anchorY: 0.74 },
+        body15: { anchorY: 0.74 }, // delete this after special combination is done
+        body16: { anchorY: 0.8 }, // delete this after special combination is done
+        body18: { anchorX: 0.75, anchorY: 0.18 }, // delete this after special combination is done
+        body21: { anchorY: 0.64 }, // delete this after special combination is done
+      },
+      // speial combinations: body9, body10, body11, body12, body13, body15, body16, body17, body18, body19, body20, body21
+    },
     // 10
-    { anchorY: 0.9, neckWidth: 0.3, neckHeight: 0.05 },
+    {
+      anchorY: 0.9,
+      neckWidth: 0.3,
+      neckHeight: 0.1,
+      neckOffsetY: -0.05,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.75, neckWidth: 0.3 },
+        body13: { anchorX: 0.65, neckWidth: 0.2 },
+        body14: { anchorY: 0.7 },
+        body18: { anchorX: 0.77, anchorY: 0.45 },
+        body19: { anchorY: 0.8 },
+      },
+    },
     // 11
-    { anchorX: 0.49, anchorY: 0.88, neckWidth: 0.4, neckHeight: 0.05 },
+    {
+      anchorX: 0.49,
+      anchorY: 0.88,
+      neckWidth: 0.4,
+      neckHeight: 0.1,
+      neckOffsetY: -0.05,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.75, neckWidth: 0.3 },
+        body13: { anchorX: 0.7, neckWidth: 0.4 },
+        body14: { anchorY: 0.7 },
+        body18: { anchorX: 0.88, anchorY: 0.51, neckWidth: 0.35 },
+      },
+    },
     // 12
-    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.1 },
+    {
+      anchorY: 0.9,
+      neckWidth: 0.5,
+      neckHeight: 0.1,
+      neckOffsetY: -0.05,
+      combinations: {
+        body8: { anchorX: 0.52, anchorY: 0.69 },
+        body9: { anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.75, neckWidth: 0.2 },
+        body11: { anchorX: 0.53, anchorY: 0.8 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.63, neckWidth: 0.2 },
+        body14: { anchorY: 0.65 },
+        body15: { anchorY: 0.6 },
+        body16: { anchorY: 0.77 },
+        body17: { anchorY: 0.67 },
+        body18: { anchorX: 0.85, anchorY: 0.2, neckWidth: 0.25 },
+        body19: { anchorY: 0.7, neckWidth: 0.4 },
+        body20: { anchorY: 0.8 },
+        body21: { anchorY: 0.7 },
+      },
+    },
     // 13
-    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      anchorY: 0.9,
+      neckWidth: 0.5,
+      neckHeight: 0.05,
+      neckOffsetY: -0.025,
+      combinations: {
+        body8: { anchorY: 0.7, neckWidth: 1 },
+        body14: { anchorY: 0.7, neckWidth: 1 },
+        body16: { anchorY: 0.79, neckWidth: 1 },
+      },
+      // special combinations: body9, body10, body11, body12, body13, body15, body17, body18, body19, body20, body21
+    },
     // 14
-    { anchorX: 0.48, anchorY: 0.9, neckWidth: 0.4, neckHeight: 0.05 },
+    {
+      anchorX: 0.48,
+      anchorY: 0.9,
+      neckWidth: 0.4,
+      neckHeight: 0.1,
+      combinations: {
+        body8: { anchorX: 0.6, anchorY: 0.7 },
+        body10: { anchorX: 0.52, anchorY: 0.75, neckWidth: 0.3 },
+        body11: { anchorX: 0.53, anchorY: 0.8 },
+        body12: { anchorY: 0.7 },
+        body13: { anchorX: 0.65, neckWidth: 0.2 },
+        body14: { anchorY: 0.65 },
+        body17: { anchorY: 0.85 },
+        body18: { anchorX: 0.78, anchorY: 0.4, neckWidth: 0.25 },
+        body19: { anchorY: 0.7, neckWidth: 0.4 },
+        body21: { anchorY: 0.7 },
+      },
+    },
     // -----------> new heads from here, check properties <-----------------
     // 15
-    { anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      anchorY: 0.94,
+      neckWidth: 0.263,
+      neckHeight: 0.15,
+      combinations: {
+        body1: { anchorY: 1.37 },
+        body2: { anchorY: 1.45 },
+        body7: { anchorX: 0.52, anchorY: 1.15 },
+        body8: { anchorX: 0.51, anchorY: 0.93 },
+        body10: { anchorX: 0.52, anchorY: 0.87 },
+        body11: { anchorX: 0.53, anchorY: 0.945 },
+        body13: { anchorX: 0.645 },
+        body14: { anchorY: 0.69 },
+        body18: { anchorX: 0.78, anchorY: 0.18 },
+      },
+      // special combinations: body3, body4, body6
+    },
     // 16
-    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      atlasKey: 'alien-2',
+      anchorY: 0.96,
+      neckWidth: 0.265,
+      neckHeight: 0.1,
+      combinations: {
+        body1: { anchorY: 1.25 },
+        body2: { anchorY: 1.31 },
+        body7: { anchorX: 0.52, anchorY: 1.1 },
+        body8: { anchorX: 0.51, anchorY: 0.98 },
+        body10: { anchorX: 0.52, anchorY: 0.91 },
+        body13: { anchorX: 0.645, anchorY: 0.99 },
+        body14: { anchorY: 0.8 },
+        body18: { anchorX: 0.78, anchorY: 0.48 },
+      },
+      // special combinations: body3, body4, body6
+    },
     // 17
-    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      atlasKey: 'alien-2',
+      anchorY: 0.9,
+      neckWidth: 0.48,
+      neckHeight: 0.08,
+      neckOffsetX: -0.05,
+      neckOffsetY: -0.04,
+      combinations: {
+        body1: { anchorY: 1.05 },
+        body2: { anchorY: 1.1 },
+        body6: { anchorX: 0.42, neckOffsetX: -0.11 },
+        body7: { anchorY: 1.02 },
+        body8: { anchorY: 0.87 },
+        body9: { anchorY: 0.925 },
+        body10: { anchorX: 0.42, anchorY: 0.88, neckWidth: 0.4, neckOffsetX: -0.1 },
+        body13: { anchorX: 0.59, anchorY: 0.93, neckWidth: 0.3, neckOffsetX: -0.15 },
+        body14: { anchorY: 0.8 },
+        body17: { anchorX: 0.45, anchorY: 0.85 },
+        body18: { anchorX: 0.8, anchorY: 0.4 },
+        body19: {
+          anchorX: 0.47,
+          anchorY: 0.8,
+        },
+      },
+      // special combinations: body3,
+    },
     // 18
-    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      atlasKey: 'alien-2',
+      anchorY: 0.87,
+      neckWidth: 0.3,
+      neckHeight: 0.1,
+      neckOffsetY: -0.1,
+      combinations: {
+        body8: { anchorY: 0.6 },
+        body10: { anchorX: 0.52, anchorY: 0.82 },
+        body11: { anchorY: 0.78 },
+        body13: { anchorX: 0.67, anchorY: 0.85 },
+        body14: { anchorY: 0.7 },
+        body17: { anchorY: 0.83 },
+        body18: { anchorX: 0.85, anchorY: 0.3 },
+        body19: { anchorY: 0.83 },
+        body21: { anchorY: 0.83 },
+      },
+    },
     // 19
-    { atlasKey: 'alien-2', anchorY: 0.9, neckWidth: 0.5, neckHeight: 0.05 },
+    {
+      atlasKey: 'alien-2',
+      anchorY: 0.83,
+      neckWidth: 0.3,
+      neckHeight: 0.1,
+      neckOffsetY: -0.15,
+      combinations: {
+        body8: { anchorX: 0.46, anchorY: 0.65 },
+        body10: { anchorX: 0.52, anchorY: 0.82 },
+        body13: { anchorX: 0.67, anchorY: 0.83 },
+        body14: { anchorY: 0.69 },
+        body18: { anchorX: 0.85, anchorY: 0.3 },
+      },
+    },
   ],
   bodies: [
     // 0
@@ -460,7 +760,8 @@ export default class Alien extends Phaser.Group {
       const width = Math.min(head.neckWidth * head.width, body.neckWidth * body.width)
       const height = head.neckHeight * head.height
       this.neck = this.makeNeck({ width, height })
-      this.neck.y = head.height - head.height * head.anchor.y
+      this.neck.x = this.neck.width + (0.5 - head.anchor.x + head.neckOffsetX) * head.width
+      this.neck.y = head.height - (head.anchor.y - head.neckOffsetY) * head.height
 
       head.addChild(this.neck)
 
@@ -833,7 +1134,7 @@ export default class Alien extends Phaser.Group {
 
     const graphics = this.game.add.graphics(width, height)
     graphics.beginFill(0xffffff)
-    graphics.drawRect(-width * 1.5, -height, width, height)
+    graphics.drawRect(-width * 1.5, -height / 2, width, height)
 
     return graphics
   }
@@ -871,11 +1172,10 @@ export default class Alien extends Phaser.Group {
   }
 
   setItemProps({ item, props }) {
-    const { anchorX, anchorY, neckWidth, neckHeight } = props || item.defaultProps
+    const { anchorX, anchorY, neckWidth, neckHeight, neckOffsetX, neckOffsetY } = props || item.defaultProps
 
     item.anchor.set(anchorX, anchorY)
-    item.neckWidth = neckWidth
-    item.neckHeight = neckHeight
+    Object.assign(item, { neckWidth, neckHeight, neckOffsetX, neckOffsetY })
   }
 
   makeItem(opt = {}) {
@@ -889,13 +1189,24 @@ export default class Alien extends Phaser.Group {
       anchorY,
       neckWidth,
       neckHeight,
+      neckOffsetX,
+      neckOffsetY,
       combinations,
       hitTestPoints,
     } = opt
 
     const item = this.game.add.sprite(0, 0, atlasKey, `${type}${index}`)
     parent?.addChild(item)
-    item.defaultProps = { anchorX, anchorY, neckWidth, neckHeight, combinations, hitTestPoints }
+    item.defaultProps = {
+      anchorX,
+      anchorY,
+      neckWidth,
+      neckHeight,
+      neckOffsetX,
+      neckOffsetY,
+      combinations,
+      hitTestPoints,
+    }
     this.setItemProps({ item })
     if (withBMD) {
       item.bmd = this.makeBitmapData({ sourceImage: item })
