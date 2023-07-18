@@ -73,8 +73,8 @@ const bodyPartProps = {
         body15: { anchorY: 0.8 },
         body16: { anchorY: 0.7 },
         body17: { anchorY: 0.6 },
-        body18: { anchorX: 0.85, anchorY: 0.1 },
-        body19: { anchorY: 0.7 },
+        body18: { anchorX: 0.72, anchorY: 0.35 },
+        body19: { anchorY: 0.2 },
         body20: { anchorY: 0.7 },
         body21: { anchorY: 0.7 },
       },
@@ -91,7 +91,7 @@ const bodyPartProps = {
         body10: { anchorX: 0.52, anchorY: 0.7 },
         body13: { anchorX: 0.65, neckWidth: 0.3 },
         body14: { anchorY: 0.7 },
-        body18: { anchorX: 0.82, anchorY: 0.4 },
+        body18: { anchorX: 0.85, anchorY: 0.4 },
       },
     },
     // 2
@@ -108,7 +108,7 @@ const bodyPartProps = {
         body13: { anchorX: 0.67, neckWidth: 0.3 },
         body14: { anchorY: 0.75 },
         body17: { anchorY: 0.8 },
-        body18: { anchorX: 0.85, anchorY: 0.4 },
+        body18: { anchorX: 0.86, anchorY: 0.38 },
         body19: { anchorY: 0.67 },
         body21: { anchorY: 0.7 },
       },
@@ -147,7 +147,7 @@ const bodyPartProps = {
         body10: { anchorX: 0.51, anchorY: 0.6 },
         body13: { anchorX: 0.63, anchorY: 0.7, neckWidth: 0.2 },
         body14: { anchorY: 0.5 },
-        body18: { anchorX: 0.8, anchorY: 0.2 },
+        body18: { anchorX: 0.8, anchorY: 0.3 },
         body19: { anchorY: 0.5 },
         body21: { anchorY: 0.5 },
       },
@@ -204,7 +204,7 @@ const bodyPartProps = {
         body15: { anchorY: 0.7 },
         body16: { anchorY: 0.8 },
         body17: { anchorY: 0.7 },
-        body18: { anchorX: 0.85, anchorY: 0.1 },
+        body18: { anchorX: 0.86, anchorY: 0.1 },
         body19: { anchorY: 0.7 },
         body20: { anchorY: 0.8 },
         body21: { anchorY: 0.7 },
@@ -223,7 +223,7 @@ const bodyPartProps = {
         body14: { anchorY: 0.3 },
         body16: { anchorY: 0.5 },
         body17: { anchorY: 0.4 },
-        body18: { anchorX: 0.9, anchorY: 0.1 },
+        body18: { anchorX: 0.9, anchorY: 0.2 },
         body19: { anchorY: 0.4 },
         body21: { anchorY: 0.4 },
       },
@@ -231,20 +231,18 @@ const bodyPartProps = {
     // 9
     {
       anchorY: 0.9,
-      neckWidth: 1,
-      neckHeight: 0.05,
-      neckOffsetY: -0.025,
+      neckWidth: 0,
       combinations: {
-        body8: { anchorX: 0.55, anchorY: 0.65 },
-        body9: { anchorY: 0.7 }, // delete this after special combination is done
-        body11: { anchorX: 0.55, anchorY: 0.65 }, // delete this after special combination is done
-        body14: { anchorY: 0.74 },
-        body15: { anchorY: 0.74 }, // delete this after special combination is done
-        body16: { anchorY: 0.8 }, // delete this after special combination is done
-        body18: { anchorX: 0.75, anchorY: 0.18 }, // delete this after special combination is done
-        body21: { anchorY: 0.64 }, // delete this after special combination is done
+        body8: { anchorX: 0.56, anchorY: 0.65 },
+        body9: { anchorY: 0.7 },
+        body11: { anchorX: 0.545, anchorY: 0.64 },
+        body14: { anchorY: 0.72 },
+        body15: { anchorY: 0.75 },
+        body16: { anchorY: 0.83 },
+        body18: { anchorX: 0.65, anchorY: 0.27 },
+        body21: { anchorY: 0.61 },
       },
-      // speial combinations: body9, body10, body11, body12, body13, body15, body16, body17, body18, body19, body20, body21
+      // speial combinations: body10, body12, body13, body17, body18 (?), body19, body20
     },
     // 10
     {
@@ -290,10 +288,10 @@ const bodyPartProps = {
         body12: { anchorY: 0.7 },
         body13: { anchorX: 0.63, neckWidth: 0.2 },
         body14: { anchorY: 0.65 },
-        body15: { anchorY: 0.6 },
+        body15: { anchorY: 0.7 },
         body16: { anchorY: 0.77 },
         body17: { anchorY: 0.67 },
-        body18: { anchorX: 0.85, anchorY: 0.2, neckWidth: 0.25 },
+        body18: { anchorX: 0.7, anchorY: 0.25, neckWidth: 0.25 },
         body19: { anchorY: 0.7, neckWidth: 0.4 },
         body20: { anchorY: 0.8 },
         body21: { anchorY: 0.7 },
@@ -302,15 +300,21 @@ const bodyPartProps = {
     // 13
     {
       anchorY: 0.9,
-      neckWidth: 0.5,
-      neckHeight: 0.05,
-      neckOffsetY: -0.025,
+      neckWidth: 0,
       combinations: {
-        body8: { anchorY: 0.7, neckWidth: 1 },
-        body14: { anchorY: 0.7, neckWidth: 1 },
-        body16: { anchorY: 0.79, neckWidth: 1 },
+        body8: { anchorY: 0.7 },
+        body9: { anchorY: 0.93 },
+        body11: { anchorX: 0.49, anchorY: 0.95 },
+        body12: { anchorX: 0.45, anchorY: 0.7 },
+        body14: { anchorY: 0.7 },
+        body15: { anchorX: 0.43, anchorY: 0.94 },
+        body16: { anchorY: 0.85 },
+        body17: { anchorX: 0.42, anchorY: 0.93 },
+        body19: { anchorX: 0.45, anchorY: 0.5 },
+        body20: { anchorX: 0.45, anchorY: 0.85 },
+        body21: { anchorX: 0.435, anchorY: 0.9 },
       },
-      // special combinations: body9, body10, body11, body12, body13, body15, body17, body18, body19, body20, body21
+      // special combinations: body10, body13, body18, body19 (?)
     },
     // 14
     {
@@ -346,7 +350,8 @@ const bodyPartProps = {
         body11: { anchorX: 0.53, anchorY: 0.945 },
         body13: { anchorX: 0.645 },
         body14: { anchorY: 0.69 },
-        body18: { anchorX: 0.78, anchorY: 0.18 },
+        body18: { anchorX: 0.73, anchorY: 0.28 },
+        body21: { anchorY: 0.9 },
       },
       // special combinations: body3, body4, body6
     },
@@ -362,9 +367,10 @@ const bodyPartProps = {
         body7: { anchorX: 0.52, anchorY: 1.1 },
         body8: { anchorX: 0.51, anchorY: 0.98 },
         body10: { anchorX: 0.52, anchorY: 0.91 },
+        body11: { anchorX: 0.53, anchorY: 0.99 },
         body13: { anchorX: 0.645, anchorY: 0.99 },
         body14: { anchorY: 0.8 },
-        body18: { anchorX: 0.78, anchorY: 0.48 },
+        body18: { anchorX: 0.73, anchorY: 0.51 },
       },
       // special combinations: body3, body4, body6
     },
@@ -387,7 +393,7 @@ const bodyPartProps = {
         body13: { anchorX: 0.59, anchorY: 0.93, neckWidth: 0.3, neckOffsetX: -0.15 },
         body14: { anchorY: 0.8 },
         body17: { anchorX: 0.45, anchorY: 0.85 },
-        body18: { anchorX: 0.8, anchorY: 0.4 },
+        body18: { anchorX: 0.8, anchorY: 0.5 },
         body19: {
           anchorX: 0.47,
           anchorY: 0.8,
@@ -409,7 +415,7 @@ const bodyPartProps = {
         body13: { anchorX: 0.67, anchorY: 0.85 },
         body14: { anchorY: 0.7 },
         body17: { anchorY: 0.83 },
-        body18: { anchorX: 0.85, anchorY: 0.3 },
+        body18: { anchorX: 0.85, anchorY: 0.35 },
         body19: { anchorY: 0.83 },
         body21: { anchorY: 0.83 },
       },
@@ -426,7 +432,7 @@ const bodyPartProps = {
         body10: { anchorX: 0.52, anchorY: 0.82 },
         body13: { anchorX: 0.67, anchorY: 0.83 },
         body14: { anchorY: 0.69 },
-        body18: { anchorX: 0.85, anchorY: 0.3 },
+        body18: { anchorX: 0.85, anchorY: 0.35 },
       },
     },
   ],
@@ -444,7 +450,7 @@ const bodyPartProps = {
     // 5
     { anchorY: 0, neckWidth: 0.6 },
     // 6
-    { anchorX: 0.64, anchorY: 0, neckWidth: 0.3 },
+    { anchorX: 0.64, anchorY: 0, neckWidth: 0 },
     // 7
     { anchorY: 0.2, neckWidth: 0.8 },
     // 8
@@ -475,7 +481,7 @@ const bodyPartProps = {
     // 20
     { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
     // 21
-    { atlasKey: 'alien-3', anchorY: 0, neckWidth: 0.8 },
+    { atlasKey: 'alien-2', anchorY: 0, neckWidth: 0.8 },
   ],
   eyeballs: [
     // 0
