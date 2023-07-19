@@ -2,7 +2,7 @@
 
 "body9":
 {
-	"frame": {"x":1457,"y":1186,"w":495,"h":355},
+	"frame": {"x":1397,"y":315,"w":495,"h":355},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":495,"h":355},
@@ -18,7 +18,7 @@
 },
 "body11":
 {
-	"frame": {"x":1195,"y":752,"w":542,"h":432},
+	"frame": {"x":1,"y":1144,"w":542,"h":432},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":542,"h":432},
@@ -26,15 +26,15 @@
 },
 "body12":
 {
-	"frame": {"x":1,"y":1312,"w":336,"h":633},
+	"frame": {"x":1646,"y":672,"w":270,"h":508},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":336,"h":633},
-	"sourceSize": {"w":336,"h":633}
+	"spriteSourceSize": {"x":0,"y":0,"w":270,"h":508},
+	"sourceSize": {"w":270,"h":508}
 },
 "body13":
 {
-	"frame": {"x":339,"y":1312,"w":369,"h":500},
+	"frame": {"x":1394,"y":1182,"w":369,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":369,"h":500},
@@ -42,7 +42,7 @@
 },
 "body14":
 {
-	"frame": {"x":1397,"y":1,"w":599,"h":316},
+	"frame": {"x":1,"y":1578,"w":599,"h":316},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":599,"h":316},
@@ -66,7 +66,7 @@
 },
 "body17":
 {
-	"frame": {"x":1397,"y":319,"w":574,"h":431},
+	"frame": {"x":1,"y":711,"w":574,"h":431},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":574,"h":431},
@@ -82,15 +82,15 @@
 },
 "body19":
 {
-	"frame": {"x":1,"y":711,"w":549,"h":599},
+	"frame": {"x":577,"y":994,"w":442,"h":482},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":549,"h":599},
-	"sourceSize": {"w":549,"h":599}
+	"spriteSourceSize": {"x":0,"y":0,"w":442,"h":482},
+	"sourceSize": {"w":442,"h":482}
 },
 "body20":
 {
-	"frame": {"x":710,"y":1308,"w":371,"h":487},
+	"frame": {"x":1021,"y":1029,"w":371,"h":487},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":487},
@@ -106,7 +106,7 @@
 },
 "head16":
 {
-	"frame": {"x":552,"y":994,"w":503,"h":312},
+	"frame": {"x":1397,"y":1,"w":503,"h":312},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":503,"h":312},
@@ -114,7 +114,7 @@
 },
 "head17":
 {
-	"frame": {"x":1083,"y":1186,"w":372,"h":394},
+	"frame": {"x":1020,"y":1518,"w":372,"h":394},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":372,"h":394},
@@ -122,7 +122,7 @@
 },
 "head18":
 {
-	"frame": {"x":1501,"y":1543,"w":449,"h":355},
+	"frame": {"x":1195,"y":672,"w":449,"h":355},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":449,"h":355},
@@ -130,7 +130,7 @@
 },
 "head19":
 {
-	"frame": {"x":1083,"y":1582,"w":416,"h":364},
+	"frame": {"x":602,"y":1478,"w":416,"h":364},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":416,"h":364},
@@ -141,8 +141,8 @@
 	"version": "1.0",
 	"image": "alien-2.png",
 	"format": "RGBA8888",
-	"size": {"w":1997,"h":1947},
+	"size": {"w":1917,"h":1913},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:eccc872dc4423cb068f58c2b8cf8550d:e138b731b8e7712f3ae7ca7368b75989:46a8698eab81c2a0efe537f1eda392a2$"
+	"smartupdate": "$TexturePacker:SmartUpdate:2b98afa477493416a7fe3aa48ba97e8d:3c9cb69a5fb869fdc0895ecad26ec345:46a8698eab81c2a0efe537f1eda392a2$"
 }
 }

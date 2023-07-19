@@ -1,0 +1,60 @@
+{"frames": {
+
+"body3-head16":
+{
+	"frame": {"x":1,"y":1,"w":502,"h":662},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":502,"h":662},
+	"sourceSize": {"w":502,"h":662}
+},
+"body3-head17":
+{
+	"frame": {"x":1,"y":1325,"w":381,"h":663},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":381,"h":663},
+	"sourceSize": {"w":381,"h":663}
+},
+"body4-head16":
+{
+	"frame": {"x":505,"y":1,"w":503,"h":637},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":503,"h":637},
+	"sourceSize": {"w":503,"h":637}
+},
+"body6-head15":
+{
+	"frame": {"x":505,"y":640,"w":503,"h":566},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":503,"h":566},
+	"sourceSize": {"w":503,"h":566}
+},
+"body6-head16":
+{
+	"frame": {"x":1,"y":665,"w":502,"h":658},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":502,"h":658},
+	"sourceSize": {"w":502,"h":658}
+},
+"body12-head17":
+{
+	"frame": {"x":505,"y":1208,"w":371,"h":762},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":762},
+	"sourceSize": {"w":371,"h":762}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "alien-combinations-3.png",
+	"format": "RGBA8888",
+	"size": {"w":1009,"h":1989},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:c0cda2782fa4319b995773b335d65024:66d955f8d5c5a4f42da648c195e337c7:e4dbe7f18db731c3d43e176576e81591$"
+}
+}

@@ -151,6 +151,12 @@ function preload() {
     'assets/alien-combinations-2.json',
     Phaser.Loader.TEXTURE_ATLAS_JSON_HASH,
   )
+  game.load.atlas(
+    'alien-combinations-3',
+    'assets/alien-combinations-3.png',
+    'assets/alien-combinations-3.json',
+    Phaser.Loader.TEXTURE_ATLAS_JSON_HASH,
+  )
 }
 
 function create() {
@@ -368,6 +374,11 @@ function makeUI(opt = {}) {
   const group = game.make.group()
   if (parent != null) parent.addChild(group)
   group.buttons = []
+
+  // // helper rectangle to view max alien bounds
+  // const maxArea = game.add.graphics(game.world.centerX, game.world.centerY - 220, group)
+  // maxArea.beginFill(0xffaaaa, 1)
+  // maxArea.drawRect(-400, -400, 800, 800)
 
   group.disableButtons = () => {
     group.buttons.forEach((button) => {
@@ -1174,10 +1185,10 @@ function showResult() {
         requestAnimationFrame(() => {
           // white background, no text
           takeScreenshot({
-            x: game.world.width / 6,
-            y: game.world.height / 4.5,
-            width: game.world.width / 1.5, // this should be a square (calculate width/height as with the avatar above if this should change)
-            height: game.world.width / 1.5, // this should be a square
+            x: game.world.width / 10,
+            y: game.world.height / 5.5,
+            width: game.world.width / 1.25, // this should be a square (calculate width/height as with the avatar above if this should change)
+            height: game.world.width / 1.25, // this should be a square
             outputWidth: imageExportWidth,
             outputHeight: imageExportHeight,
             onComplete: (image) => {
@@ -1188,7 +1199,7 @@ function showResult() {
                   // white background, with text
                   takeScreenshot({
                     x: 0,
-                    y: game.world.height / 40,
+                    y: game.world.height / 20,
                     width: game.world.width, // this should be a square
                     height: game.world.width, // this should be a square
                     outputWidth: imageExportWidth, // game.world.width / 1.5,

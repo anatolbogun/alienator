@@ -41,6 +41,12 @@ function preload() {
     'assets/alien-combinations-2.json',
     Phaser.Loader.TEXTURE_ATLAS_JSON_HASH,
   )
+  game.load.atlas(
+    'alien-combinations-3',
+    'assets/alien-combinations-3.png',
+    'assets/alien-combinations-3.json',
+    Phaser.Loader.TEXTURE_ATLAS_JSON_HASH,
+  )
 }
 
 function create() {
